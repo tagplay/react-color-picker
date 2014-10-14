@@ -1,0 +1,37 @@
+{
+  "name": "react-colorpicker",
+  "version": "0.1.0",
+  "description": "React Color Picker",
+  "main": "bundle.js",
+  "scripts": {
+    "test": "make",
+    "start": "npm run serve | npm run dev",
+    "serve": "./node_modules/.bin/http-server",
+    "build": "./node_modules/.bin/webpack --config build.config.js",
+    "dev": "./node_modules/.bin/webpack-dev-server --progress --colors --port 8090"
+  },
+  "keywords": [
+    "react",
+    "react-component",
+    "color",
+    "picker",
+    "color-picker"
+  ],
+  "author": "Radu Brehar",
+  "license": "MIT",
+  "dependencies": {
+    "react": "~0.11.2",
+    "copy-utils": "~1.0.0",
+    "tinycolor2": "~1.0.0",
+    "functionally": "~0.6.1",
+    "region": "~0.2.2"
+  },
+  "devDependencies": {
+    "style-loader": "~0.8.1",
+    "css-loader": "~0.9.0",
+    "jsx-loader": "~0.11.2",
+    "stylus-loader": "~0.4.0",
+    "webpack-dev-server": "~1.6.5",
+    "webpack": "~1.4.7"
+  }
+}
