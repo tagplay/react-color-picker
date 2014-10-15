@@ -13,6 +13,8 @@ $ npm install react-color-picker
 
 You can have either **controlled** (using **value**) or **uncontrolled** (using **defaultValue**) pickers.
 
+#### Please don't forget to include the styles!!! - `index.css` or `index.styl`
+
 Example (**controlled**)
 ```jsx
 
@@ -61,7 +63,7 @@ You can use only the hue spectrum if that is what you need.
 
 ```jsx
 var React = require('react')
-var HueSpectrum = require('react-color-picker/HueSpectrum')
+var HueSpectrum = require('react-color-picker').HueSpectrum
 
 <HueSpectrum value={color} />
 <HueSpectrum defaultValue="red" />
@@ -73,7 +75,7 @@ You can use only the saturation spectrum if that is what you need.
 
 ```jsx
 var React = require('react')
-var SaturationSpectrum = require('react-color-picker/SaturationSpectrum')
+var SaturationSpectrum = require('react-color-picker').SaturationSpectrum
 
 <SaturationSpectrum value={color} />
 <SaturationSpectrum defaultValue="red" />

@@ -12,7 +12,7 @@ var toColor   = colorUtils.toColor
 
 function emptyFn(){}
 
-module.exports = React.createClass({
+var RESULT = React.createClass({
 
     displayName: 'ColorPicker',
 
@@ -146,3 +146,8 @@ module.exports = React.createClass({
 
     }
 })
+
+RESULT.HueSpectrum = HueSpectrum
+RESULT.SaturationSpectrum = SaturationSpectrum
+
+module.exports = RESULT
