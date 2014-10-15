@@ -1423,11 +1423,11 @@
 
 	'use strict'
 
-	var hasOwn    = __webpack_require__(25)
-	var copyUtils = __webpack_require__(27)
+	var hasOwn    = __webpack_require__(26)
+	var copyUtils = __webpack_require__(25)
 	var copyList  = copyUtils.copyList
 	var F         = __webpack_require__(24)
-	var isObject  = __webpack_require__(26).object
+	var isObject  = __webpack_require__(27).object
 
 	/**
 	 * @class Region
@@ -4777,55 +4777,6 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	var hasOwn = Object.prototype.hasOwnProperty
-
-	function curry(fn, n){
-
-	    if (typeof n !== 'number'){
-	        n = fn.length
-	    }
-
-	    function getCurryClosure(prevArgs){
-
-	        function curryClosure() {
-
-	            var len  = arguments.length
-	            var args = [].concat(prevArgs)
-
-	            if (len){
-	                args.push.apply(args, arguments)
-	            }
-
-	            if (args.length < n){
-	                return getCurryClosure(args)
-	            }
-
-	            return fn.apply(this, args)
-	        }
-
-	        return curryClosure
-	    }
-
-	    return getCurryClosure([])
-	}
-
-
-	module.exports = curry(function(object, property){
-	    return hasOwn.call(object, property)
-	})
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(31)
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
 	module.exports = function(){
 
 	    'use strict'
@@ -5156,6 +5107,55 @@
 	}()
 
 /***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var hasOwn = Object.prototype.hasOwnProperty
+
+	function curry(fn, n){
+
+	    if (typeof n !== 'number'){
+	        n = fn.length
+	    }
+
+	    function getCurryClosure(prevArgs){
+
+	        function curryClosure() {
+
+	            var len  = arguments.length
+	            var args = [].concat(prevArgs)
+
+	            if (len){
+	                args.push.apply(args, arguments)
+	            }
+
+	            if (args.length < n){
+	                return getCurryClosure(args)
+	            }
+
+	            return fn.apply(this, args)
+	        }
+
+	        return curryClosure
+	    }
+
+	    return getCurryClosure([])
+	}
+
+
+	module.exports = curry(function(object, property){
+	    return hasOwn.call(object, property)
+	})
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(31)
+
+/***/ },
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -5167,7 +5167,7 @@
 	var FunctionQueue = __webpack_require__(58)
 	var withQueue     = __webpack_require__(30)
 
-	var copyUtils = __webpack_require__(27)
+	var copyUtils = __webpack_require__(25)
 	var returnFalse = function(){
 	    return false
 	}
@@ -7618,7 +7618,7 @@
 	'use strict'
 
 	var classy = __webpack_require__(29)
-	var copyUtils = __webpack_require__(27)
+	var copyUtils = __webpack_require__(25)
 	var functionally = __webpack_require__(87)
 	var sortDescFn = function( a, b){ return b - a }
 	var SLICE  = Array.prototype.slice
