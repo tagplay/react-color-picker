@@ -7,7 +7,7 @@
     "test": "make",
     "start": "npm run serve | npm run dev",
     "serve": "./node_modules/.bin/http-server",
-    "lib": "./node_modules/.bin/gulp",
+    "lib": "./node_modules/.bin/gulp | npm run css",
     "css": "./node_modules/.bin/webpack --colors --config stylus.config.js",
     "dev": "./node_modules/.bin/webpack-dev-server --progress --colors --port 8090"
   },
