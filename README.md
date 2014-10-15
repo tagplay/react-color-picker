@@ -6,7 +6,7 @@ react-colorpicker
 ## Install
 
 ```sh
-$ npm install react-colorpicker
+$ npm install react-color-picker
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ Example (**controlled**)
 ```jsx
 
 var React = require('react')
-var ColorPicker = require('react-colorpicker')
+var ColorPicker = require('react-color-picker')
 
 var App = React.createClass({
 
@@ -61,7 +61,7 @@ You can use only the hue spectrum if that is what you need.
 
 ```jsx
 var React = require('react')
-var HueSpectrum = require('react-colorpicker/HueSpectrum')
+var HueSpectrum = require('react-color-picker/HueSpectrum')
 
 <HueSpectrum value={color} />
 <HueSpectrum defaultValue="red" />
@@ -73,7 +73,7 @@ You can use only the saturation spectrum if that is what you need.
 
 ```jsx
 var React = require('react')
-var SaturationSpectrum = require('react-colorpicker/SaturationSpectrum')
+var SaturationSpectrum = require('react-color-picker/SaturationSpectrum')
 
 <SaturationSpectrum value={color} />
 <SaturationSpectrum defaultValue="red" />
