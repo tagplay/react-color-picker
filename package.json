@@ -2,11 +2,12 @@
   "name": "react-colorpicker",
   "version": "0.1.0",
   "description": "React Color Picker",
-  "main": "bundle.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "make",
     "start": "npm run serve | npm run dev",
     "serve": "./node_modules/.bin/http-server",
+    "lib": "./node_modules/.bin/gulp",
     "build": "./node_modules/.bin/webpack --config build.config.js",
     "dev": "./node_modules/.bin/webpack-dev-server --progress --colors --port 8090"
   },
@@ -32,6 +33,8 @@
     "jsx-loader": "~0.11.2",
     "stylus-loader": "~0.4.0",
     "webpack-dev-server": "~1.6.5",
-    "webpack": "~1.4.7"
+    "webpack": "~1.4.7",
+    "gulp": "~3.8.8",
+    "gulp-react": "~1.0.2"
   }
 }
