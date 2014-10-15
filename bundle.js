@@ -46,7 +46,7 @@
 
 	/** @jsx React.DOM */'use strict'
 
-	var React = __webpack_require__(1)
+	var React = window.React = __webpack_require__(1)
 
 	var ColorPicker = __webpack_require__(2)
 	__webpack_require__(3)
@@ -674,7 +674,7 @@
 
 	'use strict'
 
-	var tinycolor = __webpack_require__(23)
+	var tinycolor = __webpack_require__(22)
 
 	if (typeof window != 'undefined'){
 	    window.tinycolor = tinycolor
@@ -970,7 +970,7 @@
 
 	var Region = __webpack_require__(15)
 	var copy   = __webpack_require__(12).copy
-	var DragHelper = __webpack_require__(22)
+	var DragHelper = __webpack_require__(23)
 	var toHsv = __webpack_require__(9).toHsv
 
 	function emptyFn(){}
@@ -1128,11 +1128,11 @@
 
 	'use strict'
 
-	var hasOwn    = __webpack_require__(25)
-	var copyUtils = __webpack_require__(27)
+	var hasOwn    = __webpack_require__(26)
+	var copyUtils = __webpack_require__(25)
 	var copyList  = copyUtils.copyList
 	var F         = __webpack_require__(24)
-	var isObject  = __webpack_require__(26).object
+	var isObject  = __webpack_require__(27).object
 
 	/**
 	 * @class Region
@@ -2818,191 +2818,6 @@
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	var F      = __webpack_require__(24)
-	var copy   = __webpack_require__(12).copy
-	var Region = __webpack_require__(15)
-
-	var Helper = function(config){
-	    this.config = config
-	}
-
-	function buildRegion(target){
-
-	    var builder = Region
-
-	    if (target instanceof window.HTMLElement){
-	        builder = Region.fromDOM
-	    }
-
-	    return builder(target)
-	}
-
-	function emptyFn(){}
-
-	copy({
-
-	    /**
-	     * Should be called on a mousedown event
-	     *
-	     * @param  {Event} event
-	     * @return {[type]}       [description]
-	     */
-	    initDrag: function(event) {
-
-	        this.onDragInit(event)
-
-	        var onDragStart = F.once(this.onDragStart, this)
-
-	        var mouseMoveListener = (function(event){
-	            onDragStart(event)
-	            this.onDrag(event)
-	        }).bind(this)
-
-	        var mouseUpListener = (function(event){
-
-	            this.onDrop(event)
-
-	            window.removeEventListener('mousemove', mouseMoveListener)
-	            window.removeEventListener('mouseup', mouseUpListener)
-	        }).bind(this)
-
-	        window.addEventListener('mousemove', mouseMoveListener, false)
-	        window.addEventListener('mouseup', mouseUpListener)
-	    },
-
-	    onDragInit: function(event){
-
-	        var config = {}
-	        this.state = {
-	            config: config
-	        }
-
-	        var initPageCoords = this.state.initPageCoords = {
-	            pageX: event.pageX,
-	            pageY: event.pageY
-	        }
-
-	        if (this.config.region){
-	            this.state.initialRegion = buildRegion(this.config.region)
-	            this.state.dragRegion =
-	                config.dragRegion =
-	                    this.state.initialRegion.clone()
-	        }
-	        if (this.config.constrainTo){
-	            this.state.constrainTo = buildRegion(this.config.constrainTo)
-	        }
-
-	        this.callConfig('onDragInit', event)
-	    },
-
-	    /**
-	     * Called when the first mousemove event occurs after drag is initialized
-	     * @param  {Event} event
-	     */
-	    onDragStart: function(event){
-	        this.state.didDrag = this.state.config.didDrag = true
-	        this.callConfig('onDragStart', event)
-	    },
-
-	    /**
-	     * Called on all mousemove events after drag is initialized.
-	     *
-	     * @param  {Event} event
-	     */
-	    onDrag: function(event){
-
-	        var config = this.state.config
-	        var args   = [event, config]
-
-	        var initPageCoords = this.state.initPageCoords
-
-	        var diff = config.diff = {
-	            left: event.pageX - initPageCoords.pageX,
-	            top : event.pageY - initPageCoords.pageY
-	        }
-
-	        if (this.state.initialRegion){
-	            var dragRegion = config.dragRegion
-
-	            //set the dragRegion to initial coords
-	            dragRegion.set(this.state.initialRegion)
-
-	            //shift it to the new position
-	            dragRegion.shift(diff)
-
-	            if (this.state.constrainTo){
-	                //and finally constrain it if it's the case
-	                dragRegion.constrainTo(this.state.constrainTo)
-
-	                diff.left = dragRegion.left - this.state.initialRegion.left
-	                diff.top  = dragRegion.top - this.state.initialRegion.top
-	            }
-
-	            config.dragRegion = dragRegion
-	        }
-
-	        this.callConfig('onDrag', event)
-	    },
-
-	    /**
-	     * Called on the mouseup event on window
-	     *
-	     * @param  {Event} event
-	     */
-	    onDrop: function(event){
-	        this.callConfig('onDrop', event)
-
-	        this.state = null
-	    },
-
-	    callConfig: function(fnName, event){
-	        var config = this.state.config
-	        var args   = [event, config]
-
-	        var fn = this.config[fnName]
-
-	        if (fn){
-	            fn.apply(this, args)
-	        }
-	    }
-
-	}, Helper.prototype)
-
-	module.exports = function(event, config){
-
-	    if (config.scope){
-	        var skippedKeys = {
-	            scope      : 1,
-	            region     : 1,
-	            constrainTo: 1
-	        }
-
-	        Object.keys(config).forEach(function(key){
-	            var value = config[key]
-
-	            if (key in skippedKeys){
-	                return
-	            }
-
-	            if (typeof value == 'function'){
-	                config[key] = value.bind(config.scope)
-	            }
-	        })
-	    }
-	    var helper = new Helper(config)
-
-	    helper.initDrag(event)
-
-	    return helper
-
-	}
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var __WEBPACK_AMD_DEFINE_RESULT__;// TinyColor v1.0.0
 	// https://github.com/bgrins/TinyColor
 	// Brian Grinstead, MIT License
@@ -4113,6 +3928,191 @@
 
 
 /***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var F      = __webpack_require__(24)
+	var copy   = __webpack_require__(12).copy
+	var Region = __webpack_require__(15)
+
+	var Helper = function(config){
+	    this.config = config
+	}
+
+	function buildRegion(target){
+
+	    var builder = Region
+
+	    if (target instanceof window.HTMLElement){
+	        builder = Region.fromDOM
+	    }
+
+	    return builder(target)
+	}
+
+	function emptyFn(){}
+
+	copy({
+
+	    /**
+	     * Should be called on a mousedown event
+	     *
+	     * @param  {Event} event
+	     * @return {[type]}       [description]
+	     */
+	    initDrag: function(event) {
+
+	        this.onDragInit(event)
+
+	        var onDragStart = F.once(this.onDragStart, this)
+
+	        var mouseMoveListener = (function(event){
+	            onDragStart(event)
+	            this.onDrag(event)
+	        }).bind(this)
+
+	        var mouseUpListener = (function(event){
+
+	            this.onDrop(event)
+
+	            window.removeEventListener('mousemove', mouseMoveListener)
+	            window.removeEventListener('mouseup', mouseUpListener)
+	        }).bind(this)
+
+	        window.addEventListener('mousemove', mouseMoveListener, false)
+	        window.addEventListener('mouseup', mouseUpListener)
+	    },
+
+	    onDragInit: function(event){
+
+	        var config = {}
+	        this.state = {
+	            config: config
+	        }
+
+	        var initPageCoords = this.state.initPageCoords = {
+	            pageX: event.pageX,
+	            pageY: event.pageY
+	        }
+
+	        if (this.config.region){
+	            this.state.initialRegion = buildRegion(this.config.region)
+	            this.state.dragRegion =
+	                config.dragRegion =
+	                    this.state.initialRegion.clone()
+	        }
+	        if (this.config.constrainTo){
+	            this.state.constrainTo = buildRegion(this.config.constrainTo)
+	        }
+
+	        this.callConfig('onDragInit', event)
+	    },
+
+	    /**
+	     * Called when the first mousemove event occurs after drag is initialized
+	     * @param  {Event} event
+	     */
+	    onDragStart: function(event){
+	        this.state.didDrag = this.state.config.didDrag = true
+	        this.callConfig('onDragStart', event)
+	    },
+
+	    /**
+	     * Called on all mousemove events after drag is initialized.
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrag: function(event){
+
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var initPageCoords = this.state.initPageCoords
+
+	        var diff = config.diff = {
+	            left: event.pageX - initPageCoords.pageX,
+	            top : event.pageY - initPageCoords.pageY
+	        }
+
+	        if (this.state.initialRegion){
+	            var dragRegion = config.dragRegion
+
+	            //set the dragRegion to initial coords
+	            dragRegion.set(this.state.initialRegion)
+
+	            //shift it to the new position
+	            dragRegion.shift(diff)
+
+	            if (this.state.constrainTo){
+	                //and finally constrain it if it's the case
+	                dragRegion.constrainTo(this.state.constrainTo)
+
+	                diff.left = dragRegion.left - this.state.initialRegion.left
+	                diff.top  = dragRegion.top - this.state.initialRegion.top
+	            }
+
+	            config.dragRegion = dragRegion
+	        }
+
+	        this.callConfig('onDrag', event)
+	    },
+
+	    /**
+	     * Called on the mouseup event on window
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrop: function(event){
+	        this.callConfig('onDrop', event)
+
+	        this.state = null
+	    },
+
+	    callConfig: function(fnName, event){
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var fn = this.config[fnName]
+
+	        if (fn){
+	            fn.apply(this, args)
+	        }
+	    }
+
+	}, Helper.prototype)
+
+	module.exports = function(event, config){
+
+	    if (config.scope){
+	        var skippedKeys = {
+	            scope      : 1,
+	            region     : 1,
+	            constrainTo: 1
+	        }
+
+	        Object.keys(config).forEach(function(key){
+	            var value = config[key]
+
+	            if (key in skippedKeys){
+	                return
+	            }
+
+	            if (typeof value == 'function'){
+	                config[key] = value.bind(config.scope)
+	            }
+	        })
+	    }
+	    var helper = new Helper(config)
+
+	    helper.initDrag(event)
+
+	    return helper
+
+	}
+
+/***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4764,55 +4764,6 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	var hasOwn = Object.prototype.hasOwnProperty
-
-	function curry(fn, n){
-
-	    if (typeof n !== 'number'){
-	        n = fn.length
-	    }
-
-	    function getCurryClosure(prevArgs){
-
-	        function curryClosure() {
-
-	            var len  = arguments.length
-	            var args = [].concat(prevArgs)
-
-	            if (len){
-	                args.push.apply(args, arguments)
-	            }
-
-	            if (args.length < n){
-	                return getCurryClosure(args)
-	            }
-
-	            return fn.apply(this, args)
-	        }
-
-	        return curryClosure
-	    }
-
-	    return getCurryClosure([])
-	}
-
-
-	module.exports = curry(function(object, property){
-	    return hasOwn.call(object, property)
-	})
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(31)
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
 	module.exports = function(){
 
 	    'use strict'
@@ -5143,6 +5094,55 @@
 	}()
 
 /***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var hasOwn = Object.prototype.hasOwnProperty
+
+	function curry(fn, n){
+
+	    if (typeof n !== 'number'){
+	        n = fn.length
+	    }
+
+	    function getCurryClosure(prevArgs){
+
+	        function curryClosure() {
+
+	            var len  = arguments.length
+	            var args = [].concat(prevArgs)
+
+	            if (len){
+	                args.push.apply(args, arguments)
+	            }
+
+	            if (args.length < n){
+	                return getCurryClosure(args)
+	            }
+
+	            return fn.apply(this, args)
+	        }
+
+	        return curryClosure
+	    }
+
+	    return getCurryClosure([])
+	}
+
+
+	module.exports = curry(function(object, property){
+	    return hasOwn.call(object, property)
+	})
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(31)
+
+/***/ },
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -5154,7 +5154,7 @@
 	var FunctionQueue = __webpack_require__(58)
 	var withQueue     = __webpack_require__(30)
 
-	var copyUtils = __webpack_require__(27)
+	var copyUtils = __webpack_require__(25)
 	var returnFalse = function(){
 	    return false
 	}
@@ -7205,7 +7205,7 @@
 	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
 
 	 */
-	module.exports = __webpack_require__(85)
+	module.exports = __webpack_require__(86)
 
 /***/ },
 /* 57 */
@@ -7605,7 +7605,7 @@
 	'use strict'
 
 	var classy = __webpack_require__(29)
-	var copyUtils = __webpack_require__(27)
+	var copyUtils = __webpack_require__(25)
 	var functionally = __webpack_require__(87)
 	var sortDescFn = function( a, b){ return b - a }
 	var SLICE  = Array.prototype.slice
@@ -8644,7 +8644,7 @@
 	'use strict'
 
 	var copy = __webpack_require__(56).copy
-	var modifyFn = __webpack_require__(86)
+	var modifyFn = __webpack_require__(85)
 
 	var canDefineProperty           = __webpack_require__(75)
 	var canGetOwnPropertyDescriptor = __webpack_require__(76)
@@ -8857,6 +8857,38 @@
 /* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var callSuperRe     = /\bcallSuper|callSuperWith\b/
+	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
+
+	var ClassFunctionBuilder = __webpack_require__(90)
+	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
+	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
+
+	var emptyObject = {}
+
+	function modify(name, fn, superTarget, superClass, target, getterSetterConfig){
+	    var hasCallSuper     = callSuperRe.test    (fn)
+	    var hasCallOverriden = callOverridenRe.test(fn)
+
+	    getterSetterConfig = getterSetterConfig || {}
+
+	    if ( hasCallSuper ){
+	        fn = buildSuperFn(name, fn, superTarget, superClass, getterSetterConfig)
+	    }
+
+	    if ( hasCallOverriden ){
+	        fn = buildOverridenFn(name, fn, target, getterSetterConfig)
+	    }
+
+	    return fn
+	}
+
+	module.exports = modify
+
+/***/ },
+/* 86 */
+/***/ function(module, exports, __webpack_require__) {
+
 	module.exports = function(){
 
 	    'use strict'
@@ -9053,38 +9085,6 @@
 	    }
 
 	}()
-
-/***/ },
-/* 86 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var callSuperRe     = /\bcallSuper|callSuperWith\b/
-	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
-
-	var ClassFunctionBuilder = __webpack_require__(90)
-	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
-	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
-
-	var emptyObject = {}
-
-	function modify(name, fn, superTarget, superClass, target, getterSetterConfig){
-	    var hasCallSuper     = callSuperRe.test    (fn)
-	    var hasCallOverriden = callOverridenRe.test(fn)
-
-	    getterSetterConfig = getterSetterConfig || {}
-
-	    if ( hasCallSuper ){
-	        fn = buildSuperFn(name, fn, superTarget, superClass, getterSetterConfig)
-	    }
-
-	    if ( hasCallOverriden ){
-	        fn = buildOverridenFn(name, fn, target, getterSetterConfig)
-	    }
-
-	    return fn
-	}
-
-	module.exports = modify
 
 /***/ },
 /* 87 */
