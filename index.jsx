@@ -1,6 +1,6 @@
 'use strict'
 
-var React = window.React = require('react')
+var React = require('react')
 
 var ColorPicker = require('react-color-picker')
 require('react-color-picker/index.css')
