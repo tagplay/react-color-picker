@@ -58,16 +58,29 @@
 	    render: function(){
 
 	        return (
-	            React.DOM.div(null, 
-	                ColorPicker({value: COLOR, onChange: this.onChange}), 
+	            React.DOM.div({style: {padding: 10}}, 
+	                React.DOM.p(null, 
+	                    "React Color Picker ", React.DOM.br(null), React.DOM.br(null), 
+
+	                    React.DOM.code(null, 
+	                        "npm install react-color-picker"
+	                    )
+	                ), 
+
+	                ColorPicker({value: COLOR, onDrag: this.onDrag}), 
 	                React.DOM.div({style: {background: COLOR, width: 100, height: 50, color: 'white'}}, 
 	                    COLOR
+	                ), 
+
+	                React.DOM.p(null, "NO IMAGES"), 
+	                React.DOM.p(null, 
+	                    "For source code see ", React.DOM.a({href: "./index.jsx"}, "index.jsx")
 	                )
 	            )
 	        )
 	    },
 
-	    onChange: function(color) {
+	    onDrag: function(color) {
 	        COLOR = color
 	        this.setState({})
 	    }
@@ -400,7 +413,7 @@
 	'use strict'
 
 	var React  = __webpack_require__(1)
-	var Region = __webpack_require__(15)
+	var Region = __webpack_require__(21)
 	var copy   = __webpack_require__(12).copy
 
 	var fromRatio  = __webpack_require__(9).fromRatio
@@ -466,7 +479,7 @@
 	        var size  = this.props.pointerSize
 	        var diff  = Math.floor(size/2)
 
-	        if (this.state.locked){
+	        if (this.state.locked && this.props.value){
 	            x = this.state.left
 	        }
 
@@ -554,7 +567,7 @@
 	'use strict'
 
 	var React  = __webpack_require__(1)
-	var Region = __webpack_require__(15)
+	var Region = __webpack_require__(21)
 	var copy   = __webpack_require__(12).copy
 
 	var common = __webpack_require__(13)
@@ -786,7 +799,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copy: __webpack_require__(16),
+	        copy: __webpack_require__(15),
 
 	        /**
 	         * Copies all properties from source to destination, if the property does not exist into the destination
@@ -799,7 +812,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyIf: __webpack_require__(17),
+	        copyIf: __webpack_require__(16),
 
 	        /**
 	         * Copies all properties from source to a new object, with the given value. This object is returned
@@ -841,7 +854,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyList: __webpack_require__(18),
+	        copyList: __webpack_require__(17),
 
 	        /**
 	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
@@ -855,7 +868,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyListIf: __webpack_require__(19),
+	        copyListIf: __webpack_require__(18),
 
 	        /**
 	         * Copies all properties named in the namedKeys, from source to destination
@@ -869,7 +882,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyKeys: __webpack_require__(20),
+	        copyKeys: __webpack_require__(19),
 
 	        /**
 	         * Copies all properties named in the namedKeys, from source to destination,
@@ -884,7 +897,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyKeysIf: __webpack_require__(21),
+	        copyKeysIf: __webpack_require__(20),
 
 	        copyExceptKeys: function(source, destination, exceptKeys){
 	            destination = destination || {}
@@ -968,7 +981,7 @@
 
 	'use strict'
 
-	var Region = __webpack_require__(15)
+	var Region = __webpack_require__(21)
 	var copy   = __webpack_require__(12).copy
 	var DragHelper = __webpack_require__(22)
 	var toHsv = __webpack_require__(9).toHsv
@@ -1034,7 +1047,7 @@
 	        var initialPoint = config.initialPoint
 
 	        if (this.props.value && initialPoint){
-	            this.state.top = initialPoint.y + diff.top
+	            this.state.top  = initialPoint.y + diff.top
 	            this.state.left = initialPoint.x + diff.left
 	        }
 
@@ -1124,6 +1137,288 @@
 
 /***/ },
 /* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+
+	/**
+	 * Copies all properties from source to destination
+	 *
+	 *      copy({name: 'jon',age:5}, this);
+	 *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT ){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	            destination[i] = source[i]
+	        }
+
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyIf({name: 'jon',age:5}, {age:7})
+	 *      // => { name: 'jon', age: 7}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
+
+	            destination[i] = source[i]
+
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination
+	 *
+	 *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	 *      // => {name: 'jon', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len; i++ ){
+	        propName = list[i]
+
+	        if ( typeof source[propName] !== STR_UNDEFINED ) {
+	            destination[list[i]] = source[list[i]]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	 *      // => {name: 'jon', age: 10}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len ; i++ ){
+	        propName = list[i]
+	        if (
+	                (typeof source[propName]      !== STR_UNDEFINED) &&
+	                (typeof destination[propName] === STR_UNDEFINED)
+	            ){
+	            destination[propName] = source[propName]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyList = __webpack_require__(17)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination
+	 *
+	 *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	 *      // => {name: 'jon', age: 5, theYear: 2006}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyList(source, destination, namedKeys)
+	    }
+
+	    if (
+	           source != null && typeof source    === STR_OBJECT &&
+	        namedKeys != null && typeof namedKeys === STR_OBJECT
+	    ) {
+	        var typeOfNamedProperty
+	        var namedPropertyValue
+
+	        for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+	            namedPropertyValue  = namedKeys[propName]
+	            typeOfNamedProperty = typeof namedPropertyValue
+
+	            if (typeof source[propName] !== STR_UNDEFINED){
+	                destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
+	            }
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyListIf = __webpack_require__(18)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination,
+	 * but only if the property does not already exist in the destination object
+	 *
+	 *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	 *      // => {aname: 'test', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyListIf(source, destination, namedKeys)
+	    }
+
+	    if (
+	               source != null && typeof source    === STR_OBJECT &&
+	            namedKeys != null && typeof namedKeys === STR_OBJECT
+	        ) {
+
+	            var typeOfNamedProperty
+	            var namedPropertyValue
+	            var newPropertyName
+
+	            for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+
+	                namedPropertyValue  = namedKeys[propName]
+	                typeOfNamedProperty = typeof namedPropertyValue
+	                newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
+
+	                if (
+	                        typeof      source[propName]        !== STR_UNDEFINED &&
+	                        typeof destination[newPropertyName] === STR_UNDEFINED
+	                    ) {
+	                    destination[newPropertyName] = source[propName]
+	                }
+
+	            }
+	        }
+
+	    return destination
+	}
+
+/***/ },
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -2533,288 +2828,6 @@
 	module.exports = REGION
 
 /***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-	var STR_OBJECT    = 'object'
-
-	/**
-	 * Copies all properties from source to destination
-	 *
-	 *      copy({name: 'jon',age:5}, this);
-	 *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination){
-
-	    destination = destination || {}
-
-	    if (source != null && typeof source === STR_OBJECT ){
-
-	        for (var i in source) if ( HAS_OWN.call(source, i) ) {
-	            destination[i] = source[i]
-	        }
-
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-	var STR_OBJECT    = 'object'
-	var STR_UNDEFINED = 'undefined'
-
-	/**
-	 * Copies all properties from source to destination, if the property does not exist into the destination
-	 *
-	 *      copyIf({name: 'jon',age:5}, {age:7})
-	 *      // => { name: 'jon', age: 7}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination){
-	    destination = destination || {}
-
-	    if (source != null && typeof source === STR_OBJECT){
-
-	        for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
-
-	            destination[i] = source[i]
-
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-
-	/**
-	 * Copies all properties named in the list, from source to destination
-	 *
-	 *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
-	 *      // => {name: 'jon', age: 5}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Array} list the array with the names of the properties to copy
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, list){
-	    if (arguments.length < 3){
-	        list = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-	    list        = list || Object.keys(source)
-
-	    var i   = 0
-	    var len = list.length
-	    var propName
-
-	    for ( ; i < len; i++ ){
-	        propName = list[i]
-
-	        if ( typeof source[propName] !== STR_UNDEFINED ) {
-	            destination[list[i]] = source[list[i]]
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-
-	/**
-	 * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
-	 *
-	 *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
-	 *      // => {name: 'jon', age: 10}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Array} list the array with the names of the properties to copy
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, list){
-	    if (arguments.length < 3){
-	        list = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-	    list        = list || Object.keys(source)
-
-	    var i   = 0
-	    var len = list.length
-	    var propName
-
-	    for ( ; i < len ; i++ ){
-	        propName = list[i]
-	        if (
-	                (typeof source[propName]      !== STR_UNDEFINED) &&
-	                (typeof destination[propName] === STR_UNDEFINED)
-	            ){
-	            destination[propName] = source[propName]
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-	var STR_OBJECT    = 'object'
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-
-	var copyList = __webpack_require__(18)
-
-	/**
-	 * Copies all properties named in the namedKeys, from source to destination
-	 *
-	 *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
-	 *      // => {name: 'jon', age: 5, theYear: 2006}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, namedKeys){
-	    if (arguments.length < 3 ){
-	        namedKeys = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-
-	    if (!namedKeys || Array.isArray(namedKeys)){
-	        return copyList(source, destination, namedKeys)
-	    }
-
-	    if (
-	           source != null && typeof source    === STR_OBJECT &&
-	        namedKeys != null && typeof namedKeys === STR_OBJECT
-	    ) {
-	        var typeOfNamedProperty
-	        var namedPropertyValue
-
-	        for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
-	            namedPropertyValue  = namedKeys[propName]
-	            typeOfNamedProperty = typeof namedPropertyValue
-
-	            if (typeof source[propName] !== STR_UNDEFINED){
-	                destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
-	            }
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-	var STR_OBJECT    = 'object'
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-
-	var copyListIf = __webpack_require__(19)
-
-	/**
-	 * Copies all properties named in the namedKeys, from source to destination,
-	 * but only if the property does not already exist in the destination object
-	 *
-	 *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
-	 *      // => {aname: 'test', age: 5}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, namedKeys){
-	    if (arguments.length < 3 ){
-	        namedKeys = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-
-	    if (!namedKeys || Array.isArray(namedKeys)){
-	        return copyListIf(source, destination, namedKeys)
-	    }
-
-	    if (
-	               source != null && typeof source    === STR_OBJECT &&
-	            namedKeys != null && typeof namedKeys === STR_OBJECT
-	        ) {
-
-	            var typeOfNamedProperty
-	            var namedPropertyValue
-	            var newPropertyName
-
-	            for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
-
-	                namedPropertyValue  = namedKeys[propName]
-	                typeOfNamedProperty = typeof namedPropertyValue
-	                newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
-
-	                if (
-	                        typeof      source[propName]        !== STR_UNDEFINED &&
-	                        typeof destination[newPropertyName] === STR_UNDEFINED
-	                    ) {
-	                    destination[newPropertyName] = source[propName]
-	                }
-
-	            }
-	        }
-
-	    return destination
-	}
-
-/***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2822,7 +2835,7 @@
 
 	var F      = __webpack_require__(24)
 	var copy   = __webpack_require__(12).copy
-	var Region = __webpack_require__(15)
+	var Region = __webpack_require__(21)
 
 	var Helper = function(config){
 	    this.config = config
@@ -6830,7 +6843,7 @@
 	var SLICE = Array.prototype.slice
 
 	var getClass = __webpack_require__(48)
-	var newify   = __webpack_require__(80)
+	var newify   = __webpack_require__(81)
 
 	/**
 	 * @method create
@@ -6974,7 +6987,7 @@
 
 	    'use strict'
 
-	    var newify = __webpack_require__(80)
+	    var newify = __webpack_require__(81)
 
 	    var extend = __webpack_require__(74)
 	    var copy   = __webpack_require__(56).copy
@@ -7205,7 +7218,7 @@
 	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
 
 	 */
-	module.exports = __webpack_require__(85)
+	module.exports = __webpack_require__(86)
 
 /***/ },
 /* 57 */
@@ -7606,7 +7619,7 @@
 
 	var classy = __webpack_require__(29)
 	var copyUtils = __webpack_require__(27)
-	var functionally = __webpack_require__(86)
+	var functionally = __webpack_require__(87)
 	var sortDescFn = function( a, b){ return b - a }
 	var SLICE  = Array.prototype.slice
 
@@ -8476,9 +8489,9 @@
 	    return this
 	}
 
-	var extendClass     = __webpack_require__(81)
-	var overrideClass   = __webpack_require__(82)
-	var unregisterClass = __webpack_require__(83)
+	var extendClass     = __webpack_require__(82)
+	var overrideClass   = __webpack_require__(83)
+	var unregisterClass = __webpack_require__(84)
 
 	var ClassProcessor = __webpack_require__(73)
 
@@ -8644,7 +8657,7 @@
 	'use strict'
 
 	var copy = __webpack_require__(56).copy
-	var modifyFn = __webpack_require__(84)
+	var modifyFn = __webpack_require__(85)
 
 	var canDefineProperty           = __webpack_require__(75)
 	var canGetOwnPropertyDescriptor = __webpack_require__(76)
@@ -8788,7 +8801,7 @@
 /* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getInstantiatorFunction = __webpack_require__(87)
+	var getInstantiatorFunction = __webpack_require__(88)
 
 	module.exports = function(fn, args){
 		return getInstantiatorFunction(args.length)(fn, args)
@@ -8796,6 +8809,16 @@
 
 /***/ },
 /* 81 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getInstantiatorFunction = __webpack_require__(89)
+
+	module.exports = function(fn, args){
+		return getInstantiatorFunction(args.length)(fn, args)
+	}
+
+/***/ },
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -8814,7 +8837,7 @@
 	}
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(config){
@@ -8826,7 +8849,7 @@
 	}
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var REGISTRY = __webpack_require__(49)
@@ -8844,13 +8867,13 @@
 	}
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var callSuperRe     = /\bcallSuper|callSuperWith\b/
 	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
 
-	var ClassFunctionBuilder = __webpack_require__(88)
+	var ClassFunctionBuilder = __webpack_require__(90)
 	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
 	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
 
@@ -8876,7 +8899,7 @@
 	module.exports = modify
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(){
@@ -8900,7 +8923,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copy: __webpack_require__(89),
+	        copy: __webpack_require__(91),
 
 	        /**
 	         * Copies all properties from source to destination, if the property does not exist into the destination
@@ -8913,7 +8936,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyIf: __webpack_require__(90),
+	        copyIf: __webpack_require__(92),
 
 	        /**
 	         * Copies all properties from source to a new object, with the given value. This object is returned
@@ -8955,7 +8978,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyList: __webpack_require__(91),
+	        copyList: __webpack_require__(93),
 
 	        /**
 	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
@@ -8969,7 +8992,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyListIf: __webpack_require__(92),
+	        copyListIf: __webpack_require__(94),
 
 	        /**
 	         * Copies all properties named in the namedKeys, from source to destination
@@ -8983,7 +9006,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyKeys: __webpack_require__(93),
+	        copyKeys: __webpack_require__(95),
 
 	        /**
 	         * Copies all properties named in the namedKeys, from source to destination,
@@ -8998,7 +9021,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyKeysIf: __webpack_require__(94),
+	        copyKeysIf: __webpack_require__(96),
 
 	        copyExceptKeys: function(source, destination, exceptKeys){
 	            destination = destination || {}
@@ -9077,7 +9100,7 @@
 	}()
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	    var setImmediate = function(fn){
@@ -9157,7 +9180,7 @@
 
 	    var SLICE = Array.prototype.slice
 
-	    var curry = __webpack_require__(95),
+	    var curry = __webpack_require__(97),
 
 	        find = curry(function(fn, target, onFound){
 	            if (typeof target.find == 'function'){
@@ -9220,19 +9243,19 @@
 	         *
 	         * @return the result of the first function in the enumeration
 	         */
-	        compose = __webpack_require__(96),
+	        compose = __webpack_require__(98),
 
-	        chain = __webpack_require__(97),
+	        chain = __webpack_require__(99),
 
-	        once = __webpack_require__(98),
+	        once = __webpack_require__(100),
 
-	        bindArgsArray = __webpack_require__(99),
+	        bindArgsArray = __webpack_require__(101),
 
-	        bindArgs = __webpack_require__(100),
+	        bindArgs = __webpack_require__(102),
 
-	        lockArgsArray = __webpack_require__(101),
+	        lockArgsArray = __webpack_require__(103),
 
-	        lockArgs = __webpack_require__(102),
+	        lockArgs = __webpack_require__(104),
 
 	        skipArgs = function(fn, count){
 	            return function(){
@@ -9590,11 +9613,11 @@
 
 	module.exports = {
 
-	    map: __webpack_require__(103),
+	    map: __webpack_require__(105),
 
-	    dot: __webpack_require__(104),
+	    dot: __webpack_require__(106),
 
-	    maxArgs: __webpack_require__(105),
+	    maxArgs: __webpack_require__(107),
 
 	    /**
 	     * @method compose
@@ -9711,11 +9734,11 @@
 
 	    find: find,
 
-	    newify: __webpack_require__(106)
+	    newify: __webpack_require__(108)
 	}
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(){
@@ -9748,7 +9771,40 @@
 	}()
 
 /***/ },
-/* 88 */
+/* 89 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict';
+
+	    var fns = {}
+
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
+	}()
+
+/***/ },
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(){
@@ -9900,7 +9956,7 @@
 	}()
 
 /***/ },
-/* 89 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -9935,7 +9991,7 @@
 	}
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -9971,7 +10027,7 @@
 	}
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10015,7 +10071,7 @@
 	}
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10061,7 +10117,7 @@
 	}
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10070,7 +10126,7 @@
 	var STR_OBJECT    = 'object'
 	var HAS_OWN       = Object.prototype.hasOwnProperty
 
-	var copyList = __webpack_require__(91)
+	var copyList = __webpack_require__(93)
 
 	/**
 	 * Copies all properties named in the namedKeys, from source to destination
@@ -10117,7 +10173,7 @@
 	}
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10126,7 +10182,7 @@
 	var STR_OBJECT    = 'object'
 	var HAS_OWN       = Object.prototype.hasOwnProperty
 
-	var copyListIf = __webpack_require__(92)
+	var copyListIf = __webpack_require__(94)
 
 	/**
 	 * Copies all properties named in the namedKeys, from source to destination,
@@ -10182,7 +10238,7 @@
 	}
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10220,7 +10276,7 @@
 	module.exports = curry
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10253,7 +10309,7 @@
 	}
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10278,7 +10334,7 @@
 	module.exports = chain
 
 /***/ },
-/* 98 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use once'
@@ -10302,7 +10358,7 @@
 	module.exports = once
 
 /***/ },
-/* 99 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10322,20 +10378,20 @@
 	}
 
 /***/ },
-/* 100 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var bindArgsArray = __webpack_require__(99)
+	var bindArgsArray = __webpack_require__(101)
 
 	module.exports = function(fn){
 	    return bindArgsArray(fn, SLICE.call(arguments,1))
 	}
 
 /***/ },
-/* 101 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10354,25 +10410,25 @@
 	}
 
 /***/ },
-/* 102 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var lockArgsArray = __webpack_require__(101)
+	var lockArgsArray = __webpack_require__(103)
 
 	module.exports = function(fn){
 	    return lockArgsArray(fn, SLICE.call(arguments, 1))
 	}
 
 /***/ },
-/* 103 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var curry = __webpack_require__(95)
+	var curry = __webpack_require__(97)
 
 	module.exports = curry(function(fn, value){
 	    return value != undefined && typeof value.map?
@@ -10381,25 +10437,25 @@
 	})
 
 /***/ },
-/* 104 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var curry = __webpack_require__(95)
+	var curry = __webpack_require__(97)
 
 	module.exports = curry(function(prop, value){
 	    return value != undefined? value[prop]: undefined
 	})
 
 /***/ },
-/* 105 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var curry = __webpack_require__(95)
+	var curry = __webpack_require__(97)
 
 	module.exports = function(fn, count){
 	    return function(){
@@ -10408,15 +10464,58 @@
 	}
 
 /***/ },
-/* 106 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var newify = __webpack_require__(80)
-	var curry  = __webpack_require__(95)
+	var newify = __webpack_require__(109)
+	var curry  = __webpack_require__(97)
 
 	module.exports = curry(newify)
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getInstantiatorFunction = __webpack_require__(110)
+
+	module.exports = function(fn, args){
+		return getInstantiatorFunction(args.length)(fn, args)
+	}
+
+/***/ },
+/* 110 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict';
+
+	    var fns = {}
+
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
+	}()
 
 /***/ }
 /******/ ])
