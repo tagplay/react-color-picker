@@ -1,51 +1,36 @@
 {
-  "name": "react-color-picker",
-  "version": "1.2.0",
-  "description": "React Color Picker",
-  "main": "lib/index.js",
+  "name": "react-color-picker-demo",
+  "version": "0.1.0",
+  "description": "",
+  "private": "true",
+  "main": "index.js",
   "scripts": {
     "test": "make",
+    "serve": "http-server",
     "start": "npm run serve | npm run dev",
-    "serve": "./node_modules/.bin/http-server",
-    "lib": "./node_modules/.bin/gulp",
-    "css": "./node_modules/.bin/webpack --colors --config stylus.config.js",
-    "dev": "./node_modules/.bin/webpack-dev-server --progress --colors --port 8090"
-  },
-  "keywords": [
-    "react",
-    "react-component",
-    "color",
-    "picker",
-    "color-picker"
-  ],
-  "author": "Radu Brehar",
-  "license": "MIT",
-  "dependencies": {
-    "react": "~0.11.2",
-    "copy-utils": "~1.0.0",
-    "tinycolor2": "~1.0.0",
-    "functionally": "~0.6.1",
-    "region": "~0.2.2"
-  },
-  "devDependencies": {
-    "style-loader": "~0.8.1",
-    "css-loader": "~0.9.0",
-    "jsx-loader": "~0.11.2",
-    "stylus-loader": "~0.4.0",
-    "webpack-dev-server": "~1.6.5",
-    "webpack": "~1.4.7",
-    "gulp": "~3.8.8",
-    "gulp-react": "~1.0.2",
-    "extract-text-webpack-plugin": "~0.3.1"
-  },
-  "directories": {
-    "test": "test"
+    "build": "./node_modules/.bin/webpack --config build.config.js",
+    "dev": "webpack-dev-server --progress --colors --port 8090 --content-base http://localhost:8080"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/radubrehar/react-color-picker.git"
   },
+  "author": "Radu Brehar",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/radubrehar/react-color-picker/issues"
+  },
+  "dependencies": {
+    "react": "~0.11.2",
+    "react-color-picker": "~1.2.0"
+  },
+  "devDependencies": {
+    "style-loader": "~0.8.1",
+    "css-loader": "~0.9.0",
+    "stylus-loader": "~0.4.0",
+    "jsx-loader": "~0.11.2",
+    "webpack": "~1.4.7",
+    "webpack-dev-server": "~1.6.5",
+    "http-server": "~0.7.2"
   }
 }

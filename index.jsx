@@ -1,15 +1,30 @@
 'use strict'
 
-require('./resources/style/index.styl')
-
 var React = require('react')
-var ColorPicker = require('./src/index')
-var HueSpectrum = require('./src/HueSpectrum')
-var SaturationSpectrum = require('./src/SaturationSpectrum')
 
-var colorUtils = require('./src/utils/color')
+var ColorPicker = require('react-color-picker')
+require('react-color-picker/index.css')
 
-var COLOR = 'magenta'
+var COLOR = 'red'
 
-React.renderComponent(<ColorPicker red='red'/>, document.body)
+var App = React.createClass({
 
+    render: function(){
+
+        return (
+            <div>
+                <ColorPicker value={COLOR} onChange={this.onChange} />
+                <div style={{background: COLOR, width: 100, height: 50, color: 'white'}}>
+                    {COLOR}
+                </div>
+            </div>
+        )
+    },
+
+    onChange: function(color) {
+        COLOR = color
+        this.setState({})
+    }
+})
+
+React.renderComponent(<App />, document.body)
