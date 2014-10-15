@@ -46,7 +46,7 @@
 
 	/** @jsx React.DOM */'use strict'
 
-	var React = window.React = __webpack_require__(1)
+	var React = __webpack_require__(1)
 
 	var ColorPicker = __webpack_require__(2)
 	__webpack_require__(3)
@@ -674,7 +674,7 @@
 
 	'use strict'
 
-	var tinycolor = __webpack_require__(22)
+	var tinycolor = __webpack_require__(23)
 
 	if (typeof window != 'undefined'){
 	    window.tinycolor = tinycolor
@@ -970,7 +970,7 @@
 
 	var Region = __webpack_require__(15)
 	var copy   = __webpack_require__(12).copy
-	var DragHelper = __webpack_require__(23)
+	var DragHelper = __webpack_require__(22)
 	var toHsv = __webpack_require__(9).toHsv
 
 	function emptyFn(){}
@@ -1128,11 +1128,11 @@
 
 	'use strict'
 
-	var hasOwn    = __webpack_require__(26)
-	var copyUtils = __webpack_require__(25)
+	var hasOwn    = __webpack_require__(25)
+	var copyUtils = __webpack_require__(27)
 	var copyList  = copyUtils.copyList
 	var F         = __webpack_require__(24)
-	var isObject  = __webpack_require__(27).object
+	var isObject  = __webpack_require__(26).object
 
 	/**
 	 * @class Region
@@ -2818,6 +2818,191 @@
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict'
+
+	var F      = __webpack_require__(24)
+	var copy   = __webpack_require__(12).copy
+	var Region = __webpack_require__(15)
+
+	var Helper = function(config){
+	    this.config = config
+	}
+
+	function buildRegion(target){
+
+	    var builder = Region
+
+	    if (target instanceof window.HTMLElement){
+	        builder = Region.fromDOM
+	    }
+
+	    return builder(target)
+	}
+
+	function emptyFn(){}
+
+	copy({
+
+	    /**
+	     * Should be called on a mousedown event
+	     *
+	     * @param  {Event} event
+	     * @return {[type]}       [description]
+	     */
+	    initDrag: function(event) {
+
+	        this.onDragInit(event)
+
+	        var onDragStart = F.once(this.onDragStart, this)
+
+	        var mouseMoveListener = (function(event){
+	            onDragStart(event)
+	            this.onDrag(event)
+	        }).bind(this)
+
+	        var mouseUpListener = (function(event){
+
+	            this.onDrop(event)
+
+	            window.removeEventListener('mousemove', mouseMoveListener)
+	            window.removeEventListener('mouseup', mouseUpListener)
+	        }).bind(this)
+
+	        window.addEventListener('mousemove', mouseMoveListener, false)
+	        window.addEventListener('mouseup', mouseUpListener)
+	    },
+
+	    onDragInit: function(event){
+
+	        var config = {}
+	        this.state = {
+	            config: config
+	        }
+
+	        var initPageCoords = this.state.initPageCoords = {
+	            pageX: event.pageX,
+	            pageY: event.pageY
+	        }
+
+	        if (this.config.region){
+	            this.state.initialRegion = buildRegion(this.config.region)
+	            this.state.dragRegion =
+	                config.dragRegion =
+	                    this.state.initialRegion.clone()
+	        }
+	        if (this.config.constrainTo){
+	            this.state.constrainTo = buildRegion(this.config.constrainTo)
+	        }
+
+	        this.callConfig('onDragInit', event)
+	    },
+
+	    /**
+	     * Called when the first mousemove event occurs after drag is initialized
+	     * @param  {Event} event
+	     */
+	    onDragStart: function(event){
+	        this.state.didDrag = this.state.config.didDrag = true
+	        this.callConfig('onDragStart', event)
+	    },
+
+	    /**
+	     * Called on all mousemove events after drag is initialized.
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrag: function(event){
+
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var initPageCoords = this.state.initPageCoords
+
+	        var diff = config.diff = {
+	            left: event.pageX - initPageCoords.pageX,
+	            top : event.pageY - initPageCoords.pageY
+	        }
+
+	        if (this.state.initialRegion){
+	            var dragRegion = config.dragRegion
+
+	            //set the dragRegion to initial coords
+	            dragRegion.set(this.state.initialRegion)
+
+	            //shift it to the new position
+	            dragRegion.shift(diff)
+
+	            if (this.state.constrainTo){
+	                //and finally constrain it if it's the case
+	                dragRegion.constrainTo(this.state.constrainTo)
+
+	                diff.left = dragRegion.left - this.state.initialRegion.left
+	                diff.top  = dragRegion.top - this.state.initialRegion.top
+	            }
+
+	            config.dragRegion = dragRegion
+	        }
+
+	        this.callConfig('onDrag', event)
+	    },
+
+	    /**
+	     * Called on the mouseup event on window
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrop: function(event){
+	        this.callConfig('onDrop', event)
+
+	        this.state = null
+	    },
+
+	    callConfig: function(fnName, event){
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var fn = this.config[fnName]
+
+	        if (fn){
+	            fn.apply(this, args)
+	        }
+	    }
+
+	}, Helper.prototype)
+
+	module.exports = function(event, config){
+
+	    if (config.scope){
+	        var skippedKeys = {
+	            scope      : 1,
+	            region     : 1,
+	            constrainTo: 1
+	        }
+
+	        Object.keys(config).forEach(function(key){
+	            var value = config[key]
+
+	            if (key in skippedKeys){
+	                return
+	            }
+
+	            if (typeof value == 'function'){
+	                config[key] = value.bind(config.scope)
+	            }
+	        })
+	    }
+	    var helper = new Helper(config)
+
+	    helper.initDrag(event)
+
+	    return helper
+
+	}
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_RESULT__;// TinyColor v1.0.0
 	// https://github.com/bgrins/TinyColor
 	// Brian Grinstead, MIT License
@@ -3928,191 +4113,6 @@
 
 
 /***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var F      = __webpack_require__(24)
-	var copy   = __webpack_require__(12).copy
-	var Region = __webpack_require__(15)
-
-	var Helper = function(config){
-	    this.config = config
-	}
-
-	function buildRegion(target){
-
-	    var builder = Region
-
-	    if (target instanceof window.HTMLElement){
-	        builder = Region.fromDOM
-	    }
-
-	    return builder(target)
-	}
-
-	function emptyFn(){}
-
-	copy({
-
-	    /**
-	     * Should be called on a mousedown event
-	     *
-	     * @param  {Event} event
-	     * @return {[type]}       [description]
-	     */
-	    initDrag: function(event) {
-
-	        this.onDragInit(event)
-
-	        var onDragStart = F.once(this.onDragStart, this)
-
-	        var mouseMoveListener = (function(event){
-	            onDragStart(event)
-	            this.onDrag(event)
-	        }).bind(this)
-
-	        var mouseUpListener = (function(event){
-
-	            this.onDrop(event)
-
-	            window.removeEventListener('mousemove', mouseMoveListener)
-	            window.removeEventListener('mouseup', mouseUpListener)
-	        }).bind(this)
-
-	        window.addEventListener('mousemove', mouseMoveListener, false)
-	        window.addEventListener('mouseup', mouseUpListener)
-	    },
-
-	    onDragInit: function(event){
-
-	        var config = {}
-	        this.state = {
-	            config: config
-	        }
-
-	        var initPageCoords = this.state.initPageCoords = {
-	            pageX: event.pageX,
-	            pageY: event.pageY
-	        }
-
-	        if (this.config.region){
-	            this.state.initialRegion = buildRegion(this.config.region)
-	            this.state.dragRegion =
-	                config.dragRegion =
-	                    this.state.initialRegion.clone()
-	        }
-	        if (this.config.constrainTo){
-	            this.state.constrainTo = buildRegion(this.config.constrainTo)
-	        }
-
-	        this.callConfig('onDragInit', event)
-	    },
-
-	    /**
-	     * Called when the first mousemove event occurs after drag is initialized
-	     * @param  {Event} event
-	     */
-	    onDragStart: function(event){
-	        this.state.didDrag = this.state.config.didDrag = true
-	        this.callConfig('onDragStart', event)
-	    },
-
-	    /**
-	     * Called on all mousemove events after drag is initialized.
-	     *
-	     * @param  {Event} event
-	     */
-	    onDrag: function(event){
-
-	        var config = this.state.config
-	        var args   = [event, config]
-
-	        var initPageCoords = this.state.initPageCoords
-
-	        var diff = config.diff = {
-	            left: event.pageX - initPageCoords.pageX,
-	            top : event.pageY - initPageCoords.pageY
-	        }
-
-	        if (this.state.initialRegion){
-	            var dragRegion = config.dragRegion
-
-	            //set the dragRegion to initial coords
-	            dragRegion.set(this.state.initialRegion)
-
-	            //shift it to the new position
-	            dragRegion.shift(diff)
-
-	            if (this.state.constrainTo){
-	                //and finally constrain it if it's the case
-	                dragRegion.constrainTo(this.state.constrainTo)
-
-	                diff.left = dragRegion.left - this.state.initialRegion.left
-	                diff.top  = dragRegion.top - this.state.initialRegion.top
-	            }
-
-	            config.dragRegion = dragRegion
-	        }
-
-	        this.callConfig('onDrag', event)
-	    },
-
-	    /**
-	     * Called on the mouseup event on window
-	     *
-	     * @param  {Event} event
-	     */
-	    onDrop: function(event){
-	        this.callConfig('onDrop', event)
-
-	        this.state = null
-	    },
-
-	    callConfig: function(fnName, event){
-	        var config = this.state.config
-	        var args   = [event, config]
-
-	        var fn = this.config[fnName]
-
-	        if (fn){
-	            fn.apply(this, args)
-	        }
-	    }
-
-	}, Helper.prototype)
-
-	module.exports = function(event, config){
-
-	    if (config.scope){
-	        var skippedKeys = {
-	            scope      : 1,
-	            region     : 1,
-	            constrainTo: 1
-	        }
-
-	        Object.keys(config).forEach(function(key){
-	            var value = config[key]
-
-	            if (key in skippedKeys){
-	                return
-	            }
-
-	            if (typeof value == 'function'){
-	                config[key] = value.bind(config.scope)
-	            }
-	        })
-	    }
-	    var helper = new Helper(config)
-
-	    helper.initDrag(event)
-
-	    return helper
-
-	}
-
-/***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4764,6 +4764,55 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict'
+
+	var hasOwn = Object.prototype.hasOwnProperty
+
+	function curry(fn, n){
+
+	    if (typeof n !== 'number'){
+	        n = fn.length
+	    }
+
+	    function getCurryClosure(prevArgs){
+
+	        function curryClosure() {
+
+	            var len  = arguments.length
+	            var args = [].concat(prevArgs)
+
+	            if (len){
+	                args.push.apply(args, arguments)
+	            }
+
+	            if (args.length < n){
+	                return getCurryClosure(args)
+	            }
+
+	            return fn.apply(this, args)
+	        }
+
+	        return curryClosure
+	    }
+
+	    return getCurryClosure([])
+	}
+
+
+	module.exports = curry(function(object, property){
+	    return hasOwn.call(object, property)
+	})
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(31)
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
 	module.exports = function(){
 
 	    'use strict'
@@ -5094,55 +5143,6 @@
 	}()
 
 /***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var hasOwn = Object.prototype.hasOwnProperty
-
-	function curry(fn, n){
-
-	    if (typeof n !== 'number'){
-	        n = fn.length
-	    }
-
-	    function getCurryClosure(prevArgs){
-
-	        function curryClosure() {
-
-	            var len  = arguments.length
-	            var args = [].concat(prevArgs)
-
-	            if (len){
-	                args.push.apply(args, arguments)
-	            }
-
-	            if (args.length < n){
-	                return getCurryClosure(args)
-	            }
-
-	            return fn.apply(this, args)
-	        }
-
-	        return curryClosure
-	    }
-
-	    return getCurryClosure([])
-	}
-
-
-	module.exports = curry(function(object, property){
-	    return hasOwn.call(object, property)
-	})
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(31)
-
-/***/ },
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -5154,7 +5154,7 @@
 	var FunctionQueue = __webpack_require__(58)
 	var withQueue     = __webpack_require__(30)
 
-	var copyUtils = __webpack_require__(25)
+	var copyUtils = __webpack_require__(27)
 	var returnFalse = function(){
 	    return false
 	}
@@ -6830,7 +6830,7 @@
 	var SLICE = Array.prototype.slice
 
 	var getClass = __webpack_require__(48)
-	var newify   = __webpack_require__(81)
+	var newify   = __webpack_require__(80)
 
 	/**
 	 * @method create
@@ -6974,7 +6974,7 @@
 
 	    'use strict'
 
-	    var newify = __webpack_require__(81)
+	    var newify = __webpack_require__(80)
 
 	    var extend = __webpack_require__(74)
 	    var copy   = __webpack_require__(56).copy
@@ -7205,7 +7205,7 @@
 	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
 
 	 */
-	module.exports = __webpack_require__(86)
+	module.exports = __webpack_require__(85)
 
 /***/ },
 /* 57 */
@@ -7605,8 +7605,8 @@
 	'use strict'
 
 	var classy = __webpack_require__(29)
-	var copyUtils = __webpack_require__(25)
-	var functionally = __webpack_require__(87)
+	var copyUtils = __webpack_require__(27)
+	var functionally = __webpack_require__(86)
 	var sortDescFn = function( a, b){ return b - a }
 	var SLICE  = Array.prototype.slice
 
@@ -8476,9 +8476,9 @@
 	    return this
 	}
 
-	var extendClass     = __webpack_require__(82)
-	var overrideClass   = __webpack_require__(83)
-	var unregisterClass = __webpack_require__(84)
+	var extendClass     = __webpack_require__(81)
+	var overrideClass   = __webpack_require__(82)
+	var unregisterClass = __webpack_require__(83)
 
 	var ClassProcessor = __webpack_require__(73)
 
@@ -8644,7 +8644,7 @@
 	'use strict'
 
 	var copy = __webpack_require__(56).copy
-	var modifyFn = __webpack_require__(85)
+	var modifyFn = __webpack_require__(84)
 
 	var canDefineProperty           = __webpack_require__(75)
 	var canGetOwnPropertyDescriptor = __webpack_require__(76)
@@ -8788,7 +8788,7 @@
 /* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getInstantiatorFunction = __webpack_require__(88)
+	var getInstantiatorFunction = __webpack_require__(87)
 
 	module.exports = function(fn, args){
 		return getInstantiatorFunction(args.length)(fn, args)
@@ -8796,16 +8796,6 @@
 
 /***/ },
 /* 81 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getInstantiatorFunction = __webpack_require__(89)
-
-	module.exports = function(fn, args){
-		return getInstantiatorFunction(args.length)(fn, args)
-	}
-
-/***/ },
-/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -8824,7 +8814,7 @@
 	}
 
 /***/ },
-/* 83 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(config){
@@ -8836,7 +8826,7 @@
 	}
 
 /***/ },
-/* 84 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var REGISTRY = __webpack_require__(49)
@@ -8854,13 +8844,13 @@
 	}
 
 /***/ },
-/* 85 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var callSuperRe     = /\bcallSuper|callSuperWith\b/
 	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
 
-	var ClassFunctionBuilder = __webpack_require__(90)
+	var ClassFunctionBuilder = __webpack_require__(88)
 	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
 	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
 
@@ -8886,7 +8876,7 @@
 	module.exports = modify
 
 /***/ },
-/* 86 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(){
@@ -8910,7 +8900,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copy: __webpack_require__(91),
+	        copy: __webpack_require__(89),
 
 	        /**
 	         * Copies all properties from source to destination, if the property does not exist into the destination
@@ -8923,7 +8913,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyIf: __webpack_require__(92),
+	        copyIf: __webpack_require__(90),
 
 	        /**
 	         * Copies all properties from source to a new object, with the given value. This object is returned
@@ -8965,7 +8955,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyList: __webpack_require__(93),
+	        copyList: __webpack_require__(91),
 
 	        /**
 	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
@@ -8979,7 +8969,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyListIf: __webpack_require__(94),
+	        copyListIf: __webpack_require__(92),
 
 	        /**
 	         * Copies all properties named in the namedKeys, from source to destination
@@ -8993,7 +8983,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyKeys: __webpack_require__(95),
+	        copyKeys: __webpack_require__(93),
 
 	        /**
 	         * Copies all properties named in the namedKeys, from source to destination,
@@ -9008,7 +8998,7 @@
 	         *
 	         * @return {Object} destination
 	         */
-	        copyKeysIf: __webpack_require__(96),
+	        copyKeysIf: __webpack_require__(94),
 
 	        copyExceptKeys: function(source, destination, exceptKeys){
 	            destination = destination || {}
@@ -9087,7 +9077,7 @@
 	}()
 
 /***/ },
-/* 87 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	    var setImmediate = function(fn){
@@ -9167,7 +9157,7 @@
 
 	    var SLICE = Array.prototype.slice
 
-	    var curry = __webpack_require__(97),
+	    var curry = __webpack_require__(95),
 
 	        find = curry(function(fn, target, onFound){
 	            if (typeof target.find == 'function'){
@@ -9230,19 +9220,19 @@
 	         *
 	         * @return the result of the first function in the enumeration
 	         */
-	        compose = __webpack_require__(98),
+	        compose = __webpack_require__(96),
 
-	        chain = __webpack_require__(99),
+	        chain = __webpack_require__(97),
 
-	        once = __webpack_require__(100),
+	        once = __webpack_require__(98),
 
-	        bindArgsArray = __webpack_require__(101),
+	        bindArgsArray = __webpack_require__(99),
 
-	        bindArgs = __webpack_require__(102),
+	        bindArgs = __webpack_require__(100),
 
-	        lockArgsArray = __webpack_require__(103),
+	        lockArgsArray = __webpack_require__(101),
 
-	        lockArgs = __webpack_require__(104),
+	        lockArgs = __webpack_require__(102),
 
 	        skipArgs = function(fn, count){
 	            return function(){
@@ -9600,11 +9590,11 @@
 
 	module.exports = {
 
-	    map: __webpack_require__(105),
+	    map: __webpack_require__(103),
 
-	    dot: __webpack_require__(106),
+	    dot: __webpack_require__(104),
 
-	    maxArgs: __webpack_require__(107),
+	    maxArgs: __webpack_require__(105),
 
 	    /**
 	     * @method compose
@@ -9721,77 +9711,44 @@
 
 	    find: find,
 
-	    newify: __webpack_require__(108)
+	    newify: __webpack_require__(106)
 	}
 
 /***/ },
+/* 87 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict';
+
+	    var fns = {}
+
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
+	}()
+
+/***/ },
 /* 88 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict';
-
-	    var fns = {}
-
-	    return function(len){
-
-	        if ( ! fns [len ] ) {
-
-	            var args = []
-	            var i    = 0
-
-	            for (; i < len; i++ ) {
-	                args.push( 'a[' + i + ']')
-	            }
-
-	            fns[len] = new Function(
-	                            'c',
-	                            'a',
-	                            'return new c(' + args.join(',') + ')'
-	                        )
-	        }
-
-	        return fns[len]
-	    }
-
-	}()
-
-/***/ },
-/* 89 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict';
-
-	    var fns = {}
-
-	    return function(len){
-
-	        if ( ! fns [len ] ) {
-
-	            var args = []
-	            var i    = 0
-
-	            for (; i < len; i++ ) {
-	                args.push( 'a[' + i + ']')
-	            }
-
-	            fns[len] = new Function(
-	                            'c',
-	                            'a',
-	                            'return new c(' + args.join(',') + ')'
-	                        )
-	        }
-
-	        return fns[len]
-	    }
-
-	}()
-
-/***/ },
-/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(){
@@ -9943,7 +9900,7 @@
 	}()
 
 /***/ },
-/* 91 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -9978,7 +9935,7 @@
 	}
 
 /***/ },
-/* 92 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10014,7 +9971,7 @@
 	}
 
 /***/ },
-/* 93 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10058,7 +10015,7 @@
 	}
 
 /***/ },
-/* 94 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10104,7 +10061,7 @@
 	}
 
 /***/ },
-/* 95 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10113,7 +10070,7 @@
 	var STR_OBJECT    = 'object'
 	var HAS_OWN       = Object.prototype.hasOwnProperty
 
-	var copyList = __webpack_require__(93)
+	var copyList = __webpack_require__(91)
 
 	/**
 	 * Copies all properties named in the namedKeys, from source to destination
@@ -10160,7 +10117,7 @@
 	}
 
 /***/ },
-/* 96 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10169,7 +10126,7 @@
 	var STR_OBJECT    = 'object'
 	var HAS_OWN       = Object.prototype.hasOwnProperty
 
-	var copyListIf = __webpack_require__(94)
+	var copyListIf = __webpack_require__(92)
 
 	/**
 	 * Copies all properties named in the namedKeys, from source to destination,
@@ -10225,7 +10182,7 @@
 	}
 
 /***/ },
-/* 97 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10263,7 +10220,7 @@
 	module.exports = curry
 
 /***/ },
-/* 98 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10296,7 +10253,7 @@
 	}
 
 /***/ },
-/* 99 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10321,7 +10278,7 @@
 	module.exports = chain
 
 /***/ },
-/* 100 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use once'
@@ -10345,7 +10302,7 @@
 	module.exports = once
 
 /***/ },
-/* 101 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10365,20 +10322,20 @@
 	}
 
 /***/ },
-/* 102 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var bindArgsArray = __webpack_require__(101)
+	var bindArgsArray = __webpack_require__(99)
 
 	module.exports = function(fn){
 	    return bindArgsArray(fn, SLICE.call(arguments,1))
 	}
 
 /***/ },
-/* 103 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -10397,25 +10354,25 @@
 	}
 
 /***/ },
-/* 104 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var lockArgsArray = __webpack_require__(103)
+	var lockArgsArray = __webpack_require__(101)
 
 	module.exports = function(fn){
 	    return lockArgsArray(fn, SLICE.call(arguments, 1))
 	}
 
 /***/ },
-/* 105 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var curry = __webpack_require__(97)
+	var curry = __webpack_require__(95)
 
 	module.exports = curry(function(fn, value){
 	    return value != undefined && typeof value.map?
@@ -10424,25 +10381,25 @@
 	})
 
 /***/ },
-/* 106 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var curry = __webpack_require__(97)
+	var curry = __webpack_require__(95)
 
 	module.exports = curry(function(prop, value){
 	    return value != undefined? value[prop]: undefined
 	})
 
 /***/ },
-/* 107 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var curry = __webpack_require__(97)
+	var curry = __webpack_require__(95)
 
 	module.exports = function(fn, count){
 	    return function(){
@@ -10451,58 +10408,15 @@
 	}
 
 /***/ },
-/* 108 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var newify = __webpack_require__(109)
-	var curry  = __webpack_require__(97)
+	var newify = __webpack_require__(80)
+	var curry  = __webpack_require__(95)
 
 	module.exports = curry(newify)
-
-/***/ },
-/* 109 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getInstantiatorFunction = __webpack_require__(110)
-
-	module.exports = function(fn, args){
-		return getInstantiatorFunction(args.length)(fn, args)
-	}
-
-/***/ },
-/* 110 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict';
-
-	    var fns = {}
-
-	    return function(len){
-
-	        if ( ! fns [len ] ) {
-
-	            var args = []
-	            var i    = 0
-
-	            for (; i < len; i++ ) {
-	                args.push( 'a[' + i + ']')
-	            }
-
-	            fns[len] = new Function(
-	                            'c',
-	                            'a',
-	                            'return new c(' + args.join(',') + ')'
-	                        )
-	        }
-
-	        return fns[len]
-	    }
-
-	}()
 
 /***/ }
 /******/ ])
