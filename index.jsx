@@ -28,7 +28,8 @@ var App = React.createClass({
 
                 <p>NO IMAGES</p>
                 <p>
-                    For source code see <a href="./index.jsx">index.jsx</a>
+                    For example source code see <a href="./index.jsx">index.jsx</a>
+                    Github: <a href="https://github.com/radubrehar/react-color-picker">radubrehar/react-color-picker</a>
                 </p>
             </div>
         )

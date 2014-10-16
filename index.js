@@ -74,7 +74,8 @@
 
 	                React.DOM.p(null, "NO IMAGES"), 
 	                React.DOM.p(null, 
-	                    "For source code see ", React.DOM.a({href: "./index.jsx"}, "index.jsx")
+	                    "For example source code see ", React.DOM.a({href: "./index.jsx"}, "index.jsx"), 
+	                    "Github: ", React.DOM.a({href: "https://github.com/radubrehar/react-color-picker"}, "radubrehar/react-color-picker")
 	                )
 	            )
 	        )
@@ -1155,11 +1156,11 @@
 
 	'use strict'
 
-	var hasOwn    = __webpack_require__(27)
+	var hasOwn    = __webpack_require__(26)
 	var copyUtils = __webpack_require__(25)
 	var copyList  = copyUtils.copyList
 	var F         = __webpack_require__(24)
-	var isObject  = __webpack_require__(26).object
+	var isObject  = __webpack_require__(27).object
 
 	/**
 	 * @class Region
@@ -4991,12 +4992,6 @@
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(31)
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
 	'use strict'
 
 	var hasOwn = Object.prototype.hasOwnProperty
@@ -5035,6 +5030,12 @@
 	module.exports = curry(function(object, property){
 	    return hasOwn.call(object, property)
 	})
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(31)
 
 /***/ },
 /* 28 */
@@ -8692,7 +8693,7 @@
 /* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getInstantiatorFunction = __webpack_require__(89)
+	var getInstantiatorFunction = __webpack_require__(90)
 
 	module.exports = function(fn, args){
 		return getInstantiatorFunction(args.length)(fn, args)
@@ -8754,7 +8755,7 @@
 	var callSuperRe     = /\bcallSuper|callSuperWith\b/
 	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
 
-	var ClassFunctionBuilder = __webpack_require__(90)
+	var ClassFunctionBuilder = __webpack_require__(89)
 	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
 	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
 
@@ -9657,39 +9658,6 @@
 
 	module.exports = function(){
 
-	    'use strict';
-
-	    var fns = {}
-
-	    return function(len){
-
-	        if ( ! fns [len ] ) {
-
-	            var args = []
-	            var i    = 0
-
-	            for (; i < len; i++ ) {
-	                args.push( 'a[' + i + ']')
-	            }
-
-	            fns[len] = new Function(
-	                            'c',
-	                            'a',
-	                            'return new c(' + args.join(',') + ')'
-	                        )
-	        }
-
-	        return fns[len]
-	    }
-
-	}()
-
-/***/ },
-/* 90 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
 	    'use strict'
 
 	    var emptyFn = function(){}
@@ -9834,6 +9802,39 @@
 	        buildSuperFn     : buildSuperFn,
 	        buildOverridenFn : buildOverridenFn
 	    }
+	}()
+
+/***/ },
+/* 90 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict';
+
+	    var fns = {}
+
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
 	}()
 
 /***/ },
