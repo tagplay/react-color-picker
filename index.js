@@ -74,7 +74,9 @@
 
 	                React.DOM.p(null, "NO IMAGES"), 
 	                React.DOM.p(null, 
-	                    "For example source code see ", React.DOM.a({href: "./index.jsx"}, "index.jsx"), 
+	                    "For example source code see ", React.DOM.a({href: "./index.jsx"}, "index.jsx")
+	                ), 
+	                React.DOM.p(null, 
 	                    "Github: ", React.DOM.a({href: "https://github.com/radubrehar/react-color-picker"}, "radubrehar/react-color-picker")
 	                )
 	            )
@@ -1156,8 +1158,8 @@
 
 	'use strict'
 
-	var hasOwn    = __webpack_require__(26)
-	var copyUtils = __webpack_require__(25)
+	var hasOwn    = __webpack_require__(25)
+	var copyUtils = __webpack_require__(26)
 	var copyList  = copyUtils.copyList
 	var F         = __webpack_require__(24)
 	var isObject  = __webpack_require__(27).object
@@ -4659,6 +4661,49 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict'
+
+	var hasOwn = Object.prototype.hasOwnProperty
+
+	function curry(fn, n){
+
+	    if (typeof n !== 'number'){
+	        n = fn.length
+	    }
+
+	    function getCurryClosure(prevArgs){
+
+	        function curryClosure() {
+
+	            var len  = arguments.length
+	            var args = [].concat(prevArgs)
+
+	            if (len){
+	                args.push.apply(args, arguments)
+	            }
+
+	            if (args.length < n){
+	                return getCurryClosure(args)
+	            }
+
+	            return fn.apply(this, args)
+	        }
+
+	        return curryClosure
+	    }
+
+	    return getCurryClosure([])
+	}
+
+
+	module.exports = curry(function(object, property){
+	    return hasOwn.call(object, property)
+	})
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
 	module.exports = function(){
 
 	    'use strict'
@@ -4989,49 +5034,6 @@
 	}()
 
 /***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var hasOwn = Object.prototype.hasOwnProperty
-
-	function curry(fn, n){
-
-	    if (typeof n !== 'number'){
-	        n = fn.length
-	    }
-
-	    function getCurryClosure(prevArgs){
-
-	        function curryClosure() {
-
-	            var len  = arguments.length
-	            var args = [].concat(prevArgs)
-
-	            if (len){
-	                args.push.apply(args, arguments)
-	            }
-
-	            if (args.length < n){
-	                return getCurryClosure(args)
-	            }
-
-	            return fn.apply(this, args)
-	        }
-
-	        return curryClosure
-	    }
-
-	    return getCurryClosure([])
-	}
-
-
-	module.exports = curry(function(object, property){
-	    return hasOwn.call(object, property)
-	})
-
-/***/ },
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -5049,7 +5051,7 @@
 	var FunctionQueue = __webpack_require__(58)
 	var withQueue     = __webpack_require__(30)
 
-	var copyUtils = __webpack_require__(25)
+	var copyUtils = __webpack_require__(26)
 	var returnFalse = function(){
 	    return false
 	}
@@ -7500,7 +7502,7 @@
 	'use strict'
 
 	var classy = __webpack_require__(29)
-	var copyUtils = __webpack_require__(25)
+	var copyUtils = __webpack_require__(26)
 	var functionally = __webpack_require__(87)
 	var sortDescFn = function( a, b){ return b - a }
 	var SLICE  = Array.prototype.slice
@@ -8693,7 +8695,7 @@
 /* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getInstantiatorFunction = __webpack_require__(90)
+	var getInstantiatorFunction = __webpack_require__(89)
 
 	module.exports = function(fn, args){
 		return getInstantiatorFunction(args.length)(fn, args)
@@ -8755,7 +8757,7 @@
 	var callSuperRe     = /\bcallSuper|callSuperWith\b/
 	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
 
-	var ClassFunctionBuilder = __webpack_require__(89)
+	var ClassFunctionBuilder = __webpack_require__(90)
 	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
 	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
 
@@ -9658,6 +9660,39 @@
 
 	module.exports = function(){
 
+	    'use strict';
+
+	    var fns = {}
+
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
+	}()
+
+/***/ },
+/* 90 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
 	    'use strict'
 
 	    var emptyFn = function(){}
@@ -9802,39 +9837,6 @@
 	        buildSuperFn     : buildSuperFn,
 	        buildOverridenFn : buildOverridenFn
 	    }
-	}()
-
-/***/ },
-/* 90 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict';
-
-	    var fns = {}
-
-	    return function(len){
-
-	        if ( ! fns [len ] ) {
-
-	            var args = []
-	            var i    = 0
-
-	            for (; i < len; i++ ) {
-	                args.push( 'a[' + i + ']')
-	            }
-
-	            fns[len] = new Function(
-	                            'c',
-	                            'a',
-	                            'return new c(' + args.join(',') + ')'
-	                        )
-	        }
-
-	        return fns[len]
-	    }
-
 	}()
 
 /***/ },
