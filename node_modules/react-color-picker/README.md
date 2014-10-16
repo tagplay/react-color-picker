@@ -9,6 +9,10 @@ react-colorpicker
 $ npm install react-color-picker
 ```
 
+## DEMO
+
+See [jslog.com/react-color-picker](http://jslog.com/react-color-picker)
+
 ## Usage
 
 You can have either **controlled** (using **value**) or **uncontrolled** (using **defaultValue**) pickers.

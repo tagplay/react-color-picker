@@ -1,7 +1,7 @@
 module.exports = {
     entry: './index.jsx',
     output: {
-        filename: './bundle.js'
+        filename: 'index.js'
     },
     module: {
         loaders: require('./loaders.config')
