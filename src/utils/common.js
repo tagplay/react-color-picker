@@ -54,22 +54,35 @@ module.exports = {
         })
 
         this.updateColor(info)
-        this.handleMouseDown(event, {})
+        this.handleMouseDown(event, { initialPoint: info })
     },
 
     handleMouseDown: function(event, config){
+
         ;(this.props.onMouseDown || emptyFn).apply(this, this.getColors())
         this.handleDrag(event, config)
     },
 
-    handleUpdate: function(config){
+    handleUpdate: function(event, config){
 
         var diff = config.diff || { top: 0, left: 0 }
         var initialPoint = config.initialPoint
 
-        if (this.props.value && initialPoint){
-            this.state.top  = initialPoint.y + diff.top
-            this.state.left = initialPoint.x + diff.left
+        if (initialPoint){
+
+            var top
+            var left
+
+            this.state.top  = top = initialPoint.y + diff.top
+            this.state.left = left = initialPoint.x + diff.left
+
+            this.state.mouseDown = {
+                x     : left,
+                y     : top,
+                width : initialPoint.width,
+                height: initialPoint.height
+            }
+
         }
 
         if (this.props.inPicker){
@@ -85,17 +98,16 @@ module.exports = {
     },
 
     handleDragStart: function(event){
-        this.state.locked = true
     },
 
     handleDrag: function(event, config){
-        this.handleUpdate(config)
+        this.handleUpdate(event, config)
         ;(this.props.onDrag || emptyFn).apply(this, this.getColors())
     },
 
     handleDrop: function(event, config){
-        this.state.locked = false
-        this.handleUpdate(config)
+        this.handleUpdate(event, config)
+        this.state.mouseDown = false
         ;(this.props.onChange || emptyFn).apply(this, this.getColors())
     },
 
