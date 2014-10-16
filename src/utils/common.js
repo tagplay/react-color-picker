@@ -31,6 +31,8 @@ module.exports = {
         DragHelper(event, {
             scope: this,
 
+            constrainTo: region,
+
             onDragStart: function(event, config){
                 config.initialPoint = info
                 this.handleDragStart(event)

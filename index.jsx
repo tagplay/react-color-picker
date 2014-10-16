@@ -8,16 +8,10 @@ var ColorPicker = require('./src/index')
 var colorUtils = require('./src/utils/color')
 
 var COLOR = 'magenta'
+
 var App = React.createClass({
     displayName: 'App',
     render: function(){
-
-        var onChange = function(event){
-            COLOR = event.target.value
-            this.setState({})
-
-        }.bind(this)
-
         return React.DOM.div({},
             ColorPicker({
                 // defaultValue: 'red',
