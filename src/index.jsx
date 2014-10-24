@@ -1,14 +1,13 @@
 'use strict'
 
-var React = require('react')
-var copy  = require('copy-utils').copy
+var React      = require('react')
+var copy       = require('copy-utils').copy
 var colorUtils = require('./utils/color')
 
+var HueSpectrum        = require('./HueSpectrum')
 var SaturationSpectrum = require('./SaturationSpectrum')
-var HueSpectrum = require('./HueSpectrum')
 
-var toHsv     = colorUtils.toHsv
-var toColor   = colorUtils.toColor
+var toHsv = colorUtils.toHsv
 
 function emptyFn(){}
 
@@ -18,8 +17,12 @@ var RESULT = React.createClass({
 
     getDefaultProps: function(){
         return {
-            defaultColor: require('./defaultColor'),
-            hueMargin   : 10
+            defaultColor    : require('./defaultColor'),
+            saturationWidth : 300,
+            saturationHeight: 300,
+            hueHeight       : null,
+            hueWidth        : 30,
+            hueMargin       : 10
         }
     },
 
@@ -63,12 +66,16 @@ var RESULT = React.createClass({
             onDrag     : this.handleSaturationDrag,
             onChange   : this.handleSaturationChange,
             onMouseDown: this.handleSaturationMouseDown,
+            height     : props.saturationHeight,
+            width     : props.saturationWidth,
             inPicker   : true
         }
 
         var hueConfig = {
             onDrag     : this.handleHueDrag,
             onChange   : this.handleHueChange,
+            height     : props.hueHeight || props.saturationHeight,
+            width      : props.hueWidth,
             inPicker   : true,
             style      : hueStyle
         }
@@ -139,15 +146,13 @@ var RESULT = React.createClass({
     },
 
     handleSaturationMouseDown: function(hsv){
-
         this.setState({
             dragHue: hsv.h
         })
-
     }
 })
 
-RESULT.HueSpectrum = HueSpectrum
+RESULT.HueSpectrum        = HueSpectrum
 RESULT.SaturationSpectrum = SaturationSpectrum
 
 module.exports = RESULT

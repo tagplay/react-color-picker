@@ -426,8 +426,8 @@ th {
   padding: 0;
 }
 
-.cp,
-.cp *,
+.color-picker,
+.color-picker *,
 .cp-saturation-spectrum,
 .cp-saturation-spectrum *,
 .cp-hue-spectrum,

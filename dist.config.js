@@ -1,7 +1,10 @@
 module.exports = {
-    entry: './index.js',
+    entry: './src/index.jsx',
     output: {
-        filename: './bundle.js'
+        path         : __dirname + "/dist",
+        libraryTarget: 'umd',
+        library      : 'ColorPicker',
+        filename     : 'react-color-picker.js'
     },
     module: {
         loaders: require('./loaders.config')
