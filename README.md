@@ -1,4 +1,4 @@
-react-colorpicker
+react-color-picker
 =================
 
 > React Color Picker
@@ -10,6 +10,10 @@ $ npm install react-color-picker
 ```
 
 or use `dist/react-color-picker.js`, which uses umd (exported as `ColorPicker`)
+
+## Demo
+
+[jslog.com/react-color-picker](http://jslog.com/react-color-picker)
 
 ## Usage
 
