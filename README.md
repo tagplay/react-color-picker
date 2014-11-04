@@ -11,6 +11,8 @@ $ npm install react-color-picker
 
 or use `dist/react-color-picker.js`, which uses umd (exported as `ColorPicker`)
 
+Use version >=2.0.0 for React >=0.12.0. For prev react versions, use v 1.4.1
+
 ## Demo
 
 [jslog.com/react-color-picker](http://jslog.com/react-color-picker)
