@@ -9,8 +9,8 @@
     "serve": "./node_modules/.bin/http-server",
     "css": "./node_modules/.bin/webpack --colors --progress --config stylus.config.js",
     "lib": "./node_modules/.bin/gulp && npm run css",
-    "dist": "webpack --progress --colors --config dist.config.js",
-    "dist.min": "webpack --progress --colors --optimize-minimize --optimize-occurence-order --optimize-dedupe --config dist.min.config.js",
+    "dist": "./node_modules/.bin/webpack --progress --colors --config dist.config.js",
+    "dist.min": "./node_modules/.bin/webpack --progress --colors --optimize-minimize --optimize-occurence-order --optimize-dedupe --config dist.min.config.js",
     "build": "npm run dist && npm run dist.min && npm run lib",
     "dev": "./node_modules/.bin/webpack-dev-server --progress --colors --port 8090"
   },
