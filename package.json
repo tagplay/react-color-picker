@@ -10,7 +10,7 @@
     "css": "./node_modules/.bin/webpack --colors --progress --config stylus.config.js",
     "lib": "./node_modules/.bin/gulp && npm run css",
     "dist": "./node_modules/.bin/webpack --progress --colors --optimize-minimize --optimize-occurence-order --optimize-dedupe --config dist.config.js",
-    "prepare": "npm run dist && npm run lib",
+    "build": "npm run dist && npm run lib",
     "dev": "./node_modules/.bin/webpack-dev-server --progress --colors --port 8090"
   },
   "keywords": [
