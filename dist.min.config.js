@@ -4,7 +4,7 @@ module.exports = {
         path         : __dirname + "/dist",
         libraryTarget: 'umd',
         library      : 'ColorPicker',
-        filename     : require('./DIST_FILE_NAME') + '.js'
+        filename     : require('./DIST_FILE_NAME') + '.min.js'
     },
     module: {
         loaders: require('./loaders.config')

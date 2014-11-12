@@ -9,8 +9,9 @@
     "serve": "./node_modules/.bin/http-server",
     "css": "./node_modules/.bin/webpack --colors --progress --config stylus.config.js",
     "lib": "./node_modules/.bin/gulp && npm run css",
-    "dist": "./node_modules/.bin/webpack --progress --colors --optimize-minimize --optimize-occurence-order --optimize-dedupe --config dist.config.js",
-    "build": "npm run dist && npm run lib",
+    "dist": "webpack --progress --colors --config dist.config.js",
+    "dist.min": "webpack --progress --colors --optimize-minimize --optimize-occurence-order --optimize-dedupe --config dist.min.config.js",
+    "build": "npm run dist && npm run dist.min && npm run lib",
     "dev": "./node_modules/.bin/webpack-dev-server --progress --colors --port 8090"
   },
   "keywords": [
@@ -25,11 +26,12 @@
   "dependencies": {
     "copy-utils": "~1.0.0",
     "functionally": "~0.6.1",
+    "gulp-react": "^2.0.0",
+    "jsx-loader": "^0.12.1",
+    "normalize.css": "^3.0.2",
     "react": "^0.12.0",
     "region": "~1.1.3",
-    "tinycolor2": "~1.0.0",
-    "gulp-react": "^2.0.0",
-    "jsx-loader": "^0.12.1"
+    "tinycolor2": "~1.0.0"
   },
   "devDependencies": {
     "style-loader": "~0.8.1",
@@ -39,7 +41,7 @@
     "webpack-dev-server": "~1.6.5",
     "webpack": "~1.4.7",
     "gulp": "~3.8.8",
-    "gulp-react": "~1.0.2",
+    "gulp-react": "^2.0.0",
     "http-server": "^0.7.2",
     "extract-text-webpack-plugin": "~0.3.1"
   },

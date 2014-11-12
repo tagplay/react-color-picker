@@ -1,2 +1,9760 @@
-!function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(require("React")):"function"==typeof define&&define.amd?define(["React"],e):"object"==typeof exports?exports.ColorPicker=e(require("React")):t.ColorPicker=e(t.React)}(this,function(t){return function(t){function e(i){if(n[i])return n[i].exports;var r=n[i]={exports:{},id:i,loaded:!1};return t[i].call(r.exports,r,r.exports,e),r.loaded=!0,r.exports}var n={};return e.m=t,e.c=n,e.p="",e(0)}(function(t){for(var e in t)switch(typeof t[e]){case"number":t[e]=t[t[e]];break;case"object":t[e]=function(e){var n=e.slice(1),i=t[e[0]];return function(t,e,r){i.apply(null,[t,e,r].concat(n))}}(t[e])}return t}([function(t,e,n){"use strict";function i(){}var r=n(16),o=n(4).copy,s=n(9),a=r.createFactory(n(96)),u=r.createFactory(n(97)),h=s.toHsv,f=r.createClass({displayName:"ColorPicker",getDefaultProps:function(){return{defaultColor:n(14),saturationWidth:300,saturationHeight:300,hueHeight:null,hueWidth:30,hueMargin:10}},getInitialState:function(){return{value:this.props.defaultValue}},prepareClasses:function(t){t.push("cp")},prepareProps:function(t){var e=[t.className||""];return this.prepareClasses(e),t.className=e.join(" "),t},render:function(){var t=this.prepareProps(o(this.props)),e=this.props.hueStyle||{};e.marginLeft=this.props.hueMargin;var n=t.value?this.toColorValue(this.props.value):null,i=n?null:this.toColorValue(this.state.value||t.defaultValue||t.defaultColor),s={onDrag:this.handleSaturationDrag,onChange:this.handleSaturationChange,onMouseDown:this.handleSaturationMouseDown,height:t.saturationHeight,width:t.saturationWidth,inPicker:!0},h={onDrag:this.handleHueDrag,onChange:this.handleHueChange,height:t.hueHeight||t.saturationHeight,width:t.hueWidth,inPicker:!0,style:e};return this.state.dragHue&&((n||i).h=this.state.dragHue),n?(s.value=o(n),h.value=o(n)):(s.defaultValue=o(i),h.defaultValue=o(i)),r.DOM.div(t,u(s),a(h))},toColorValue:function(t){return"string"==typeof t?h(t):t},toStringValue:n(15),handleChange:function(t){this.state.dragHue=null,t=o(t);var e=this.toStringValue(t);(this.props.onChange||i)(e,t)},handleSaturationChange:function(t){this.handleChange(t)},handleHueChange:function(t){this.handleChange(t)},handleHueDrag:function(t){this.handleDrag(t)},handleSaturationDrag:function(t){this.handleDrag(t)},handleDrag:function(t){this.props.value||this.setState({value:t}),(this.props.onDrag||i)(this.toStringValue(t),t)},handleSaturationMouseDown:function(t){this.setState({dragHue:t.h})}});f.HueSpectrum=a,f.SaturationSpectrum=u,t.exports=f},function(t,e,n){t.exports=function(){"use strict";function t(t){return t=t||{},t.getInstance=function(){return this.INSTANCE||(this.INSTANCE=s(this,arguments)),this.INSTANCE},t.getInstanceIf=function(){return this.INSTANCE?this.INSTANCE:void 0},t}function e(e,n,r){function o(){if(!(this instanceof o)&&o.prototype.forceInstance)return s(o,arguments);if(!this)throw"Cannot call class constructor with undefined context.";if(this.singleton){if(this.$ownClass.INSTANCE)throw"Cannot re-instantiate singleton for class "+o;this.$ownClass.INSTANCE=this}return this.init.apply(this,arguments)}1==arguments.length?(n=e,e=g):e=e||g,a(e,o),p(e.prototype,o.prototype),p(e,o);var h=n.statics||{},f=h.$own;return h.$own=null,n.statics=null,o.$initialConfig=i(o,n),n.singleton&&t(h),i(o,e,{proto:!1,skipOwn:!0,skipProps:u(e.$own,{$own:1,$ownClass:1,$superClass:1,$initialConfig:1})}),i(o,h,{proto:!1}),f&&i(o,f,{proto:!1,own:!0}),"function"!=typeof r?o.init&&o.init():r(o),o}function i(t,e,n,i){n=n||{proto:!0};var r,o,s,a=i||{},u=!f&&n.own,p=e.$own,g=!f&&n.skipOwn&&p,v=n.skipProps;for(r in e)if(h.call(e,r)){if(g&&p[r])continue;if(v&&v[r])continue;o=c?l(e,r):e[r],s=d(t,r,o,n),u?a[r]=1:c?Object.defineProperty(a,r,o):a[r]=s}return u&&(t.$own=a),a}function r(e,n){"function"==typeof e.beforeOverride&&(n=e.beforeOverride(n));var r=n.statics||{},o=r.$own;r.$own=null,n.statics=null,n.singleton&&t(r),i(e,n,null,e.$initialConfig),i(e,r,{proto:!1}),o&&i(e,o,{proto:!1,own:!0})}function o(t,e){i(t,e,{proto:!1})}var s=n(23),a=n(58),u=n(3).copy,h=Object.prototype.hasOwnProperty,f=n(24),c=n(11),l=c?Object.getOwnPropertyDescriptor:null,p=n(57),g=function(){};g.prototype.init=function(){return this},g.prototype.self=function(){return this};var d=n(55);return{canDefineProperty:f,extend:a,createClass:e,overrideClass:r,overrideObject:o,copyClassConfig:i,BaseClass:g}}()},function(t,e,n){var i=n(7),r=n(1).BaseClass;t.exports=function(t){return t?("string"!=typeof t&&(t=t.alias||(t.prototype?t.prototype.alias:t)),i[t]):r}},function(t,e,n){t.exports=n(52)},[99,33,34,17,18,35,36],function(t){"use strict";function e(t,e){function n(i){function r(){var r=arguments.length,o=[].concat(i);return r&&o.push.apply(o,arguments),o.length<e?n(o):t.apply(this,o)}return r}return"number"!=typeof e&&(e=t.length),n([])}t.exports=e},function(t,e,n){"use strict";var i=n(73),r=n(72),o=r.copyList,s=n(10),a=n(74).object,u=n(12),h=n(87).mixin,f=Math.max,c=Math.min,l={cy:"YCenter",cx:"XCenter",t:"Top",tc:"TopCenter",tl:"TopLeft",tr:"TopRight",b:"Bottom",bc:"BottomCenter",bl:"BottomLeft",br:"BottomRight",l:"Left",lc:"LeftCenter",r:"Right",rc:"RightCenter",c:"Center"},p=u.define({forceInstance:!0,mixins:[h],statics:{init:function(){var t,e,n={getIntersection:!0,getIntersectionArea:!0,getIntersectionHeight:!0,getIntersectionWidth:!0,getUnion:!0},r=this.prototype,o=i(n);for(e in n)o(e)&&(t=n[e],"string"!=typeof t&&(t=e),function(t,e,n){t[e]=function(t){return this.$ownClass[n]||console.warn("cannot find method ",n," on ",this.$ownClass),this.$ownClass[n](this,t)}}(r,t,e))},validate:function(t){var e=!0;return t.right<t.left&&(e=!1,t.right=t.left),t.bottom<t.top&&(e=!1,t.bottom=t.top),e},getDocRegion:function(){return p.fromDOM(document.documentElement)},from:function(t){return t instanceof p?t.clone():"undefined"!=typeof HTMLElement&&t instanceof HTMLElement?p.fromDOM(t):t.type&&void 0!=t.pageX&&void 0!=t.pageY?p.fromEvent(t):p(t)},fromEvent:function(t){return p.fromPoint({x:t.pageX,y:t.pageY})},fromDOM:function(t){{var e=t.getBoundingClientRect(),n=document.documentElement,i=window;e.top+i.pageYOffset-n.clientTop,e.left+i.pageXOffset-n.clientLeft}return new p({top:e.top,left:e.left,bottom:e.bottom,right:e.right})},getIntersection:function(t,e){var n=this.getIntersectionArea(t,e);return n?new p(n):!1},getIntersectionWidth:function(t,e){var n=c(t.right,e.right),i=f(t.left,e.left);return n>i?n-i:0},getIntersectionHeight:function(t,e){var n=f(t.top,e.top),i=c(t.bottom,e.bottom);return i>n?i-n:0},getIntersectionArea:function(t,e){var n=f(t.top,e.top),i=c(t.right,e.right),r=c(t.bottom,e.bottom),o=f(t.left,e.left);return r>n&&i>o?{top:n,right:i,bottom:r,left:o,width:i-o,height:r-n}:!1},getUnion:function(t,e){var n=c(t.top,e.top),i=f(t.right,e.right),r=f(t.bottom,e.bottom),o=c(t.left,e.left);return new p(n,i,r,o)},getRegion:function(t){return p.from(t)},fromPoint:function(t){return new p({top:t.y,bottom:t.y,left:t.x,right:t.x})}},emitChangeEvents:!1,changeEventsBuffer:0,getRegion:function(t){return t?this.clone():this},setRegion:function(t){return this.set(t instanceof p?t.get():t),this},validate:function(){return p.validate(this)},_before:function(){return this.emitChangeEvents?o(this,{},["left","top","bottom","right"]):void 0},_after:function(t){this.emitChangeEvents&&((this.top!=t.top||this.left!=t.left)&&this.emitPositionChange(),(this.right!=t.right||this.bottom!=t.bottom)&&this.emitSizeChange())},notifyPositionChange:function(){this.emit("changeposition",this)},emitPositionChange:function(){this.changeEventsBuffer&&(this.emitPositionChangeBuffered||(this.emitPositionChangeBuffered=s.buffer(this.notifyPositionChange,changeEventsBuffer)),this.emitPositionChangeBuffered()),this.notifyPositionChange()},notifySizeChange:function(){this.emit("changesize",this)},emitSizeChange:function(){this.changeEventsBuffer&&(this.emitSizeChangeBuffered||(this.emitSizeChangeBuffered=s.buffer(this.notifySizeChange,changeEventsBuffer)),this.emitSizeChangeBuffered()),this.notifySizeChange()},add:function(t){var e,n=this._before();for(e in t)i(t,e)&&(this[e]+=t[e]);return this[0]=this.left,this[1]=this.top,this._after(n),this},substract:function(t){var e,n=this._before();for(e in t)i(t,e)&&(this[e]-=t[e]);return this[0]=this.left,this[1]=this.top,this._after(n),this},getSize:function(){return{width:this.getWidth(),height:this.getHeight()}},setPosition:function(t){var e=this.getWidth(),n=this.getHeight();return t.left&&(t.right=t.left+e),t.top&&(t.bottom=t.top+n),this.set(t)},setSize:function(t){return t.height&&t.width?this.set({right:this.left+t.width,bottom:this.top+t.height}):(t.width&&this.setWidth(t.width),t.height&&this.setHeight(t.height),this)},setWidth:function(t){return this.set({right:this.left+t})},setHeight:function(t){return this.set({bottom:this.top+t})},set:function(t){var e=this._before();return o(t,this,["left","top","bottom","right"]),null==t.bottom&&null!=t.height&&(this.bottom=this.top+t.height),null==t.right&&null!=t.width&&(this.right=this.left+t.width),this[0]=this.left,this[1]=this.top,this._after(e),this},get:function(t){return t?this[t]:o(this,{},["left","right","top","bottom"])},shift:function(t){var e=this._before();return t.top&&(this.top+=t.top,this.bottom+=t.top),t.left&&(this.left+=t.left,this.right+=t.left),this[0]=this.left,this[1]=this.top,this._after(e),this},unshift:function(t){return t.top&&(t.top*=-1),t.left&&(t.left*=-1),this.shift(t)},equals:function(t){return this.equalsPosition(t)&&this.equalsSize(t)},equalsSize:function(t){var e=t instanceof p,n={width:null==t.width&&e?t.getWidth():t.width,height:null==t.height&&e?t.getHeight():t.height};return this.getWidth()==n.width&&this.getHeight()==n.height},equalsPosition:function(t){return this.top==t.top&&this.left==t.left},addLeft:function(t){var e=this._before();return this.left=this[0]=this.left+t,this._after(e),this},addTop:function(t){var e=this._before();return this.top=this[1]=this.top+t,this._after(e),this},addBottom:function(t){var e=this._before();return this.bottom+=t,this._after(e),this},addRight:function(t){var e=this._before();return this.right+=t,this._after(e),this},minTop:function(){return this.expand({top:1})},maxBottom:function(){return this.expand({bottom:1})},minLeft:function(){return this.expand({left:1})},maxRight:function(){return this.expand({right:1})},expand:function(t,e){var n,r=e||p.getDocRegion(),s=[],a=this._before();for(n in t)i(t,n)&&s.push(n);return o(r,this,s),this[0]=this.left,this[1]=this.top,this._after(a),this},clone:function(){return new p({top:this.top,left:this.left,right:this.right,bottom:this.bottom})},containsPoint:function(t,e){return 1==arguments.length&&(e=t.y,t=t.x),this.left<=t&&t<=this.right&&this.top<=e&&e<=this.bottom},containsRegion:function(t){return this.containsPoint(t.left,t.top)&&this.containsPoint(t.right,t.bottom)},diffHeight:function(t){return this.diff(t,{top:!0,bottom:!0})},diffWidth:function(t){return this.diff(t,{left:!0,right:!0})},diff:function(t,e){var n,r={};for(n in e)i(e,n)&&(r[n]=this[n]-t[n]);return r},getPosition:function(){return{left:this.left,top:this.top}},getPoint:function(t,e){l[t]||console.warn("The position ",t," could not be found! Available options are tl, bl, tr, br, l, r, t, b.");var n="getPoint"+l[t],i=this[n]();return e?{left:i.x,top:i.y}:i},getPointYCenter:function(){return{x:null,y:this.top+this.getHeight()/2}},getPointXCenter:function(){return{x:this.left+this.getWidth()/2,y:null}},getPointTop:function(){return{x:null,y:this.top}},getPointTopCenter:function(){return{x:this.left+this.getWidth()/2,y:this.top}},getPointTopLeft:function(){return{x:this.left,y:this.top}},getPointTopRight:function(){return{x:this.right,y:this.top}},getPointBottom:function(){return{x:null,y:this.bottom}},getPointBottomCenter:function(){return{x:this.left+this.getWidth()/2,y:this.bottom}},getPointBottomLeft:function(){return{x:this.left,y:this.bottom}},getPointBottomRight:function(){return{x:this.right,y:this.bottom}},getPointLeft:function(){return{x:this.left,y:null}},getPointLeftCenter:function(){return{x:this.left,y:this.top+this.getHeight()/2}},getPointRight:function(){return{x:this.right,y:null}},getPointRightCenter:function(){return{x:this.right,y:this.top+this.getHeight()/2}},getPointCenter:function(){return{x:this.left+this.getWidth()/2,y:this.top+this.getHeight()/2}},getHeight:function(){return this.bottom-this.top},getWidth:function(){return this.right-this.left},getTop:function(){return this.top},getLeft:function(){return this.left},getBottom:function(){return this.bottom},getRight:function(){return this.right},getArea:function(){return this.getWidth()*this.getHeight()},constrainTo:function(t){var e,n=this.getIntersection(t);if(!n||!n.equals(this)){var i=t.getWidth(),r=t.getHeight(),e={};return this.getWidth()>i&&(this.left=t.left,this.setWidth(i)),this.getHeight()>r&&(this.top=t.top,this.setHeight(r)),e={},this.right>t.right&&(e.left=t.right-this.right),this.bottom>t.bottom&&(e.top=t.bottom-this.bottom),this.left<t.left&&(e.left=t.left-this.left),this.top<t.top&&(e.top=t.top-this.top),this.shift(e),!0}return!1},init:function(t,e,n,i){a(t)?(o(t,this,["top","right","bottom","left"]),null==t.bottom&&null!=t.height&&(this.bottom=this.top+t.height),null==t.right&&null!=t.width&&(this.right=this.left+t.width),t.emitChangeEvents&&(this.emitChangeEvents=t.emitChangeEvents)):(this.top=t,this.right=e,this.bottom=n,this.left=i),this[0]=this.left,this[1]=this.top,p.validate(this)}});t.exports=p},function(t){t.exports={}},function(t,e,n){function i(t){h.preprocess(t)}function r(){return c+f++}var o=n(2),s=n(69),a=n(7),u=n(1),h=n(25),f=0,c="ZClass-";t.exports=function(t,e){"use strict";1==arguments.length&&(e=t,t=null);var n=t||e.extend,h=e.alias||(e.alias=r());return n=o(n)||n,n||console.warn("Could not find class to extend ("+e.extend+"). Extending base class."),i(e,n),u.createClass(n,e,function(t){a[h]&&console.warn("A class with alias "+h+" is already registered. It will be overwritten!"),a[h]=t,s(t)})}},function(t,e,n){"use strict";function i(t){return u(t)}function r(t){var e=i(t).toHsl().h;return i({h:e,s:100,l:50,a:1})}function o(t){return u.fromRatio(t)}function s(t,e){return e>1&&(e/=100),t=i(t).toRgb(),t.a=e,i(t)}function a(t){return i(t).toHsv()}var u=n(94);"undefined"!=typeof window&&(window.tinycolor=u);var h={toColor:i,toPure:r,fromRatio:o,toAlpha:s,toHsv:a};"undefined"!=typeof window&&(window.color=h),t.exports=h},function(t,e,n){var i=function(t){setTimeout(t,0)},r=clearTimeout,o=Array.prototype.slice,s=n(5),a=function(t,e,n){if(n="function"==typeof n?n:function(t){return t},Array.isArray(e)){for(var i,r=0,o=e.length;o>r;r++)if(i=e[r],t(i,r,e))return n(i,r,e)}else if("object"==typeof e)for(var s,i,a=Object.keys(e),r=0,o=a.length;o>r;r++)if(s=a[r],i=e[s],t(i,s,e))return n(i,s,e)},u=s(a,2),h=s(function(t,e){return a(t,e,function(t,e){return e})}),f=function(t){return Object.keys(t).forEach(function(e){"function"==typeof t[e]&&(t[e]=t[e].bind(t))}),t},c=n(41),l=n(40),p=n(47),g=n(19),d=n(39),v=n(20),y=n(43),m=function(t,e){return function(){var n=o.call(arguments,e||0);return t.apply(this,n)}},b=function(t,e,n){return function(){var i=[].from(arguments),r={stop:!1};n&&i.push(r);var o=e.apply(this,i);if(n){if(r.stop===!0)return o}else if(o===!1)return o;return t.apply(this,arguments)}},x=function(t,e,n){var r=1*e==e;return 2!=arguments.length||r?r||(e=0):(n=e,e=0),function(){var r=n||this,o=arguments;return 0>e?void t.apply(r,o):void(e||!i?setTimeout(function(){t.apply(r,o)},e):i(function(){t.apply(r,o)}))}},w=function(t,e){return x(t,0,e)},C=function(t,e,n){var o=-1;return function(){var s=n||this,a=arguments;if(0>e)return void t.apply(s,a);var u=e||!i,h=u?clearTimeout:r,f=u?setTimeout:i;-1!==o&&h(o),o=f(function(){t.apply(s,a),s=null},e)}},_=function(t,e,n){var i,r,o=-1;return function(){i=n||this,r=arguments,-1!==o||(o=setTimeout(function(){t.apply(i,r),i=null,o=-1},e))}},S=function(t,e,n){var i,r,o=-1,s=0,a=0,u={},h=!0;return r=i=function(){var f=arguments,c=n||this;h&&(u[s++]={args:f,scope:c}),-1!==o||(o=setTimeout(function(){t.apply(c,f),o=-1,a++,s!==a?(r=g(i,u[a].args).bind(u[a].scope),delete u[a],h=!1,r.apply(c),h=!0):u={}},e))}};t.exports={map:n(44),dot:n(42),maxArgs:n(45),compose:c,self:function(t){return t},buffer:C,delay:x,defer:w,skipArgs:m,intercept:function(t,e,n){return b(e,t,n)},throttle:_,spread:S,chain:function(t,e,n){return l(e,n,t)},before:function(t,e){return l("before",e,t)},after:function(t,e){return l("after",e,t)},curry:s,once:p,bindArgs:d,bindArgsArray:g,lockArgs:y,lockArgsArray:v,bindFunctionsOf:f,find:u,findIndex:h,newify:n(46)}},function(t){"use strict";t.exports=function(){return"getOwnPropertyDescriptor"in Object&&"function"==typeof Object.getOwnPropertyDescriptor}()},function(t,e,n){t.exports=function(){"use strict";function t(t,e){return i(t,e,{allowSame:!0})}var e=n(1),i=n(66);n(54);var r=n(3);return{_:r.copy(r),BaseClass:e.BaseClass,extend:e.extend,createClass:e.createClass,overrideClass:e.overrideClass,core:e,define:n(8),override:n(67),getClass:n(2),classRegistry:n(7),defineMixin:n(61),mixin:n(26).mixin,create:n(60),getInstance:n(64),destroyClass:n(62),getParentClass:n(65),isSubclassOf:i,isSameOrSubclassOf:t,isClassLike:t}}()},function(t){"use strict";t.exports=function(t){return"number"==typeof t&&isFinite(t)}},function(t){t.exports="red"},function(t,e,n){"use strict";var i=n(4).copy,r=n(9).toColor;t.exports=function(t){return t=r(i(t)),1==t.toRgb().a?t.toHexString():t.toRgbString()}},function(e){e.exports=t},function(t){"use strict";var e="undefined";t.exports=function(t,n,i){arguments.length<3&&(i=n,n=null),n=n||{},i=i||Object.keys(t);for(var r,o=0,s=i.length;s>o;o++)r=i[o],typeof t[r]!==e&&(n[i[o]]=t[i[o]]);return n}},function(t){"use strict";var e="undefined";t.exports=function(t,n,i){arguments.length<3&&(i=n,n=null),n=n||{},i=i||Object.keys(t);for(var r,o=0,s=i.length;s>o;o++)r=i[o],typeof t[r]!==e&&typeof n[r]===e&&(n[r]=t[r]);return n}},function(t){"use strict";var e=Array.prototype.slice;t.exports=function(t,n){return function(){var i=e.call(n||[]);return arguments.length&&i.push.apply(i,arguments),t.apply(this,i)}}},function(t){"use strict";var e=Array.prototype.slice;t.exports=function(t,n){return function(){return Array.isArray(n)||(n=e.call(n||[])),t.apply(this,n)}}},17,18,[98,53],function(t){"use strict";t.exports=function(){var t={};try{return Object.defineProperty(t,"name",{value:"x"}),!0}catch(e){}return!1}()},function(t,e,n){t.exports=function(){"use strict";var t=[],e={attach:function(e){t.push(e)},preprocess:function(e,n){t.forEach(function(t){t.preprocess&&t.preprocess(e,n)})},process:function(e){return t.forEach(function(t){t.process(e)}),e}};return e.attach(n(26)),e}()},function(t,e,n){t.exports=function(){"use strict";function t(t){var e=t.mixins||[];e.forEach(function(e){o(t,e)})}function e(t){if(!t.addMixin){var e=function(t){o(this,t)};l.canDefineProperty?Object.defineProperties(t,{addMixin:{value:e}}):t.addMixin=e}}function i(t,n){return t.$mixins&&~t.$mixins.indexOf(n)?!0:(e(t),t.$mixins=t.$mixins?[].concat(t.$mixins):[],t.$mixins.push(n),!1)}function r(t,e){return x.forEach(function(n){var i=t[n],r=i;if(null!=i){e&&(r=e[n]=e[n]||{});for(var o in i)m(i,o)&&(r[o]=t[o])}}),e}function o(t,e,n){if(1==arguments.length&&(e=t,t={}),!e)return t;n=n||{};var i=v(e),a=n.mixinIdentifier||e;if(i&&("string"==typeof e&&(e={alias:e}),e==i?e=i.prototype:d(i.prototype,e),r(e),a=e.alias),t.$ownClass&&!n.skipStatics){var u=i?r(i,{}):e.statics;if(u&&x.some(function(t){return!!u[t]})){n.skipWarning=!0;var h="statics."+a;o(t.$ownClass,u,{skipStatics:!0,mixinIdentifier:h})}}return s(t,e,a,n),t}function s(t,e,n,r){n=n||e.alias,i(t,n)||c(t,e,r)}function a(t,e,n){var i=t[e],r="function"==typeof i?i:b;return function(){var t=arguments,e=this.callTarget,i=this.callTargetWith;this.callTarget=function(){return r.apply(this,t)},this.callTargetWith=function(){return r.apply(this,arguments)};var o=n.apply(this,t);return this.callTarget=e,this.callTargetWith=i,o}}function u(t,e,n,i){e[n]=t?p[t](i,e[n]):a(e,n,i)}function h(t,e,n,i,r){var o,s,a,h=r?r.skipProperties:null;for(o in i)if(m(i,o)){if("init"==o){a={when:t,props:i};continue}if(h&&h[o])continue;if(s=i[o],"$copyIf"==e){"undefined"==typeof n[o]&&(n[o]=s);continue}"function"==typeof s?"function"==typeof n[o]?u(t,n,o,s):n[o]=s:t&&"undefined"!=typeof n[o]||(n[o]=s)}return a}function f(t,e,n){if(n){var i=n.props.init,r=n.when,o=e.initOn||"init";u(r,t,o,i)}}function c(t,e,n){t.callTarget=t.callTarget||b,n=n||{},n.skipWarning||e.$before||e.$after||e.$override||e.$copyIf||console.warn("No $before, $after or $override properties on the mixin ",e,". This will result in nothing being mixed in.");var i=w(t,e.$before,n),r=C(t,e.$after,n);_(t,e.$copyIf,n);var o=S(t,e.$override,n);f(t,e,i||r||o)}var l=n(1),p=n(71),g=p.bindArgs,d=n(3).copyIf,v=n(2),y=Object.prototype.hasOwnProperty,m=function(t,e){return y.call(t,e)},b=function(){},x=["$copyIf","$override","$after","$before"],w=g(h,"before","$before"),C=g(h,"after","$after"),_=g(h,"copyIf","$copyIf"),S=g(h,"","$override");return{mixin:o,preprocess:function(){},process:function(e){t(e.prototype),t(e)}}}()},17,18,[99,88,89,27,28,90,91],function(t,e,n){"use strict";var i=n(12),r=n(29),o=n(10),s=function(t,e){return e-t},a=Array.prototype.slice,u=i.define({allowFunctionsAsString:!1,keepFunctionReferences:!1,forceInstance:!0,statics:{fly:function(){var t;return function(e){return t=t||new u(e),e&&e.state&&t.from(e.state),t}}()},maxLength:null,init:function(t){r.copy(t,this),this.clear()},from:function(t){return t=t||{},this._fns=t._fns=t._fns||[],this.fns=t.fns=t.fns||[],this.scopes=t.scopes=t.scopes||[],this.options=t.options=t.options||[],this.length=this.fns.length,this},toStateObject:function(t){return this.getLength()?(t=t||{},t._fns=this._fns,t.fns=this.fns,t.scopes=this.scopes,t.options=this.options,t):void 0},clear:function(){return this.from()},destroy:function(){return this.clear(),delete this.fns,delete this._fns,delete this.scopes,delete this.options,this},clone:function(){var t=new u;return t._fns=this._fns.slice(),t.fns=this.fns.slice(),t.scopes=this.scopes.slice(),t.options=this.options.slice(),t.length=t.fns.length,t.maxLength=this.maxLength,t},getLength:function(){return this.length},isEmpty:function(){return!this.getLength()},add:function(t,e,n){return this.insert(this.length,t,e,n)},insert:function(t,e,n,i){var r;t>=this.length&&(t=this.length,r=!0);var o,s="function"==typeof e,a=e,u=e;if(s)o=this.getModifiedFunction(e,i),a=o.fn,o.modified||(u=void 0);else if(!this.allowFunctionsAsString||"string"!=typeof e)return this;return this._dirty=!0,r?(this._fns.push(u),this.fns.push(a),this.scopes.push(n||void 0),this.options.push(i)):(this._fns.splice(t,0,u),this.fns.splice(t,0,a),this.scopes.splice(t,0,n||void 0),this.options.splice(t,0,i)),this.length=this.fns.length,null!=this.maxLength&&this.adjustLength(),this},adjustLength:function(){this.maxLength<this.length&&(this._fns.shift(),this.fns.shift(),this.scopes.shift(),this.options.shift(),this.length=this.fns.length)},getModifiedFunction:function(t,e){var n=!1;return e&&(null!=e.buffer&&(t=o.buffer(t,e.buffer),n=!0),null!=e.delay&&(t=o.delay(t,e.delay),n=!0),null!=e.defer&&(t=o.defer(t),n=!0),null!=e.throttle&&(t=o.throttle(t,e.throttle),n=!0)),{modified:n,fn:t}},addStart:function(t,e,n){return this.insert(0,t,e,n)},call:function(t){return this.apply(t,a.call(arguments,1))},execute:function(){return this.apply(void 0,arguments)},collect:function(){return this.applyWith(void 0,arguments,{allResults:!0})},apply:function(t,e){return this.applyWith(t,e)},applyWith:function(t,e,n){this._dirty=!1;for(var i,r,o,s,a,u,h=this.fns.slice(),f=this._fns.slice(),c=this.scopes.slice(),l=this.options.slice(),p=this.allowFunctionsAsString,g=this.keepFunctionReferences,d=n&&n.forceScope,v=n&&n.quickStop,y=n&&n.allResults,m=n&&n.filter,b=0,x=h.length,w=[],C=!0,_=y?[]:null;x>b&&(a=!0,i=h[b],o=c[b],r=l[b],null!=o&&!d||null==t||(o=t),p&&"string"==typeof i&&("function"==typeof o[i]?(u=this.getModifiedFunction(o[i],r),g&&!this._dirty&&(f[b]=this._fns[b]=h[b],h[b]=this.fns[b]=u.fn),i=u.fn):a=!1),a&&m&&!m(i,o,r)||(r&&r.once===!0&&w.push(b),!(a&&(s=i.apply(o,e),y&&_.push(s),s===!1&&(C=!1,v||r&&r.quickStop)))));b++);return w.length&&this.removeAt(w),y?_:C},forEach:function(t,e){e=e||this;for(var n,i,r,o=this.fns,s=this.scopes,a=this.options,u=0,h=o.length;h>u&&(n=o[u],i=s[u],r=a[u],t.call(e,n,i,r,u)!==!1);u++);},remove:function(t,e){var n=this.fns,i=this._fns,r=this.scopes,o=null!=e,s=[];return n.forEach(function(n,a){var u=i[a],h=t==n||t==u;!h||o&&r[a]!==e||s.push(a)}),s.length&&this.removeAt(s),this},removeAt:function(t){this._dirty=!0;var e,n=Array.isArray(t)?t:[t],i=0,r=n.length;for(n.sort(s);r>i;i++)e=n[i],this._fns.splice(e,1),this.fns.splice(e,1),this.options.splice(e,1),this.scopes.splice(e,1);return this.length=this.fns.length,this}});u.displayName="FunctionQueue",u.constructor.displayName="FunctionQueue",t.exports=u},function(t,e,n){"use strict";function i(){}var r=n(6),o=n(4).copy,s=n(95),a=n(9).toHsv;t.exports={toColorValue:function(t){return"string"==typeof t?a(t):{h:t.h,s:t.s,v:t.v,a:t.a}},onMouseDown:function(t){t.preventDefault();var e=r.fromDOM(this.getDOMNode()),n=this.getEventInfo(t,e);s(t,{scope:this,constrainTo:e,onDragStart:function(t,e){e.initialPoint=n,this.handleDragStart(t)},onDrag:function(t,n){var i=this.getEventInfo(t,e);this.updateColor(i),this.handleDrag(t,n)},onDrop:function(t,n){var i=this.getEventInfo(t,e);this.updateColor(i),this.handleDrop(t,n)}}),this.updateColor(n),this.handleMouseDown(t,{initialPoint:n})},handleMouseDown:function(t,e){(this.props.onMouseDown||i).apply(this,this.getColors()),this.handleDrag(t,e)},handleUpdate:function(t,e){var n=e.diff||{top:0,left:0},i=e.initialPoint;if(i){var r,o;this.state.top=r=i.y+n.top,this.state.left=o=i.x+n.left,this.state.mouseDown={x:o,y:r,width:i.width,height:i.height}}this.props.inPicker||this.props.value||this.setState({value:this.hsv})},handleDragStart:function(){},handleDrag:function(t,e){this.handleUpdate(t,e),(this.props.onDrag||i).apply(this,this.getColors())},handleDrop:function(t,e){this.handleUpdate(t,e),this.state.mouseDown=!1,(this.props.onChange||i).apply(this,this.getColors())},getColors:function(){var t=this.props.inPicker?this.hsv:this.toStringValue(this.hsv),e=[t];return this.props.inPicker||e.push(o(this.hsv)),e},getEventInfo:function(t,e){e=e||r.fromDOM(this.getDOMNode());var n=t.clientX-e.left,i=t.clientY-e.top;return{x:n,y:i,width:e.getWidth(),height:e.getHeight()}}}},function(t){"use strict";t.exports=function(t){var e=t.height,n=t.width;return t.x<0&&(t.x=0),t.x>=n&&(t.x=n),t.y<0&&(t.y=0),t.y>=e&&(t.y=e),t}},function(t){"use strict";var e=Object.prototype.hasOwnProperty,n="object";t.exports=function(t,i){if(i=i||{},null!=t&&typeof t===n)for(var r in t)e.call(t,r)&&(i[r]=t[r]);return i}},function(t){"use strict";var e=Object.prototype.hasOwnProperty,n="object",i="undefined";t.exports=function(t,r){if(r=r||{},null!=t&&typeof t===n)for(var o in t)e.call(t,o)&&typeof r[o]===i&&(r[o]=t[o]);return r}},[100,17],[101,18],function(t){t.exports=function(){"use strict";var t={};return function(e){if(!t[e]){for(var n=[],i=0;e>i;i++)n.push("a["+i+"]");t[e]=new Function("c","a","return new c("+n.join(",")+")")}return t[e]}}()},[98,37],function(t,e,n){"use strict";var i=Array.prototype.slice,r=n(19);t.exports=function(t){return r(t,i.call(arguments,1))}},function(t){"use strict";function e(t,e,n){return function(){"before"===t&&n.apply(this,arguments);var i=e.apply(this,arguments);return"before"!==t&&n.apply(this,arguments),i}}t.exports=e},function(t){"use strict";function e(t,e){return function(){return t(e.apply(this,arguments))}}t.exports=function(){for(var t=arguments,n=t.length,i=0,r=t[0];++i<n;)r=e(r,t[i]);return r}},function(t,e,n){"use strict";var i=n(5);t.exports=i(function(t,e){return void 0!=e?e[t]:void 0})},function(t,e,n){"use strict";var i=Array.prototype.slice,r=n(20);t.exports=function(t){return r(t,i.call(arguments,1))}},function(t,e,n){"use strict";var i=n(5);t.exports=i(function(t,e){return void 0!=e?e.map(t):t(e)})},function(t,e,n){"use strict";{var i=Array.prototype.slice;n(5)}t.exports=function(t,e){return function(){return t.apply(this,i.call(arguments,0,e))}}},function(t,e,n){"use strict";var i=n(38),r=n(5);t.exports=r(i)},function(t){"use once";function e(t,e){var n,i;return function(){return n?i:(n=!0,i=t.apply(e||this,arguments))}}t.exports=e},33,34,[100,21],[101,22],[99,48,49,21,22,50,51],37,function(t,e,n){"use strict";var i=n(1),r=n(3).copy,o=["$before","$after","$override","$copyIf"];t.exports=n(8)({alias:"z.mixin",callTarget:function(){},statics:{init:function(){var t=this.$initialConfig||{};o.forEach(function(e){t[e]&&i.copyClassConfig(this,t[e],{proto:!0}),this[e]&&i.copyClassConfig(this,this[e],{proto:!1})},this)},beforeOverride:function(t){var e={},n=this.prototype;return o.forEach(function(i){var o=t[i];null!=o&&(r(o,e),r(o,n[i]))}),e}}})},function(t,e,n){"use strict";var i=n(3).copy,r=n(59),o=n(24),s=n(11),a=function(t,e,n,a){var u,h=a.proto?t.prototype:t,f=t.$superClass,c=f?a.proto?f.prototype:f:void 0,l=a.own;!s||void 0!==n.get&&void 0!=n.set||(u=Object.getOwnPropertyDescriptor(h,e),u&&void 0===n.get&&void 0!==u.get&&(n.get=u.get),u&&void 0===n.set&&void 0!==u.set&&(n.set=u.set));var p,g,d=n.get||n.set;return d?(p=i(n),void 0!==n.get&&(p.get=r(e,n.get,c,f,h,{getter:!0})),void 0!==n.set&&(p.set=r(e,n.set,c,f,h,{setter:!0})),n=p):(g=n.value,"function"==typeof g&&(g=r(e,g,c,f,h))),l?o?Object.defineProperty(h,e,{value:g,enumerable:!1}):h[e]=g:d?Object.defineProperty(h,e,n):h[e]=g,g};t.exports=a},function(t){t.exports=function(){"use strict";function t(t,e,n,r,o){function s(e){var s=o.getter?"get":o.setter?"set":null,a=s?i(n,t):null,u=s?a?a[s]:null:n[t],h="function"==typeof u;return h||"init"!=t||r.$superClass||(u=r,h=!0),h?u.apply(this,e):void 0}return function(){var t=this.callSuper,n=this.callSuperWith,i=arguments;this.callSuperWith=function(){return s.call(this,arguments)},this.callSuper=function(){return s.call(this,i)};var r=e.apply(this,i);return this.callSuper=t,this.callSuperWith=n,r}}function e(t,e,r,o){var s=o.getter?"get":o.setter?"set":null,a=s?i(r,t):null,u=s?a?a[s]:null:r[t];return"undefined"==typeof u&&(u=n),function(){var t=this.callOverriden,n=this.callOverridenWith,i=arguments;this.callOverridenWith=function(){return u.apply(this,arguments)},this.callOverriden=function(){return u.apply(this,i)};var r=e.apply(this,i);return this.callOverriden=t,this.callOverridenWith=n,r}}var n=function(){},i=Object.getOwnPropertyDescriptor;return{buildSuperFn:t,buildOverridenFn:e}}()},function(t,e,n){"use strict";function i(t,e){Object.getOwnPropertyNames(t).forEach(function(n){var i=Object.getOwnPropertyDescriptor(t,n);(i.get||i.set)&&Object.defineProperty(e,n,i)})}var r=n(11);t.exports=r?i:function(){}},function(t){t.exports=function(){"use strict";var t=function(){};return function(e,n){return t.prototype=e.prototype,n.prototype=new t,n.prototype.constructor=n,n.prototype.$ownClass=n,n.prototype.$superClass=e,n.$ownClass=n,n.$superClass=e,n}}()},function(t,e,n){function i(t,e,n,i,s,h){var f=r.test(e),c=o.test(e);return h=h||{},f&&(e=a(t,e,n,i,h)),c&&(e=u(t,e,s,h)),e}var r=/\bcallSuper|callSuperWith\b/,o=/\bcallOverriden|callOverridenWith\b/,s=n(56),a=s.buildSuperFn,u=s.buildOverridenFn;t.exports=i},function(t,e,n){var i=Array.prototype.slice,r=n(2),o=n(23);t.exports=function(t){"use strict";var e=r(t),n=i.call(arguments,1);return o(e,n)}},function(t,e,n){var i=n(8),r=n(3).copyIf;t.exports=function(t){"use strict";return i(r({extend:"z.mixin"},t))}},function(t,e,n){var i=n(2),r=n(1),o=r.BaseClass;t.exports=function(t){"use strict";t=i(t),t&&t!=o&&t.destroy()}},function(t,e,n){t.exports=function(t){"use strict";var e=n(8);return t=t||{},t.extend=t.extend||this.prototype.alias,e(t)}},function(t,e,n){var i=n(1).BaseClass,r=n(2);t.exports=function(t){"use strict";
-if(t instanceof i)return t;t="string"==typeof t?{alias:t}:t||{};var e=r(t);return e||console.warn("Cannot find class for ",t),e&&e.prototype.singleton?e.getInstance():new e(t)}},function(t,e,n){var i=n(1).BaseClass,r=n(2);t.exports=function(t){"use strict";var e=r(t);if(e&&e!=i&&e.$superClass!=i){for(;e.$superClass&&e.$superClass!=i;)e=e.$superClass;return e}}},function(t,e,n){var i=n(2);t.exports=function(t,e,n){"use strict";if(t=i(t),e=i(e),!t||!e)return!1;if(n&&n.allowSame&&t===e)return!0;for(;t&&t.$superClass!=e;)t=t.$superClass;return!!t}},function(t,e,n){var i=n(2);t.exports=function(t,e){"use strict";var n=i(t);return n&&n.override(e),n}},function(t,e,n){t.exports=function(t){"use strict";return n(1).overrideClass(this,t)}},function(t,e,n){function i(t){return r(this.prototype,this.prototype,t),this}var r=n(3).copyKeys,o=n(63),s=n(68),a=n(70),u=n(25);t.exports=function(t){"use strict";if(t.extend=o,t.override=s,t.aliasMethods=i,"function"==typeof t.destroy){var e=t.destroy;t.destroy=function(){e.call(this),a.call(this)}}else t.destroy=a;u.process(t),t.init&&t.init()}},function(t,e,n){var i=n(7);t.exports=function(){"use strict";var t=this.prototype.alias;i[t]=null,delete i[t]}},function(t){t.exports=function(){function t(t,e){return function(){var n=o.call(e||[]);return arguments.length&&n.push.apply(n,arguments),t.apply(this,n)}}function e(e){return t(e,o.call(arguments,1))}function n(t,e,n){return function(){"before"===t&&n.apply(this,arguments);var i=e.apply(this,arguments);return"before"!==t&&n.apply(this,arguments),i}}function i(t,e){return n("before",e,t)}function r(t,e){return n("after",e,t)}var o=Array.prototype.slice;return{before:i,after:r,bindArgs:e,bindArgsArray:t}}()},function(t){t.exports=function(){"use strict";var t=Object.prototype.hasOwnProperty,e="object",n="undefined";return{copy:function(n,i){if(i=i||{},null!=n&&typeof n===e)for(var r in n)t.call(n,r)&&(i[r]=n[r]);return i},copyIf:function(i,r){if(r=r||{},null!=i&&typeof i===e)for(var o in i)t.call(i,o)&&typeof r[o]===n&&(r[o]=i[o]);return r},copyAs:function(n,i){var r={};if(i=i||1,null!=n&&typeof n===e)for(var o in n)t.call(n,o)&&(r[o]=i);return r},copyList:function(t,e,i){2==arguments.length&&(i=e,e=null),e=e||{},i=i||[];for(var r,o=0,s=i.length;s>o;o++)r=i[o],typeof t[r]!==n&&(e[i[o]]=t[i[o]]);return e},copyListIf:function(t,e,i){2==arguments.length&&(i=e,e=null),e=e||{},i=i||[];for(var r,o=0,s=i.length;s>o;o++)r=i[o],typeof t[r]!==n&&typeof e[r]===n&&(e[r]=t[r]);return e},copyKeys:function(i,r,o){if(2==arguments.length&&(o=r,r=null),r=r||{},null!=i&&typeof i===e&&null!=o&&typeof o===e){var s,a;for(var u in o)t.call(o,u)&&(a=o[u],s=typeof a,typeof i[u]!==n&&(r["string"==s?a:u]=i[u]))}return r},copyKeysIf:function(i,r,o){if(2==arguments.length&&(o=r,r=null),r=r||{},null!=i&&typeof i===e&&null!=o&&typeof o===e){var s,a,u;for(var h in o)t.call(o,h)&&(a=o[h],s=typeof a,u="string"==s?a:h,typeof i[h]!==n&&typeof r[u]===n&&(r[u]=i[h]))}return r},copyExceptKeys:function(n,i,r){if(i=i||{},r=r||{},null!=n&&typeof n===e)for(var o in n)t.call(n,o)&&!t.call(r,o)&&(i[o]=n[o]);return i},bindCopyKeys:function(i,r,o){if(2==arguments.length&&(o=r,r=null),r=r||{},null!=i&&typeof i===e&&null!=o&&typeof o===e){var s,a,u,h;for(var f in o)t.call(o,f)&&(a=o[f],s=typeof a,h=i[f],u=typeof h,u!==n&&(r["string"==s?a:f]="function"==u?h.bind(i):h))}return r}}}()},function(t){"use strict";function e(t,e){function n(i){function r(){var r=arguments.length,o=[].concat(i);return r&&o.push.apply(o,arguments),o.length<e?n(o):t.apply(this,o)}return r}return"number"!=typeof e&&(e=t.length),n([])}var n=Object.prototype.hasOwnProperty;t.exports=e(function(t,e){return n.call(t,e)})},function(t,e,n){t.exports=n(81)},function(t){"use strict";var e=Object.prototype.toString;t.exports=function(t){return"[object Arguments]"===e.apply(t)||!!t.callee}},function(t){"use strict";t.exports=function(t){return Array.isArray(t)}},function(t){"use strict";t.exports=function(t){return"boolean"==typeof t}},function(t){"use strict";var e=Object.prototype.toString;t.exports=function(t){return"[object Date]"===e.apply(t)}},function(t,e,n){"use strict";var i=n(13);t.exports=function(t){return i(t)&&t===parseFloat(t,10)&&!(t===parseInt(t,10))}},function(t){"use strict";var e=Object.prototype.toString;t.exports=function(t){return"[object Function]"===e.apply(t)}},function(t,e,n){"use strict";t.exports={numeric:n(83),number:n(13),"int":n(82),"float":n(79),string:n(86),"function":n(80),object:n(84),arguments:n(75),"boolean":n(77),date:n(78),regexp:n(85),array:n(76)}},function(t,e,n){"use strict";var i=n(13);t.exports=function(t){return i(t)&&t===parseInt(t,10)}},function(t){"use strict";t.exports=function(t){return!isNaN(parseFloat(t))&&isFinite(t)}},function(t){"use strict";var e=Object.prototype.toString;t.exports=function(t){return"[object Object]"===e.apply(t)}},function(t){"use strict";var e=Object.prototype.toString;t.exports=function(t){return"[object RegExp]"===e.apply(t)}},function(t){"use strict";t.exports=function(t){return"string"==typeof t}},function(t,e,n){"use strict";var i=Object.prototype.hasOwnProperty,r=n(12),o=n(30),s=n(92),a=n(29),u=function(){return!1},h=function(t,e){return i.call(t,e)},f=function(t){return!!(t&&t.$superClass&&t.prototype&&t.extend&&t.override)},c=Array.prototype.slice,l=function(t){return"function"==typeof t},p=function(t){return t?l(t)||l(t.fn)||"string"==typeof t.fn:!1},g=function(t){t.clear()},d=new o({allowFunctionsAsString:!0,keepFunctionReferences:!0}),v=r.defineMixin({$copyIf:{hasListenersFor:function(){return!!this.getListenerCountFor.apply(this,arguments)},getListenerCountFor:function(t){var e=0;return this.withQueue(t,function(t){e=t.getLength()},{skipEmpty:!0}),e}},$override:{addNormalizedListener:function(t){this.callTarget();var e=t.name,n=t.fn,i=t.scope,r=t.options;return this.withQueue(e,function(t){t.add(n,i,r)}),this}},$before:{eventEmitter:!0,availableEmitterOptions:{once:1,buffer:1,delay:1,defer:1,throttle:1,quickStop:1,selector:1,capture:1},destroy:function(){this.off()},init:function(t){return this.eventQueueState=this.eventQueueState||{},(f(this)||!this.initEventEmitter)&&(this.listeners&&this.on(this.listeners),t&&t.listeners&&t.listeners!=this.listeners&&this.on(t.listeners),this.initEventEmitter=!0),this},withQueue:function(t,e,n){var i="eventQueueState",r=n&&n.checkEmpty;r&&(n.skipEmpty=!0);var o=s.call(this,t,function(r){e.call(this,r),n&&n.checkEmpty&&!r.getLength()&&delete this[i][t]},i,d,n);return r&&!o&&delete this[i][t],this},removeOneEventListener:function(t,e,n,i,r){r.remove(e,n)},removeNormalizedListener:function(t){var e=t.name,n=t.fn,i=t.scope;return t.defaultScope&&(i=null),n?this.withQueue(e,function(r){this.removeOneEventListener(e,n,i,t,r)},{checkEmpty:!0}):this.removeAllListenersFor(e),this},removeAllListenersFor:function(t){return this.withQueue(t,g,{checkEmpty:!0}),this},removeAllListeners:function(){var t,e=this.eventQueueState;for(t in e)h(e,t)&&this.removeAllListenersFor(t);return this.eventQueueState={},this},getNormalizedArray:function(t,e,n,i){var r,o=this.availableEmitterOptions,s=arguments,u=[];if(s.length>1||1==s.length&&"string"==typeof t||Array.isArray(t)){if(Array.isArray(t))return t.forEach(function(t){u.push.apply(u,this.getNormalizedArray(t,e,n,i))},this),u;if(Array.isArray(e))return e.forEach(function(e){u.push.apply(u,this.getNormalizedArray(t,e,n,i))},this),u;var f;return r=i,l(e)?f=e:"string"==typeof e?f=e:p(e)&&(f=e.fn,r=a.copy(i),a.copyKeys(e,r,o),e.options&&a.copy(e.options,r),e.scope&&(n=e.scope)),~t.indexOf(" ")?t.split(" ").forEach(function(t){t&&u.push({defaultScope:null==n,name:t,fn:f,options:r,scope:n||this})},this):u.push({defaultScope:null==n,name:t,fn:f,options:r,scope:n||this}),u}var c,g,d=t;r=a.copyKeys(d,{},o),d.options&&a.copy(d.options,r);for(c in d)h(d,c)&&(g=d[c],(p(g)||Array.isArray(g)||"string"==typeof g&&!(c in o)&&"scope"!=c)&&u.push.apply(u,this.getNormalizedArray(c,g,d.scope,r)));return u},addListener:function(t,e){var n=arguments,i=this;if(1==n.length&&"string"==typeof t){throw new Error("Promise not supported yet for events.")}return this.getNormalizedArray.apply(this,n).forEach(function(t){this.ensureEventOptions(t),this.addNormalizedListener(t)},this),i},on:function(){return this.addListener.apply(this,arguments)},removeListener:function(){var t=arguments;return t.length?this.getNormalizedArray.apply(this,t).forEach(function(t){this.ensureEventOptions(t),this.removeNormalizedListener(t)},this):this.removeAllListeners(),this},off:function(){return this.removeListener.apply(this,arguments)},once:function(){return this.getNormalizedArray.apply(this,arguments).forEach(function(t){this.ensureEventOptions(t),t.options.once=!0,this.addNormalizedListener(t)},this),this},ensureEventOptions:function(t){t.options=t.options||{}},one:function(){return this.once.apply(this,arguments)},emit:function(t){return this.emitEvent(t,c.call(arguments,1))},emitAppEvent:function(t){var e=c.call(arguments,1),n=this.createAppEventObject(t,e);return this.emitEvent(t,e.concat(n))===!1&&(n.stop=!0),n},createAppEventObject:function(t,e){var n={stop:!1};return n.appEvent=!0,n.type=t,n.source=this,n.current=this,n.targets=[this],n.args=e,n},emitEvent:function(t,e,n){if("*"==t)return console.log("You cannot emit the generic event"),!1;var i;return this.lastEventName=t,this.withQueue(t,function(r){this.mutedEvents&&this.mutedEvents[t]&&(n=n||{},n.filter=u),i=r.applyWith(this,e,n)}),this.withQueue("*",function(i){this.mutedEvents&&this.mutedEvents[t]&&(n=n||{},n.filter=u),i.applyWith(this,[t].concat(e),n)},{skipEmpty:!0}),i},trigger:function(){return this.emit.apply(this,arguments)},getLastEventName:function(){return this.lastEventName},quickEmit:function(t){var e,n=c.call(arguments,1);return this.lastEventName=t,this.withQueue(t,function(t){e=t.applyWith(this,n,{quickStop:!0})}),e},muteEvents:function(t){return this.mutedEvents=this.mutedEvents||{},(t||[]).forEach(function(t){this.mutedEvents[t]=1},this),this},unmuteEvents:function(t){return this.mutedEvents&&(t?t.forEach(function(t){delete this.mutedEvents[t]},this):delete this.mutedEvents),this}}}),y=function(t){return t?r.mixin(t,v):new v};y.mixin=v,t.exports=y},33,34,[100,27],[101,28],function(t,e,n){"use strict";var i=n(93);t.exports=function(t,e,n,r,o){var s=!(!o||!o.skipEmpty),a=!1;return i.call(this,function(n,i){if(!s||n[t]){a=this;var r=n[t]||{};i.from(r),e.call(this,i),r=i.toStateObject(),void 0!==r?n[t]=r:delete n[t]}},n,r),a}},function(t,e,n){"use strict";var i=n(30),r=new i({allowFunctionsAsString:!0,keepFunctionReferences:!0});t.exports=function(t,e,n){n=n||r,this[e]=this[e]||{};var i=n.toStateObject();return t&&t.call(this,this[e],n),n.from(i),this}},function(t,e,n){var i;!function(){function r(t){var e={r:0,g:0,b:0},n=1,i=!1,r=!1;return"string"==typeof t&&(t=I(t)),"object"==typeof t&&(t.hasOwnProperty("r")&&t.hasOwnProperty("g")&&t.hasOwnProperty("b")?(e=o(t.r,t.g,t.b),i=!0,r="%"===String(t.r).substr(-1)?"prgb":"rgb"):t.hasOwnProperty("h")&&t.hasOwnProperty("s")&&t.hasOwnProperty("v")?(t.s=R(t.s),t.v=R(t.v),e=h(t.h,t.s,t.v),i=!0,r="hsv"):t.hasOwnProperty("h")&&t.hasOwnProperty("s")&&t.hasOwnProperty("l")&&(t.s=R(t.s),t.l=R(t.l),e=a(t.h,t.s,t.l),i=!0,r="hsl"),t.hasOwnProperty("a")&&(n=t.a)),n=A(n),{ok:i,format:t.format||r,r:B(255,z(e.r,0)),g:B(255,z(e.g,0)),b:B(255,z(e.b,0)),a:n}}function o(t,e,n){return{r:255*P(t,255),g:255*P(e,255),b:255*P(n,255)}}function s(t,e,n){t=P(t,255),e=P(e,255),n=P(n,255);var i,r,o=z(t,e,n),s=B(t,e,n),a=(o+s)/2;if(o==s)i=r=0;else{var u=o-s;switch(r=a>.5?u/(2-o-s):u/(o+s),o){case t:i=(e-n)/u+(n>e?6:0);break;case e:i=(n-t)/u+2;break;case n:i=(t-e)/u+4}i/=6}return{h:i,s:r,l:a}}function a(t,e,n){function i(t,e,n){return 0>n&&(n+=1),n>1&&(n-=1),1/6>n?t+6*(e-t)*n:.5>n?e:2/3>n?t+(e-t)*(2/3-n)*6:t}var r,o,s;if(t=P(t,360),e=P(e,100),n=P(n,100),0===e)r=o=s=n;else{var a=.5>n?n*(1+e):n+e-n*e,u=2*n-a;r=i(u,a,t+1/3),o=i(u,a,t),s=i(u,a,t-1/3)}return{r:255*r,g:255*o,b:255*s}}function u(t,e,n){t=P(t,255),e=P(e,255),n=P(n,255);var i,r,o=z(t,e,n),s=B(t,e,n),a=o,u=o-s;if(r=0===o?0:u/o,o==s)i=0;else{switch(o){case t:i=(e-n)/u+(n>e?6:0);break;case e:i=(n-t)/u+2;break;case n:i=(t-e)/u+4}i/=6}return{h:i,s:r,v:a}}function h(t,e,n){t=6*P(t,360),e=P(e,100),n=P(n,100);var i=F.floor(t),r=t-i,o=n*(1-e),s=n*(1-r*e),a=n*(1-(1-r)*e),u=i%6,h=[n,s,o,o,a,n][u],f=[a,n,n,s,o,o][u],c=[o,o,a,n,n,s][u];return{r:255*h,g:255*f,b:255*c}}function f(t,e,n,i){var r=[M(W(t).toString(16)),M(W(e).toString(16)),M(W(n).toString(16))];return i&&r[0].charAt(0)==r[0].charAt(1)&&r[1].charAt(0)==r[1].charAt(1)&&r[2].charAt(0)==r[2].charAt(1)?r[0].charAt(0)+r[1].charAt(0)+r[2].charAt(0):r.join("")}function c(t,e,n,i){var r=[M($(i)),M(W(t).toString(16)),M(W(e).toString(16)),M(W(n).toString(16))];return r.join("")}function l(t,e){e=0===e?0:e||10;var n=V(t).toHsl();return n.s-=e/100,n.s=E(n.s),V(n)}function p(t,e){e=0===e?0:e||10;var n=V(t).toHsl();return n.s+=e/100,n.s=E(n.s),V(n)}function g(t){return V(t).desaturate(100)}function d(t,e){e=0===e?0:e||10;var n=V(t).toHsl();return n.l+=e/100,n.l=E(n.l),V(n)}function v(t,e){e=0===e?0:e||10;var n=V(t).toRgb();return n.r=z(0,B(255,n.r-W(255*-(e/100)))),n.g=z(0,B(255,n.g-W(255*-(e/100)))),n.b=z(0,B(255,n.b-W(255*-(e/100)))),V(n)}function y(t,e){e=0===e?0:e||10;var n=V(t).toHsl();return n.l-=e/100,n.l=E(n.l),V(n)}function m(t,e){var n=V(t).toHsl(),i=(W(n.h)+e)%360;return n.h=0>i?360+i:i,V(n)}function b(t){var e=V(t).toHsl();return e.h=(e.h+180)%360,V(e)}function x(t){var e=V(t).toHsl(),n=e.h;return[V(t),V({h:(n+120)%360,s:e.s,l:e.l}),V({h:(n+240)%360,s:e.s,l:e.l})]}function w(t){var e=V(t).toHsl(),n=e.h;return[V(t),V({h:(n+90)%360,s:e.s,l:e.l}),V({h:(n+180)%360,s:e.s,l:e.l}),V({h:(n+270)%360,s:e.s,l:e.l})]}function C(t){var e=V(t).toHsl(),n=e.h;return[V(t),V({h:(n+72)%360,s:e.s,l:e.l}),V({h:(n+216)%360,s:e.s,l:e.l})]}function _(t,e,n){e=e||6,n=n||30;var i=V(t).toHsl(),r=360/n,o=[V(t)];for(i.h=(i.h-(r*e>>1)+720)%360;--e;)i.h=(i.h+r)%360,o.push(V(i));return o}function S(t,e){e=e||6;for(var n=V(t).toHsv(),i=n.h,r=n.s,o=n.v,s=[],a=1/e;e--;)s.push(V({h:i,s:r,v:o})),o=(o+a)%1;return s}function O(t){var e={};for(var n in t)t.hasOwnProperty(n)&&(e[t[n]]=n);return e}function A(t){return t=parseFloat(t),(isNaN(t)||0>t||t>1)&&(t=1),t}function P(t,e){k(t)&&(t="100%");var n=H(t);return t=B(e,z(0,parseFloat(t))),n&&(t=parseInt(t*e,10)/100),F.abs(t-e)<1e-6?1:t%e/parseFloat(e)}function E(t){return B(1,z(0,t))}function D(t){return parseInt(t,16)}function k(t){return"string"==typeof t&&-1!=t.indexOf(".")&&1===parseFloat(t)}function H(t){return"string"==typeof t&&-1!=t.indexOf("%")}function M(t){return 1==t.length?"0"+t:""+t}function R(t){return 1>=t&&(t=100*t+"%"),t}function $(t){return Math.round(255*parseFloat(t)).toString(16)}function j(t){return D(t)/255}function I(t){t=t.replace(L,"").replace(N,"").toLowerCase();var e=!1;if(Q[t])t=Q[t],e=!0;else if("transparent"==t)return{r:0,g:0,b:0,a:0,format:"name"};var n;return(n=X.rgb.exec(t))?{r:n[1],g:n[2],b:n[3]}:(n=X.rgba.exec(t))?{r:n[1],g:n[2],b:n[3],a:n[4]}:(n=X.hsl.exec(t))?{h:n[1],s:n[2],l:n[3]}:(n=X.hsla.exec(t))?{h:n[1],s:n[2],l:n[3],a:n[4]}:(n=X.hsv.exec(t))?{h:n[1],s:n[2],v:n[3]}:(n=X.hex8.exec(t))?{a:j(n[1]),r:D(n[2]),g:D(n[3]),b:D(n[4]),format:e?"name":"hex8"}:(n=X.hex6.exec(t))?{r:D(n[1]),g:D(n[2]),b:D(n[3]),format:e?"name":"hex"}:(n=X.hex3.exec(t))?{r:D(n[1]+""+n[1]),g:D(n[2]+""+n[2]),b:D(n[3]+""+n[3]),format:e?"name":"hex"}:!1}var L=/^[\s,#]+/,N=/\s+$/,T=0,F=Math,W=F.round,B=F.min,z=F.max,q=F.random,V=function Y(t,e){if(t=t?t:"",e=e||{},t instanceof Y)return t;if(!(this instanceof Y))return new Y(t,e);var n=r(t);this._r=n.r,this._g=n.g,this._b=n.b,this._a=n.a,this._roundA=W(100*this._a)/100,this._format=e.format||n.format,this._gradientType=e.gradientType,this._r<1&&(this._r=W(this._r)),this._g<1&&(this._g=W(this._g)),this._b<1&&(this._b=W(this._b)),this._ok=n.ok,this._tc_id=T++};V.prototype={isDark:function(){return this.getBrightness()<128},isLight:function(){return!this.isDark()},isValid:function(){return this._ok},getFormat:function(){return this._format},getAlpha:function(){return this._a},getBrightness:function(){var t=this.toRgb();return(299*t.r+587*t.g+114*t.b)/1e3},setAlpha:function(t){return this._a=A(t),this._roundA=W(100*this._a)/100,this},toHsv:function(){var t=u(this._r,this._g,this._b);return{h:360*t.h,s:t.s,v:t.v,a:this._a}},toHsvString:function(){var t=u(this._r,this._g,this._b),e=W(360*t.h),n=W(100*t.s),i=W(100*t.v);return 1==this._a?"hsv("+e+", "+n+"%, "+i+"%)":"hsva("+e+", "+n+"%, "+i+"%, "+this._roundA+")"},toHsl:function(){var t=s(this._r,this._g,this._b);return{h:360*t.h,s:t.s,l:t.l,a:this._a}},toHslString:function(){var t=s(this._r,this._g,this._b),e=W(360*t.h),n=W(100*t.s),i=W(100*t.l);return 1==this._a?"hsl("+e+", "+n+"%, "+i+"%)":"hsla("+e+", "+n+"%, "+i+"%, "+this._roundA+")"},toHex:function(t){return f(this._r,this._g,this._b,t)},toHexString:function(t){return"#"+this.toHex(t)},toHex8:function(){return c(this._r,this._g,this._b,this._a)},toHex8String:function(){return"#"+this.toHex8()},toRgb:function(){return{r:W(this._r),g:W(this._g),b:W(this._b),a:this._a}},toRgbString:function(){return 1==this._a?"rgb("+W(this._r)+", "+W(this._g)+", "+W(this._b)+")":"rgba("+W(this._r)+", "+W(this._g)+", "+W(this._b)+", "+this._roundA+")"},toPercentageRgb:function(){return{r:W(100*P(this._r,255))+"%",g:W(100*P(this._g,255))+"%",b:W(100*P(this._b,255))+"%",a:this._a}},toPercentageRgbString:function(){return 1==this._a?"rgb("+W(100*P(this._r,255))+"%, "+W(100*P(this._g,255))+"%, "+W(100*P(this._b,255))+"%)":"rgba("+W(100*P(this._r,255))+"%, "+W(100*P(this._g,255))+"%, "+W(100*P(this._b,255))+"%, "+this._roundA+")"},toName:function(){return 0===this._a?"transparent":this._a<1?!1:K[f(this._r,this._g,this._b,!0)]||!1},toFilter:function(t){var e="#"+c(this._r,this._g,this._b,this._a),n=e,i=this._gradientType?"GradientType = 1, ":"";if(t){var r=V(t);n=r.toHex8String()}return"progid:DXImageTransform.Microsoft.gradient("+i+"startColorstr="+e+",endColorstr="+n+")"},toString:function(t){var e=!!t;t=t||this._format;var n=!1,i=this._a<1&&this._a>=0,r=!e&&i&&("hex"===t||"hex6"===t||"hex3"===t||"name"===t);return r?"name"===t&&0===this._a?this.toName():this.toRgbString():("rgb"===t&&(n=this.toRgbString()),"prgb"===t&&(n=this.toPercentageRgbString()),("hex"===t||"hex6"===t)&&(n=this.toHexString()),"hex3"===t&&(n=this.toHexString(!0)),"hex8"===t&&(n=this.toHex8String()),"name"===t&&(n=this.toName()),"hsl"===t&&(n=this.toHslString()),"hsv"===t&&(n=this.toHsvString()),n||this.toHexString())},_applyModification:function(t,e){var n=t.apply(null,[this].concat([].slice.call(e)));return this._r=n._r,this._g=n._g,this._b=n._b,this.setAlpha(n._a),this},lighten:function(){return this._applyModification(d,arguments)},brighten:function(){return this._applyModification(v,arguments)},darken:function(){return this._applyModification(y,arguments)},desaturate:function(){return this._applyModification(l,arguments)},saturate:function(){return this._applyModification(p,arguments)},greyscale:function(){return this._applyModification(g,arguments)},spin:function(){return this._applyModification(m,arguments)},_applyCombination:function(t,e){return t.apply(null,[this].concat([].slice.call(e)))},analogous:function(){return this._applyCombination(_,arguments)},complement:function(){return this._applyCombination(b,arguments)},monochromatic:function(){return this._applyCombination(S,arguments)},splitcomplement:function(){return this._applyCombination(C,arguments)},triad:function(){return this._applyCombination(x,arguments)},tetrad:function(){return this._applyCombination(w,arguments)}},V.fromRatio=function(t,e){if("object"==typeof t){var n={};for(var i in t)t.hasOwnProperty(i)&&(n[i]="a"===i?t[i]:R(t[i]));t=n}return V(t,e)},V.equals=function(t,e){return t&&e?V(t).toRgbString()==V(e).toRgbString():!1},V.random=function(){return V.fromRatio({r:q(),g:q(),b:q()})},V.mix=function(t,e,n){n=0===n?0:n||50;var i,r=V(t).toRgb(),o=V(e).toRgb(),s=n/100,a=2*s-1,u=o.a-r.a;i=a*u==-1?a:(a+u)/(1+a*u),i=(i+1)/2;var h=1-i,f={r:o.r*i+r.r*h,g:o.g*i+r.g*h,b:o.b*i+r.b*h,a:o.a*s+r.a*(1-s)};return V(f)},V.readability=function(t,e){var n=V(t),i=V(e),r=n.toRgb(),o=i.toRgb(),s=n.getBrightness(),a=i.getBrightness(),u=Math.max(r.r,o.r)-Math.min(r.r,o.r)+Math.max(r.g,o.g)-Math.min(r.g,o.g)+Math.max(r.b,o.b)-Math.min(r.b,o.b);return{brightness:Math.abs(s-a),color:u}},V.isReadable=function(t,e){var n=V.readability(t,e);return n.brightness>125&&n.color>500},V.mostReadable=function(t,e){for(var n=null,i=0,r=!1,o=0;o<e.length;o++){var s=V.readability(t,e[o]),a=s.brightness>125&&s.color>500,u=3*(s.brightness/125)+s.color/500;(a&&!r||a&&r&&u>i||!a&&!r&&u>i)&&(r=a,i=u,n=V(e[o]))}return n};var Q=V.names={aliceblue:"f0f8ff",antiquewhite:"faebd7",aqua:"0ff",aquamarine:"7fffd4",azure:"f0ffff",beige:"f5f5dc",bisque:"ffe4c4",black:"000",blanchedalmond:"ffebcd",blue:"00f",blueviolet:"8a2be2",brown:"a52a2a",burlywood:"deb887",burntsienna:"ea7e5d",cadetblue:"5f9ea0",chartreuse:"7fff00",chocolate:"d2691e",coral:"ff7f50",cornflowerblue:"6495ed",cornsilk:"fff8dc",crimson:"dc143c",cyan:"0ff",darkblue:"00008b",darkcyan:"008b8b",darkgoldenrod:"b8860b",darkgray:"a9a9a9",darkgreen:"006400",darkgrey:"a9a9a9",darkkhaki:"bdb76b",darkmagenta:"8b008b",darkolivegreen:"556b2f",darkorange:"ff8c00",darkorchid:"9932cc",darkred:"8b0000",darksalmon:"e9967a",darkseagreen:"8fbc8f",darkslateblue:"483d8b",darkslategray:"2f4f4f",darkslategrey:"2f4f4f",darkturquoise:"00ced1",darkviolet:"9400d3",deeppink:"ff1493",deepskyblue:"00bfff",dimgray:"696969",dimgrey:"696969",dodgerblue:"1e90ff",firebrick:"b22222",floralwhite:"fffaf0",forestgreen:"228b22",fuchsia:"f0f",gainsboro:"dcdcdc",ghostwhite:"f8f8ff",gold:"ffd700",goldenrod:"daa520",gray:"808080",green:"008000",greenyellow:"adff2f",grey:"808080",honeydew:"f0fff0",hotpink:"ff69b4",indianred:"cd5c5c",indigo:"4b0082",ivory:"fffff0",khaki:"f0e68c",lavender:"e6e6fa",lavenderblush:"fff0f5",lawngreen:"7cfc00",lemonchiffon:"fffacd",lightblue:"add8e6",lightcoral:"f08080",lightcyan:"e0ffff",lightgoldenrodyellow:"fafad2",lightgray:"d3d3d3",lightgreen:"90ee90",lightgrey:"d3d3d3",lightpink:"ffb6c1",lightsalmon:"ffa07a",lightseagreen:"20b2aa",lightskyblue:"87cefa",lightslategray:"789",lightslategrey:"789",lightsteelblue:"b0c4de",lightyellow:"ffffe0",lime:"0f0",limegreen:"32cd32",linen:"faf0e6",magenta:"f0f",maroon:"800000",mediumaquamarine:"66cdaa",mediumblue:"0000cd",mediumorchid:"ba55d3",mediumpurple:"9370db",mediumseagreen:"3cb371",mediumslateblue:"7b68ee",mediumspringgreen:"00fa9a",mediumturquoise:"48d1cc",mediumvioletred:"c71585",midnightblue:"191970",mintcream:"f5fffa",mistyrose:"ffe4e1",moccasin:"ffe4b5",navajowhite:"ffdead",navy:"000080",oldlace:"fdf5e6",olive:"808000",olivedrab:"6b8e23",orange:"ffa500",orangered:"ff4500",orchid:"da70d6",palegoldenrod:"eee8aa",palegreen:"98fb98",paleturquoise:"afeeee",palevioletred:"db7093",papayawhip:"ffefd5",peachpuff:"ffdab9",peru:"cd853f",pink:"ffc0cb",plum:"dda0dd",powderblue:"b0e0e6",purple:"800080",red:"f00",rosybrown:"bc8f8f",royalblue:"4169e1",saddlebrown:"8b4513",salmon:"fa8072",sandybrown:"f4a460",seagreen:"2e8b57",seashell:"fff5ee",sienna:"a0522d",silver:"c0c0c0",skyblue:"87ceeb",slateblue:"6a5acd",slategray:"708090",slategrey:"708090",snow:"fffafa",springgreen:"00ff7f",steelblue:"4682b4",tan:"d2b48c",teal:"008080",thistle:"d8bfd8",tomato:"ff6347",turquoise:"40e0d0",violet:"ee82ee",wheat:"f5deb3",white:"fff",whitesmoke:"f5f5f5",yellow:"ff0",yellowgreen:"9acd32"},K=V.hexNames=O(Q),X=function(){var t="[-\\+]?\\d+%?",e="[-\\+]?\\d*\\.\\d+%?",n="(?:"+e+")|(?:"+t+")",i="[\\s|\\(]+("+n+")[,|\\s]+("+n+")[,|\\s]+("+n+")\\s*\\)?",r="[\\s|\\(]+("+n+")[,|\\s]+("+n+")[,|\\s]+("+n+")[,|\\s]+("+n+")\\s*\\)?";return{rgb:new RegExp("rgb"+i),rgba:new RegExp("rgba"+r),hsl:new RegExp("hsl"+i),hsla:new RegExp("hsla"+r),hsv:new RegExp("hsv"+i),hex3:/^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,hex6:/^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,hex8:/^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/}}();"undefined"!=typeof t&&t.exports?t.exports=V:(i=function(){return V}.call(e,n,e,t),!(void 0!==i&&(t.exports=i)))}()},function(t,e,n){"use strict";function i(t){return s.from(t)}var r=n(10),o=n(4).copy,s=n(6),a=function(t){this.config=t};o({initDrag:function(t){this.onDragInit(t);var e=r.once(this.onDragStart,this),n=function(t){e(t),this.onDrag(t)}.bind(this),i=function(t){this.onDrop(t),window.removeEventListener("mousemove",n),window.removeEventListener("mouseup",i)}.bind(this);window.addEventListener("mousemove",n,!1),window.addEventListener("mouseup",i)},onDragInit:function(t){var e={};this.state={config:e};this.state.initPageCoords={pageX:t.pageX,pageY:t.pageY};this.config.region&&(this.state.initialRegion=i(this.config.region),this.state.dragRegion=e.dragRegion=this.state.initialRegion.clone()),this.config.constrainTo&&(this.state.constrainTo=i(this.config.constrainTo)),this.callConfig("onDragInit",t)},onDragStart:function(t){this.state.didDrag=this.state.config.didDrag=!0,this.callConfig("onDragStart",t)},onDrag:function(t){var e=this.state.config,n=this.state.initPageCoords,i=e.diff={left:t.pageX-n.pageX,top:t.pageY-n.pageY};if(this.state.initialRegion){var r=e.dragRegion;r.set(this.state.initialRegion),r.shift(i),this.state.constrainTo&&(r.constrainTo(this.state.constrainTo),i.left=r.left-this.state.initialRegion.left,i.top=r.top-this.state.initialRegion.top),e.dragRegion=r}this.callConfig("onDrag",t)},onDrop:function(t){this.callConfig("onDrop",t),this.state=null},callConfig:function(t,e){var n=this.state.config,i=[e,n],r=this.config[t];r&&r.apply(this,i)}},a.prototype),t.exports=function(t,e){if(e.scope){var n={scope:1,region:1,constrainTo:1};Object.keys(e).forEach(function(t){var i=e[t];t in n||"function"==typeof i&&(e[t]=i.bind(e.scope))})}var i=new a(e);return i.initDrag(t),i}},function(t,e,n){"use strict";var i=n(16),r=n(6),o=n(4).copy,s=n(31),a=n(32);t.exports=i.createClass(o(s,{displayName:"HueSpectrum",getDefaultProps:function(){return{height:300,width:30,pointerSize:3,defaultColor:n(14)}},getInitialState:function(){return{h:0}},componentDidUpdate:function(){},componentDidMount:function(){this.updateDragPositionIf()},updateDragPositionIf:function(){this.props.height||this.setState({})},render:function(){this.hsv=this.toColorValue(this.state.value||this.props.value||this.props.defaultValue||this.props.defaultColor),360!=this.state.h||this.hsv.h||(this.hsv.h=360);var t=this.props.style||{};this.props.height&&(t.height=this.props.height),this.props.width&&(t.width=this.props.width);var e={height:this.props.pointerSize},n=this.getDragPosition();return null!=n&&(e.top=n,e.display="block"),i.DOM.div({className:"cp-hue-spectrum",style:t,onMouseDown:this.onMouseDown},i.DOM.div({className:"cp-hue-drag",style:e},i.DOM.div({className:"inner"})))},getDragPosition:function(t){if(t=t||this.hsv,!this.props.height&&!this.isMounted())return null;var e=this.props.height||r.fromDOM(this.getDOMNode()).getHeight(),n=this.props.pointerSize,i=Math.round(t.h*e/360),o=Math.round(n/2);return i-o},updateColor:function(t){t=a(t),this.hsv.h=360*t.y/t.height,0!=this.hsv.h&&(this.state.h=this.hsv.h),this.state.h=0!=this.hsv.h?this.hsv.h:0},toStringValue:n(15)}))},function(t,e,n){"use strict";var i=n(16),r=n(6),o=n(4).copy,s=n(9).fromRatio,a=n(31),u=n(32);t.exports=i.createClass(o(a,{displayName:"SaturationSpectrum",getDefaultProps:function(){return{height:300,width:300,pointerSize:7,defaultColor:n(14)}},getInitialState:function(){return{pointerTop:null,pointerLeft:null}},componentDidUpdate:function(){},componentDidMount:function(){this.updateDragPositionIf()},updateDragPositionIf:function(){this.props.height&&this.props.width||this.setState({})},getDragPosition:function(t){t=t||this.hsv;var e=this.props.width,n=this.props.height,i=e&&n;if(!i&&!this.isMounted())return null;var o;i||(o=r.fromDOM(this.getDOMNode()),n=n||o.getHeight(),e=e||o.getWidth());var s=t.s*e,a=n-t.v*n,u=this.props.pointerSize,h=Math.floor(u/2);return this.props.value&&this.state.mouseDown&&(s=this.state.mouseDown.x),{left:s-h,top:a-h}},prepareBackgroundColor:function(t){var e=t;return s({h:e.h,s:1,v:1}).toRgbString()},render:function(){var t=this.state.value||this.props.value||this.props.defaultValue||this.props.defaultColor;this.hsv=this.toColorValue(t);var e=this.props.style||{};this.props.height&&(e.height=this.props.height),this.props.width&&(e.width=this.props.width),e.backgroundColor=this.prepareBackgroundColor(this.hsv);var n={width:this.props.pointerSize,height:this.props.pointerSize},r=this.getDragPosition();return r&&(n.top=r.top,n.left=r.left,n.display="block"),i.DOM.div({className:"cp-saturation-spectrum",style:e,onMouseDown:this.onMouseDown},i.DOM.div({className:"cp-saturation-white"},i.DOM.div({className:"cp-saturation-black"})),i.DOM.div({className:"cp-saturation-drag",style:n},i.DOM.div({className:"inner"})))},getSaturationForPoint:function(t){return t.x/t.width},getColorValueForPoint:function(t){return(t.height-t.y)/t.height},updateColor:function(t){t=u(t),this.hsv.s=this.getSaturationForPoint(t),this.hsv.v=this.getColorValueForPoint(t)},toStringValue:n(15)}))},function(t,e,n,i){var r=n(i);t.exports=function(t,e){return r(e.length)(t,e)}},function(t,e,n,i,r,o,s,a,u){t.exports=function(){"use strict";var t=Object.prototype.hasOwnProperty,e="object",h="undefined";return{copy:n(i),copyIf:n(r),copyAs:function(n,i){var r={};if(i=i||1,null!=n&&typeof n===e)for(var o in n)t.call(n,o)&&(r[o]=i);return r},copyList:n(o),copyListIf:n(s),copyKeys:n(a),copyKeysIf:n(u),copyExceptKeys:function(n,i,r){if(i=i||{},r=r||{},null!=n&&typeof n===e)for(var o in n)t.call(n,o)&&!t.call(r,o)&&(i[o]=n[o]);return i},bindCopyKeys:function(n,i,r){if(2==arguments.length&&(r=i,i=null),i=i||{},null!=n&&typeof n===e&&null!=r&&typeof r===e){var o,s,a,u;for(var f in r)t.call(r,f)&&(s=r[f],o=typeof s,u=n[f],a=typeof u,a!==h&&(i["string"==o?s:f]="function"==a?u.bind(n):u))}return i}}}()},function(t,e,n,i){"use strict";var r="undefined",o="object",s=Object.prototype.hasOwnProperty,a=n(i);t.exports=function(t,e,n){if(arguments.length<3&&(n=e,e=null),e=e||{},!n||Array.isArray(n))return a(t,e,n);if(null!=t&&typeof t===o&&null!=n&&typeof n===o){var i,u;for(var h in n)s.call(n,h)&&(u=n[h],i=typeof u,typeof t[h]!==r&&(e["string"==i?u:h]=t[h]))}return e}},function(t,e,n,i){"use strict";var r="undefined",o="object",s=Object.prototype.hasOwnProperty,a=n(i);t.exports=function(t,e,n){if(arguments.length<3&&(n=e,e=null),e=e||{},!n||Array.isArray(n))return a(t,e,n);if(null!=t&&typeof t===o&&null!=n&&typeof n===o){var i,u,h;for(var f in n)s.call(n,f)&&(u=n[f],i=typeof u,h="string"==i?u:f,typeof t[f]!==r&&typeof e[h]===r&&(e[h]=t[f]))}return e}}]))});
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("React"));
+	else if(typeof define === 'function' && define.amd)
+		define(["React"], factory);
+	else if(typeof exports === 'object')
+		exports["ColorPicker"] = factory(require("React"));
+	else
+		root["ColorPicker"] = factory(root["React"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+/******/
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var React      = __webpack_require__(1)
+	var copy       = __webpack_require__(7).copy
+	var colorUtils = __webpack_require__(5)
+
+	var HueSpectrum        = React.createFactory(__webpack_require__(2))
+	var SaturationSpectrum = React.createFactory(__webpack_require__(3))
+
+	var toHsv = colorUtils.toHsv
+
+	function emptyFn(){}
+
+	var RESULT = React.createClass({
+
+	    displayName: 'ColorPicker',
+
+	    getDefaultProps: function(){
+	        return {
+	            defaultColor    : __webpack_require__(4),
+	            saturationWidth : 300,
+	            saturationHeight: 300,
+	            hueHeight       : null,
+	            hueWidth        : 30,
+	            hueMargin       : 10
+	        }
+	    },
+
+	    getInitialState: function(){
+	        return {
+	            value: this.props.defaultValue
+	        }
+	    },
+
+	    prepareClasses: function(classes){
+	        classes.push('cp')
+	    },
+
+	    prepareProps: function(props){
+
+	        var classes = [props.className || '']
+	        this.prepareClasses(classes)
+	        props.className = classes.join(' ')
+
+	        return props
+	    },
+
+	    render: function(){
+
+	        var props = this.prepareProps(copy(this.props))
+
+	        var hueStyle = this.props.hueStyle || {}
+
+	        hueStyle.marginLeft = this.props.hueMargin
+
+
+	        var value = props.value?
+	                        this.toColorValue(this.props.value):
+	                        null
+
+	        var defaultValue = !value?
+	                                this.toColorValue(this.state.value || props.defaultValue || props.defaultColor):
+	                                null
+
+	        var saturationConfig = {
+	            onDrag     : this.handleSaturationDrag,
+	            onChange   : this.handleSaturationChange,
+	            onMouseDown: this.handleSaturationMouseDown,
+	            height     : props.saturationHeight,
+	            width     : props.saturationWidth,
+	            inPicker   : true
+	        }
+
+	        var hueConfig = {
+	            onDrag     : this.handleHueDrag,
+	            onChange   : this.handleHueChange,
+	            height     : props.hueHeight || props.saturationHeight,
+	            width      : props.hueWidth,
+	            inPicker   : true,
+	            style      : hueStyle
+	        }
+
+	        if (this.state.dragHue){
+	            ;(value || defaultValue).h = this.state.dragHue
+	        }
+
+	        if (value){
+	            saturationConfig.value = copy(value)
+	            hueConfig.value = copy(value)
+	        } else {
+	            saturationConfig.defaultValue = copy(defaultValue)
+	            hueConfig.defaultValue = copy(defaultValue)
+	        }
+
+	        return React.DOM.div(
+	                props,
+	                SaturationSpectrum(saturationConfig),
+	                HueSpectrum(hueConfig)
+	            )
+	    },
+
+	    toColorValue: function(value){
+	        return typeof value == 'string'?
+	                    toHsv(value):
+	                    value
+	    },
+
+	    toStringValue: __webpack_require__(6),
+
+	    handleChange: function(color){
+
+	        this.state.dragHue = null
+
+	        color = copy(color)
+
+	        var value = this.toStringValue(color)
+
+	        ;(this.props.onChange || emptyFn)(value, color)
+	    },
+
+	    handleSaturationChange: function(color){
+	        this.handleChange(color)
+	    },
+
+	    handleHueChange: function(color){
+	        this.handleChange(color)
+	    },
+
+	    handleHueDrag: function(hsv){
+	        this.handleDrag(hsv)
+	    },
+
+	    handleSaturationDrag: function(hsv){
+	        this.handleDrag(hsv)
+	    },
+
+	    handleDrag: function(color){
+
+	        if (!this.props.value){
+	            this.setState({
+	                value: color
+	            })
+	        }
+
+	        ;(this.props.onDrag || emptyFn)(this.toStringValue(color), color)
+	    },
+
+	    handleSaturationMouseDown: function(hsv){
+	        this.setState({
+	            dragHue: hsv.h
+	        })
+	    }
+	})
+
+	RESULT.HueSpectrum        = HueSpectrum
+	RESULT.SaturationSpectrum = SaturationSpectrum
+
+	module.exports = RESULT
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict'
+
+	var React  = __webpack_require__(1)
+	var Region = __webpack_require__(16)
+	var copy   = __webpack_require__(7).copy
+
+	var common = __webpack_require__(8)
+
+	var VALIDATE = __webpack_require__(9)
+
+	module.exports = React.createClass(copy(common, {
+
+	    displayName: 'HueSpectrum',
+
+	    getDefaultProps: function(){
+	        return {
+	            height      : 300,
+	            width       : 30,
+	            pointerSize : 3,
+	            defaultColor: __webpack_require__(4)
+	        }
+	    },
+
+	    getInitialState: function(){
+	        return {
+	            h: 0
+	        }
+	    },
+
+	    componentDidUpdate: function(){
+	        // this.updateDragPositionIf()
+	    },
+
+	    componentDidMount: function(){
+	        this.updateDragPositionIf()
+	    },
+
+	    updateDragPositionIf: function(){
+
+	        if (!this.props.height){
+	            this.setState({})
+	        }
+	    },
+
+	    render: function(){
+	        this.hsv = this.toColorValue(this.state.value || this.props.value || this.props.defaultValue || this.props.defaultColor)
+
+	        if (this.state.h == 360 && !this.hsv.h){
+	            //in order to show bottom red as well on drag
+	            this.hsv.h = 360
+	        }
+
+	        var style = this.props.style || {}
+
+	        if (this.props.height){
+	            style.height = this.props.height
+	        }
+	        if (this.props.width){
+	            style.width = this.props.width
+	        }
+
+	        var dragStyle = {
+	            height: this.props.pointerSize
+	        }
+
+	        var dragPos = this.getDragPosition()
+
+	        if (dragPos != null){
+	            dragStyle.top   = dragPos
+	            dragStyle.display = 'block'
+	        }
+	        return (
+	            React.DOM.div({className: "cp-hue-spectrum", style: style, onMouseDown: this.onMouseDown}, 
+	                React.DOM.div({className: "cp-hue-drag", style: dragStyle}, 
+	                    React.DOM.div({className: "inner"})
+	                )
+	            )
+	        )
+	    },
+
+	    getDragPosition: function(hsv){
+	        hsv = hsv || this.hsv
+
+	        if (!this.props.height && !this.isMounted()){
+	            return null
+	        }
+
+	        var height = this.props.height || Region.fromDOM(this.getDOMNode()).getHeight()
+	        var size   = this.props.pointerSize
+
+	        var pos  = Math.round(hsv.h * height / 360)
+	        var diff = Math.round(size / 2)
+
+	        return pos - diff
+	    },
+
+	    updateColor: function(point){
+	        point = VALIDATE(point)
+
+	        this.hsv.h = point.y * 360 / point.height
+
+	        if (this.hsv.h != 0){
+	            this.state.h = this.hsv.h
+	        }
+
+	        this.state.h = this.hsv.h != 0? this.hsv.h: 0
+	    },
+
+	    toStringValue: __webpack_require__(6)
+	}))
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict'
+
+	var React  = __webpack_require__(1)
+	var Region = __webpack_require__(16)
+	var copy   = __webpack_require__(7).copy
+
+	var fromRatio  = __webpack_require__(5).fromRatio
+	var common = __webpack_require__(8)
+
+	var VALIDATE = __webpack_require__(9)
+
+	module.exports = React.createClass(copy(common, {
+
+	    displayName: 'SaturationSpectrum',
+
+	    getDefaultProps: function(){
+	        return {
+	            height      : 300,
+	            width       : 300,
+	            pointerSize : 7,
+	            defaultColor: __webpack_require__(4)
+	        }
+	    },
+
+	    getInitialState: function(){
+	        return {
+	            pointerTop  : null,
+	            pointerLeft : null
+	        }
+	    },
+
+	    componentDidUpdate: function(){
+	        // this.updateDragPositionIf()
+	    },
+
+	    componentDidMount: function(){
+	        this.updateDragPositionIf()
+	    },
+
+	    updateDragPositionIf: function(){
+	        if (!this.props.height || !this.props.width){
+	            this.setState({})
+	        }
+	    },
+
+	    getDragPosition: function(hsv){
+	        hsv = hsv || this.hsv
+
+	        var width  = this.props.width
+	        var height = this.props.height
+	        var sizeDefined = width && height
+
+	        if (!sizeDefined && !this.isMounted()){
+	            return null
+	        }
+
+	        var region
+
+	        if (!sizeDefined){
+	            region = Region.fromDOM(this.getDOMNode())
+	            height = height || region.getHeight()
+	            width  = width  || region.getWidth()
+	        }
+
+	        var x = hsv.s * width
+	        var y = height - (hsv.v * height)
+	        var size  = this.props.pointerSize
+	        var diff  = Math.floor(size/2)
+
+	        if (this.props.value && this.state.mouseDown){
+	            x = this.state.mouseDown.x
+	        }
+
+	        return {
+	            left: x - diff,
+	            top : y - diff
+	        }
+	    },
+
+	    prepareBackgroundColor: function(color){
+	        var hsv = color
+
+	        return fromRatio({
+	            h: hsv.h,
+	            s: 1,
+	            v: 1
+	        }).toRgbString()
+	    },
+
+	    render: function(){
+
+	        var color = this.state.value || this.props.value || this.props.defaultValue || this.props.defaultColor
+
+	        this.hsv = this.toColorValue(color)
+
+	        var style = this.props.style || {}
+
+	        if (this.props.height){
+	            style.height = this.props.height
+	        }
+	        if (this.props.width){
+	            style.width = this.props.width
+	        }
+
+	        style.backgroundColor = this.prepareBackgroundColor(this.hsv)
+
+	        var dragStyle = {
+	            width : this.props.pointerSize,
+	            height: this.props.pointerSize
+	        }
+
+	        var dragPos = this.getDragPosition()
+
+	        if (dragPos){
+	            dragStyle.top     = dragPos.top
+	            dragStyle.left    = dragPos.left
+	            dragStyle.display = 'block'
+	        }
+
+	        return (
+	            React.DOM.div({className: "cp-saturation-spectrum", style: style, onMouseDown: this.onMouseDown}, 
+	                React.DOM.div({className: "cp-saturation-white"}, 
+	                    React.DOM.div({className: "cp-saturation-black"})
+	                ), 
+	                React.DOM.div({className: "cp-saturation-drag", style: dragStyle}, 
+	                    React.DOM.div({className: "inner"})
+	                )
+	            )
+	        )
+	    },
+
+	    getSaturationForPoint: function(point){
+	        return point.x / point.width
+	    },
+
+	    getColorValueForPoint: function(point){
+	        return (point.height - point.y) / point.height
+	    },
+
+	    updateColor: function(point){
+	        point = VALIDATE(point)
+
+	        this.hsv.s = this.getSaturationForPoint(point)
+	        this.hsv.v = this.getColorValueForPoint(point)
+	    },
+
+	    toStringValue: __webpack_require__(6)
+	}))
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = 'red'
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var tinycolor = __webpack_require__(17)
+
+	if (typeof window != 'undefined'){
+	    window.tinycolor = tinycolor
+	}
+
+	function toColor(color){
+	    return tinycolor(color)
+	}
+
+	function toPure(color){
+	    var h = toColor(color).toHsl().h
+
+	    return toColor({ h: h, s: 100, l: 50, a: 1})
+	}
+
+	function fromRatio(color){
+	    return tinycolor.fromRatio(color)
+	}
+
+	function toAlpha(color, alpha){
+	    if (alpha > 1){
+	        alpha = alpha/100
+	    }
+
+	    color   = toColor(color).toRgb()
+	    color.a = alpha
+
+	    return toColor(color)
+	}
+
+	function toHsv(color){
+	    return toColor(color).toHsv()
+	}
+
+	var Color = {
+	    toColor  : toColor,
+	    toPure   : toPure,
+	    fromRatio: fromRatio,
+	    toAlpha  : toAlpha,
+	    toHsv    : toHsv
+	}
+
+	if (typeof window != 'undefined'){
+	    window.color = Color
+	}
+
+	module.exports = Color
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var copy    = __webpack_require__(7).copy
+	var toColor = __webpack_require__(5).toColor
+
+	module.exports = function toStringValue(color){
+	    color = toColor(copy(color))
+
+	    return color.toRgb().a == 1?
+	                color.toHexString():
+	                color.toRgbString()
+	}
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var HAS_OWN       = Object.prototype.hasOwnProperty,
+	        STR_OBJECT    = 'object',
+	        STR_UNDEFINED = 'undefined'
+
+	    return {
+
+	        /**
+	         * Copies all properties from source to destination
+	         *
+	         *      copy({name: 'jon',age:5}, this);
+	         *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copy: __webpack_require__(10),
+
+	        /**
+	         * Copies all properties from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyIf({name: 'jon',age:5}, {age:7})
+	         *      // => { name: 'jon', age: 7}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copyIf: __webpack_require__(11),
+
+	        /**
+	         * Copies all properties from source to a new object, with the given value. This object is returned
+	         *
+	         *      copyAs({name: 'jon',age:5})
+	         *      // => the resulting object will have the 'name' and 'age' properties set to 1
+	         *
+	         * @param {Object} source
+	         * @param {Object/Number/String} [value=1]
+	         *
+	         * @return {Object} destination
+	         */
+	        copyAs: function(source, value){
+
+	            var destination = {}
+
+	            value = value || 1
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	                    destination[i] = value
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the list, from source to destination
+	         *
+	         *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	         *      // => {name: 'jon', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyList: __webpack_require__(12),
+
+	        /**
+	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	         *      // => {name: 'jon', age: 10}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyListIf: __webpack_require__(13),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination
+	         *
+	         *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	         *      // => {name: 'jon', age: 5, theYear: 2006}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeys: __webpack_require__(14),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination,
+	         * but only if the property does not already exist in the destination object
+	         *
+	         *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	         *      // => {aname: 'test', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeysIf: __webpack_require__(15),
+
+	        copyExceptKeys: function(source, destination, exceptKeys){
+	            destination = destination || {}
+	            exceptKeys  = exceptKeys  || {}
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) && !HAS_OWN.call(exceptKeys, i) ) {
+
+	                    destination[i] = source[i]
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies the named keys from source to destination.
+	         * For the keys that are functions, copies the functions bound to the source
+	         *
+	         * @param  {Object} source      The source object
+	         * @param  {Object} destination The target object
+	         * @param  {Object} namedKeys   An object with the names of the keys to copy The values from the keys in this object
+	         *                              need to be either numbers or booleans if you want to copy the property under the same name,
+	         *                              or a string if you want to copy the property under a different name
+	         * @return {Object}             Returns the destination object
+	         */
+	        bindCopyKeys: function(source, destination, namedKeys){
+	            if (arguments.length == 2){
+	                namedKeys = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+
+	            if (
+	                       source != null && typeof source    === STR_OBJECT &&
+	                    namedKeys != null && typeof namedKeys === STR_OBJECT
+	                ) {
+
+
+	                var typeOfNamedProperty,
+	                    namedPropertyValue,
+
+	                    typeOfSourceProperty,
+	                    propValue
+
+
+	                for(var propName in namedKeys) if (HAS_OWN.call(namedKeys, propName)) {
+
+	                    namedPropertyValue = namedKeys[propName]
+	                    typeOfNamedProperty = typeof namedPropertyValue
+
+	                    propValue = source[propName]
+	                    typeOfSourceProperty = typeof propValue
+
+
+	                    if ( typeOfSourceProperty !== STR_UNDEFINED ) {
+
+	                        destination[
+	                            typeOfNamedProperty == 'string'?
+	                                            namedPropertyValue :
+	                                            propName
+	                            ] = typeOfSourceProperty == 'function' ?
+	                                            propValue.bind(source):
+	                                            propValue
+	                    }
+	                }
+	            }
+
+	            return destination
+	        }
+	    }
+
+	}()
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var Region = __webpack_require__(16)
+	var copy   = __webpack_require__(7).copy
+	var DragHelper = __webpack_require__(18)
+	var toHsv = __webpack_require__(5).toHsv
+
+	function emptyFn(){}
+
+	module.exports = {
+
+	    toColorValue: function(value){
+	        if (typeof value == 'string'){
+	            return toHsv(value)
+	        }
+
+	        return {
+	            h: value.h,
+	            s: value.s,
+	            v: value.v,
+	            a: value.a
+	        }
+	    },
+
+	    onMouseDown: function(event){
+	        event.preventDefault()
+
+	        var region = Region.fromDOM(this.getDOMNode())
+	        var info   = this.getEventInfo(event, region)
+
+	        DragHelper(event, {
+	            scope: this,
+
+	            constrainTo: region,
+
+	            onDragStart: function(event, config){
+	                config.initialPoint = info
+	                this.handleDragStart(event)
+	            },
+	            onDrag: function(event, config){
+	                var info = this.getEventInfo(event, region)
+
+	                this.updateColor(info)
+
+	                this.handleDrag(event, config)
+	            },
+	            onDrop: function(event, config){
+	                var info = this.getEventInfo(event, region)
+
+	                this.updateColor(info)
+
+	                this.handleDrop(event, config)
+	            }
+	        })
+
+	        this.updateColor(info)
+	        this.handleMouseDown(event, { initialPoint: info })
+	    },
+
+	    handleMouseDown: function(event, config){
+
+	        ;(this.props.onMouseDown || emptyFn).apply(this, this.getColors())
+	        this.handleDrag(event, config)
+	    },
+
+	    handleUpdate: function(event, config){
+
+	        var diff = config.diff || { top: 0, left: 0 }
+	        var initialPoint = config.initialPoint
+
+	        if (initialPoint){
+
+	            var top
+	            var left
+
+	            this.state.top  = top = initialPoint.y + diff.top
+	            this.state.left = left = initialPoint.x + diff.left
+
+	            this.state.mouseDown = {
+	                x     : left,
+	                y     : top,
+	                width : initialPoint.width,
+	                height: initialPoint.height
+	        }
+
+	        }
+
+	        if (this.props.inPicker){
+	            //the picker handles the values
+	            return
+	        }
+
+	        if (!this.props.value){
+	            this.setState({
+	                value: this.hsv
+	            })
+	        }
+	    },
+
+	    handleDragStart: function(event){
+	    },
+
+	    handleDrag: function(event, config){
+	        this.handleUpdate(event, config)
+	        ;(this.props.onDrag || emptyFn).apply(this, this.getColors())
+	    },
+
+	    handleDrop: function(event, config){
+	        this.handleUpdate(event, config)
+	        this.state.mouseDown = false
+	        ;(this.props.onChange || emptyFn).apply(this, this.getColors())
+	    },
+
+	    getColors: function(){
+	        var first = this.props.inPicker?
+	                        this.hsv:
+	                        this.toStringValue(this.hsv)
+	        var args = [first]
+
+	        if (!this.props.inPicker){
+	            args.push(copy(this.hsv))
+	        }
+
+	        return args
+	    },
+
+	    getEventInfo: function(event, region){
+	        region = region || Region.fromDOM(this.getDOMNode())
+
+	        var x = event.clientX - region.left
+	        var y = event.clientY - region.top
+
+	        return {
+	            x: x,
+	            y: y,
+	            width  : region.getWidth(),
+	            height : region.getHeight()
+	        }
+	    }
+	}
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = function validate(info){
+	    var height  = info.height
+	    var width   = info.width
+
+	    if (info.x < 0){
+	        info.x = 0
+	    }
+
+	    if (info.x >= width){
+	        info.x = width
+	    }
+
+	    if (info.y < 0){
+	        info.y = 0
+	    }
+
+	    if (info.y >= height){
+	        info.y = height
+	    }
+
+	    return info
+	}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+
+	/**
+	 * Copies all properties from source to destination
+	 *
+	 *      copy({name: 'jon',age:5}, this);
+	 *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT ){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	            destination[i] = source[i]
+	        }
+
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyIf({name: 'jon',age:5}, {age:7})
+	 *      // => { name: 'jon', age: 7}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
+
+	            destination[i] = source[i]
+
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination
+	 *
+	 *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	 *      // => {name: 'jon', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len; i++ ){
+	        propName = list[i]
+
+	        if ( typeof source[propName] !== STR_UNDEFINED ) {
+	            destination[list[i]] = source[list[i]]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	 *      // => {name: 'jon', age: 10}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len ; i++ ){
+	        propName = list[i]
+	        if (
+	                (typeof source[propName]      !== STR_UNDEFINED) &&
+	                (typeof destination[propName] === STR_UNDEFINED)
+	            ){
+	            destination[propName] = source[propName]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyList = __webpack_require__(12)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination
+	 *
+	 *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	 *      // => {name: 'jon', age: 5, theYear: 2006}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyList(source, destination, namedKeys)
+	    }
+
+	    if (
+	           source != null && typeof source    === STR_OBJECT &&
+	        namedKeys != null && typeof namedKeys === STR_OBJECT
+	    ) {
+	        var typeOfNamedProperty
+	        var namedPropertyValue
+
+	        for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+	            namedPropertyValue  = namedKeys[propName]
+	            typeOfNamedProperty = typeof namedPropertyValue
+
+	            if (typeof source[propName] !== STR_UNDEFINED){
+	                destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
+	            }
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyListIf = __webpack_require__(13)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination,
+	 * but only if the property does not already exist in the destination object
+	 *
+	 *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	 *      // => {aname: 'test', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyListIf(source, destination, namedKeys)
+	    }
+
+	    if (
+	               source != null && typeof source    === STR_OBJECT &&
+	            namedKeys != null && typeof namedKeys === STR_OBJECT
+	        ) {
+
+	            var typeOfNamedProperty
+	            var namedPropertyValue
+	            var newPropertyName
+
+	            for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+
+	                namedPropertyValue  = namedKeys[propName]
+	                typeOfNamedProperty = typeof namedPropertyValue
+	                newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
+
+	                if (
+	                        typeof      source[propName]        !== STR_UNDEFINED &&
+	                        typeof destination[newPropertyName] === STR_UNDEFINED
+	                    ) {
+	                    destination[newPropertyName] = source[propName]
+	                }
+
+	            }
+	        }
+
+	    return destination
+	}
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var hasOwn    = __webpack_require__(20)
+	var copyUtils = __webpack_require__(21)
+	var copyList  = copyUtils.copyList
+	var F         = __webpack_require__(19)
+	var isObject  = __webpack_require__(22).object
+
+	/**
+	 * @class Region
+	 *
+	 * # z.region
+	 *
+	 * The Region class is an abstraction that allows the developer to refer to rectangles on the screen,
+	 * and move them around, make diffs and unions, detect intersections, compute areas, etc.
+	 *
+	 * ## Creating a region
+	 *
+	 *
+	 *
+	 *      var region = require('region')({
+	 *          top  : 10,
+	 *          left : 10,
+	 *          bottom: 100,
+	 *          right : 100
+	 *      })
+	 *      //this region is a square, 90x90, starting from (10,10) to (100,100)
+	 *
+	 *      var second = require('region')({ top: 10, left: 100, right: 200, bottom: 60})
+	 *      var union  = region.getUnion(second)
+	 *
+	 *      //the "union" region is a union between "region" and "second"
+	 *
+	 * ## Element regions
+	 *
+	 * The {@link Element} class has {@link Element#getRegion} and {@link Element#setRegion} methods, so you can easily
+	 * retrieve and set element size and position.
+	 *
+	 *      var bodyElement = Element.select('body'),
+	 *          bodyRegion  = bodyElement.getRegion()
+	 *
+	 *      bodyRegion.setWidth(100).setHeight(200)
+	 *
+	 *      //this makes the body just 100px in width and 200px in height
+	 *      bodyElement.setRegion(bodyRegion)
+	 *
+	 *      //you can even bind an element to a region
+	 *
+	 *      var reg = bodyElement.getRegion({bound: true})
+	 *
+	 *      reg.setWidth(200) //also sets the width of the bodyElement
+	 *
+	 */
+
+	var classy = __webpack_require__(24)
+	var EventEmitter = __webpack_require__(23).mixin
+
+	var MAX       = Math.max,
+	    MIN       = Math.min,
+	    POINT_POSITIONS = {
+	        cy: 'YCenter',
+	        cx: 'XCenter',
+	        t : 'Top',
+	        tc: 'TopCenter',
+	        tl: 'TopLeft',
+	        tr: 'TopRight',
+	        b : 'Bottom',
+	        bc: 'BottomCenter',
+	        bl: 'BottomLeft',
+	        br: 'BottomRight',
+	        l : 'Left',
+	        lc: 'LeftCenter',
+	        r : 'Right',
+	        rc: 'RightCenter',
+	        c : 'Center'
+	    }
+
+	var REGION = classy.define({
+
+	    forceInstance: true,
+
+	    mixins: [
+	        EventEmitter
+	    ],
+
+	    statics: {
+	        init: function(){
+	            var exportAsNonStatic = {
+	                getIntersection      : true,
+	                getIntersectionArea  : true,
+	                getIntersectionHeight: true,
+	                getIntersectionWidth : true,
+	                getUnion             : true
+	            }
+	            var thisProto = this.prototype
+	            var newName
+
+	            var exportHasOwn = hasOwn(exportAsNonStatic)
+	            var methodName
+
+	            for (methodName in exportAsNonStatic) if (exportHasOwn(methodName)) {
+	                newName = exportAsNonStatic[methodName]
+	                if (typeof newName != 'string'){
+	                    newName = methodName
+	                }
+
+	                (function(proto, methodName, protoMethodName){
+
+	                    proto[methodName] = function(region){
+	                        //<debug>
+	                        if (!this.$ownClass[protoMethodName]){
+	                            console.warn('cannot find method ', protoMethodName,' on ', this.$ownClass)
+	                        }
+	                        //</debug>
+	                        return this.$ownClass[protoMethodName](this, region)
+	                    }
+
+	                })(thisProto, newName, methodName)
+	            }
+	        },
+
+	        /**
+	         * @static
+	         * Returns true if the given region is valid, false otherwise.
+	         * @param  {Region} region The region to check
+	         * @return {Boolean}        True, if the region is valid, false otherwise.
+	         * A region is valid if
+	         *  * left <= right  &&
+	         *  * top  <= bottom
+	         */
+	        validate: function(region){
+
+	            var isValid = true
+
+	            if (region.right < region.left){
+	                isValid = false
+	                region.right = region.left
+	            }
+
+	            if (region.bottom < region.top){
+	                isValid = false
+	                region.bottom = region.top
+	            }
+
+	            return isValid
+	        },
+
+	        /**
+	         * Returns the region corresponding to the documentElement
+	         * @return {Region} The region corresponding to the documentElement. This region is the maximum region visible on the screen.
+	         */
+	        getDocRegion: function(){
+	            return REGION.fromDOM(document.documentElement)
+	        },
+
+	        from: function(reg){
+	            if (reg instanceof REGION){
+	                return reg.clone()
+	            }
+
+	            if (typeof document){
+	                if (typeof HTMLElement != 'undefined' && reg instanceof HTMLElement){
+	                    return REGION.fromDOM(reg)
+	                }
+
+	                if (reg.type && reg.pageX != undefined && reg.pageY != undefined){
+	                    return REGION.fromEvent(reg)
+	                }
+	            }
+
+	            return REGION(reg)
+	        },
+
+	        fromEvent: function(event){
+	            return REGION.fromPoint({
+	                x: event.pageX,
+	                y: event.pageY
+	            })
+	        },
+
+	        fromDOM: function(dom){
+	            var rect    = dom.getBoundingClientRect()
+	            var docElem = document.documentElement
+	            var win     = window
+
+	            var top  = rect.top + win.pageYOffset - docElem.clientTop
+	            var left = rect.left + win.pageXOffset - docElem.clientLeft
+
+	            return new REGION({
+	                top   : rect.top,
+	                left  : rect.left,
+	                bottom: rect.bottom,
+	                right : rect.right
+	            })
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region that is the intersection of the given two regions
+	         * @param  {Region} first  The first region
+	         * @param  {Region} second The second region
+	         * @return {Region/Boolean}        The intersection region or false if no intersection found
+	         */
+	        getIntersection: function(first, second){
+
+	            var area = this.getIntersectionArea(first, second)
+
+	            if (area){
+	                return new REGION(area)
+	            }
+
+	            return false
+	        },
+
+	        getIntersectionWidth: function(first, second){
+	            var minRight  = MIN(first.right, second.right)
+	            var maxLeft   = MAX(first.left,  second.left)
+
+	            if (maxLeft < minRight){
+	                return minRight  - maxLeft
+	            }
+
+	            return 0
+	        },
+
+	        getIntersectionHeight: function(first, second){
+	            var maxTop    = MAX(first.top,   second.top)
+	            var minBottom = MIN(first.bottom,second.bottom)
+
+	            if (maxTop  < minBottom){
+	                return minBottom - maxTop
+	            }
+
+	            return 0
+	        },
+
+	        getIntersectionArea: function(first, second){
+	            var maxTop    = MAX(first.top,   second.top)
+	            var minRight  = MIN(first.right, second.right)
+	            var minBottom = MIN(first.bottom,second.bottom)
+	            var maxLeft   = MAX(first.left,  second.left)
+
+	            if (
+	                    maxTop  < minBottom &&
+	                    maxLeft < minRight
+	                ){
+	                return {
+	                    top    : maxTop,
+	                    right  : minRight,
+	                    bottom : minBottom,
+	                    left   : maxLeft,
+
+	                    width  : minRight  - maxLeft,
+	                    height : minBottom - maxTop
+	                }
+	            }
+
+	            return false
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region that is the union of the given two regions
+	         * @param  {Region} first  The first region
+	         * @param  {Region} second The second region
+	         * @return {Region}        The union region. The smallest region that contains both given regions.
+	         */
+	        getUnion: function(first, second){
+	            var top    = MIN(first.top,   second.top)
+	            var right  = MAX(first.right, second.right)
+	            var bottom = MAX(first.bottom,second.bottom)
+	            var left   = MIN(first.left,  second.left)
+
+	            return new REGION(top, right, bottom, left)
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region. If the reg argument is a region, returns it, otherwise return a new region built from the reg object.
+	         *
+	         * @param  {Region} reg A region or an object with either top, left, bottom, right or
+	         * with top, left, width, height
+	         * @return {Region} A region
+	         */
+	        getRegion: function(reg){
+	            return REGION.from(reg)
+	        },
+
+	        /**
+	         * Creates a region that corresponds to a point.
+	         *
+	         * @param  {Object} xy The point
+	         * @param  {Number} xy.x
+	         * @param  {Number} xy.y
+	         *
+	         * @return {Region}    The new region, with top==xy.y, bottom = xy.y and left==xy.x, right==xy.x
+	         */
+	        fromPoint: function(xy){
+	            return new REGION({
+	                        top    : xy.y,
+	                        bottom : xy.y,
+	                        left   : xy.x,
+	                        right  : xy.x
+	                    })
+	        }
+	    },
+
+	    /**
+	     * @cfg {Boolean} emitChangeEvents If this is set to true, the region
+	     * will emit 'changesize' and 'changeposition' whenever the size or the position changs
+	     */
+	    emitChangeEvents: false,
+
+	    /**
+	     * @cfg {Number} changeEventsBuffer If {@link #emitChangeEvents} is true, the change events will be emitted in a buffered manner,
+	     * if this value is greater than 0
+	     */
+	    changeEventsBuffer: 0,
+
+	    /**
+	     * Returns this region, or a clone of this region
+	     * @param  {Boolean} [clone] If true, this method will return a clone of this region
+	     * @return {Region}       This region, or a clone of this
+	     */
+	    getRegion: function(clone){
+	        return clone?
+	                    this.clone():
+	                    this
+	    },
+
+	    /**
+	     * Sets the properties of this region to those of the given region
+	     * @param {Region/Object} reg The region or object to use for setting properties of this region
+	     * @return {Region} this
+	     */
+	    setRegion: function(reg){
+
+	        if (reg instanceof REGION){
+	            this.set(reg.get())
+	        } else {
+	            this.set(reg)
+	        }
+
+	        return this
+	    },
+
+	    /**
+	     * Returns true if this region is valid, false otherwise
+	     *
+	     * @param  {Region} region The region to check
+	     * @return {Boolean}        True, if the region is valid, false otherwise.
+	     * A region is valid if
+	     *  * left <= right  &&
+	     *  * top  <= bottom
+	     */
+	    validate: function(){
+	        return REGION.validate(this)
+	    },
+
+	    _before: function(){
+	        if (this.emitChangeEvents){
+	            return copyList(this, {}, ['left','top','bottom','right'])
+	        }
+	    },
+
+	    _after: function(before){
+	        if (this.emitChangeEvents){
+
+	            if(this.top != before.top || this.left != before.left) {
+	                this.emitPositionChange()
+	            }
+
+	            if(this.right != before.right || this.bottom != before.bottom) {
+	                this.emitSizeChange()
+	            }
+	        }
+	    },
+
+	    notifyPositionChange: function(){
+	        this.emit('changeposition', this)
+	    },
+
+	    emitPositionChange: function(){
+	        if (this.changeEventsBuffer){
+	            if (!this.emitPositionChangeBuffered){
+	                this.emitPositionChangeBuffered = F.buffer(this.notifyPositionChange, changeEventsBuffer)
+	            }
+	            this.emitPositionChangeBuffered()
+	        }
+
+	        this.notifyPositionChange()
+	    },
+
+	    notifySizeChange: function(){
+	        this.emit('changesize', this)
+	    },
+
+	    emitSizeChange: function(){
+	        if (this.changeEventsBuffer){
+	            if (!this.emitSizeChangeBuffered){
+	                this.emitSizeChangeBuffered = F.buffer(this.notifySizeChange, changeEventsBuffer)
+	            }
+	            this.emitSizeChangeBuffered()
+	        }
+
+	        this.notifySizeChange()
+	    },
+
+	    /**
+	     * Add the given amounts to each specified side. Example
+	     *
+	     *      region.add({
+	     *          top: 50,    //add 50 px to the top side
+	     *          bottom: -100    //substract 100 px from the bottom side
+	     *      })
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @return {Region} this
+	     */
+	    add: function(directions){
+
+	        var before = this._before()
+	        var direction
+
+	        for (direction in directions) if ( hasOwn(directions, direction) ) {
+	            this[direction] += directions[direction]
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * The same as {@link #add}, but substracts the given values
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @return {Region} this
+	     */
+	    substract: function(directions){
+
+	        var before = this._before()
+	        var direction
+
+	        for (direction in directions) if (hasOwn(directions, direction) ) {
+	            this[direction] -= directions[direction]
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Retrieves the size of the region.
+	     * @return {Object} An object with {width, height}, corresponding to the width and height of the region
+	     */
+	    getSize: function(){
+	        return {
+	            width  : this.getWidth(),
+	            height : this.getHeight()
+	        }
+	    },
+
+	    /**
+	     * Move the region to the given position and keeps the region width and height.
+	     *
+	     * @param {Object} position An object with {top, left} properties. The values in {top,left} are used to move the region by the given amounts.
+	     * @param {Number} [position.left]
+	     * @param {Number} [position.top]
+	     *
+	     * @return {Region} this
+	     */
+	    setPosition: function(position){
+	        var width  = this.getWidth(),
+	            height = this.getHeight()
+
+	        if (position.left){
+	            position.right  = position.left + width
+	        }
+
+	        if (position.top){
+	            position.bottom = position.top  + height
+	        }
+
+	        return this.set(position)
+	    },
+
+	    /**
+	     * Sets both the height and the width of this region to the given size.
+	     *
+	     * @param {Number} size The new size for the region
+	     * @return {Region} this
+	     */
+	    setSize: function(size){
+	        if (size.height && size.width){
+	            return this.set({
+	                right  : this.left + size.width,
+	                bottom : this.top + size.height
+	            })
+	        }
+
+	        if (size.width){
+	            this.setWidth(size.width)
+	        }
+
+	        if (size.height){
+	            this.setHeight(size.height)
+	        }
+
+	        return this
+	    },
+
+	    /**
+	     * @chainable
+	     *
+	     * Sets the width of this region
+	     * @param {Number} width The new width for this region
+	     * @return {Region} this
+	     */
+	    setWidth: function(width){
+	        return this.set({
+	            right: this.left + width
+	        })
+	    },
+
+	    /**
+	     * @chainable
+	     *
+	     * Sets the height of this region
+	     * @param {Number} height The new height for this region
+	     * @return {Region} this
+	     */
+	    setHeight: function(height){
+	        return this.set({
+	            bottom: this.top + height
+	        })
+	    },
+
+	    /**
+	     * Sets the given properties on this region
+	     *
+	     * @param {Object} directions an object containing top, left, and EITHER bottom, right OR width, height
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @param {Number} [directions.width]
+	     * @param {Number} [directions.height]
+	     *
+	     *
+	     * @return {Region} this
+	     */
+	    set: function(directions){
+	        var before = this._before()
+
+	        copyList(directions, this, ['left','top','bottom','right'])
+
+	        if (directions.bottom == null && directions.height != null){
+	            this.bottom = this.top + directions.height
+	        }
+	        if (directions.right == null && directions.width != null){
+	            this.right = this.left + directions.width
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Retrieves the given property from this region. If no property is given, return an object
+	     * with {left, top, right, bottom}
+	     *
+	     * @param {String} [dir] the property to retrieve from this region
+	     * @return {Number/Object}
+	     */
+	    get: function(dir){
+	        return dir? this[dir]:
+	                    copyList(this, {}, ['left','right','top','bottom'])
+	    },
+
+	    /**
+	     * Shifts this region to either top, or left or both.
+	     * Shift is similar to {@link #add} by the fact that it adds the given dimensions to top/left sides, but also adds the given dimensions
+	     * to bottom and right
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @return {Region} this
+	     */
+	    shift: function(directions){
+
+	        var before = this._before()
+
+	        if (directions.top){
+	            this.top    += directions.top
+	            this.bottom += directions.top
+	        }
+
+	        if (directions.left){
+	            this.left  += directions.left
+	            this.right += directions.left
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Same as {@link #shift}, but substracts the given values
+	     * @chainable
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @return {Region} this
+	     */
+	    unshift: function(directions){
+
+	        if (directions.top){
+	            directions.top *= -1
+	        }
+
+	        if (directions.left){
+	            directions.left *= -1
+	        }
+
+	        return this.shift(directions)
+	    },
+
+	    /**
+	     * Compare this region and the given region. Return true if they have all the same size and position
+	     * @param  {Region} region The region to compare with
+	     * @return {Boolean}       True if this and region have same size and position
+	     */
+	    equals: function(region){
+	        return this.equalsPosition(region) && this.equalsSize(region)
+	    },
+
+	    /**
+	     * Returns true if this region has the same bottom,right properties as the given region
+	     * @param  {Region/Object} size The region to compare against
+	     * @return {Boolean}       true if this region is the same size as the given size
+	     */
+	    equalsSize: function(size){
+	        var isInstance = size instanceof REGION
+
+	        var s = {
+	            width: size.width == null && isInstance?
+	                    size.getWidth():
+	                    size.width,
+
+	            height: size.height == null && isInstance?
+	                    size.getHeight():
+	                    size.height
+	        }
+	        return this.getWidth() == s.width && this.getHeight() == s.height
+	    },
+
+	    /**
+	     * Returns true if this region has the same top,left properties as the given region
+	     * @param  {Region} region The region to compare against
+	     * @return {Boolean}       true if this.top == region.top and this.left == region.left
+	     */
+	    equalsPosition: function(region){
+	        return this.top == region.top && this.left == region.left
+	    },
+
+	    /**
+	     * Adds the given ammount to the left side of this region
+	     * @param {Number} left The ammount to add
+	     * @return {Region} this
+	     */
+	    addLeft: function(left){
+	        var before = this._before()
+
+	        this.left = this[0] = this.left + left
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the top side of this region
+	     * @param {Number} top The ammount to add
+	     * @return {Region} this
+	     */
+	    addTop: function(top){
+	        var before = this._before()
+
+	        this.top = this[1] = this.top + top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the bottom side of this region
+	     * @param {Number} bottom The ammount to add
+	     * @return {Region} this
+	     */
+	    addBottom: function(bottom){
+	        var before = this._before()
+
+	        this.bottom += bottom
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the right side of this region
+	     * @param {Number} right The ammount to add
+	     * @return {Region} this
+	     */
+	    addRight: function(right){
+	        var before = this._before()
+
+	        this.right += right
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Minimize the top side.
+	     * @return {Region} this
+	     */
+	    minTop: function(){
+	        return this.expand({top: 1})
+	    },
+	    /**
+	     * Minimize the bottom side.
+	     * @return {Region} this
+	     */
+	    maxBottom: function(){
+	        return this.expand({bottom: 1})
+	    },
+	    /**
+	     * Minimize the left side.
+	     * @return {Region} this
+	     */
+	    minLeft: function(){
+	        return this.expand({left: 1})
+	    },
+	    /**
+	     * Maximize the right side.
+	     * @return {Region} this
+	     */
+	    maxRight: function(){
+	        return this.expand({right: 1})
+	    },
+
+	    /**
+	     * Expands this region to the dimensions of the given region, or the document region, if no region is expanded.
+	     * But only expand the given sides (any of the four can be expanded).
+	     *
+	     * @param {Object} directions
+	     * @param {Boolean} [directions.top]
+	     * @param {Boolean} [directions.bottom]
+	     * @param {Boolean} [directions.left]
+	     * @param {Boolean} [directions.right]
+	     *
+	     * @param {Region} [region] the region to expand to, defaults to the document region
+	     * @return {Region} this region
+	     */
+	    expand: function(directions, region){
+	        var docRegion = region || REGION.getDocRegion(),
+	            list      = [],
+	            direction,
+	            before = this._before()
+
+	        for (direction in directions) if ( hasOwn(directions, direction) ) {
+	            list.push(direction)
+	        }
+
+	        copyList(docRegion, this, list)
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Returns a clone of this region
+	     * @return {Region} A new region, with the same position and dimension as this region
+	     */
+	    clone: function(){
+	        return new REGION({
+	                    top    : this.top,
+	                    left   : this.left,
+	                    right  : this.right,
+	                    bottom : this.bottom
+	                })
+	    },
+
+	    /**
+	     * Returns true if this region contains the given point
+	     * @param {Number/Object} x the x coordinate of the point
+	     * @param {Number} [y] the y coordinate of the point
+	     *
+	     * @return {Boolean} true if this region constains the given point, false otherwise
+	     */
+	    containsPoint: function(x, y){
+	        if (arguments.length == 1){
+	            y = x.y
+	            x = x.x
+	        }
+
+	        return this.left <= x  &&
+	               x <= this.right &&
+	               this.top <= y   &&
+	               y <= this.bottom
+	    },
+
+	    /**
+	     *
+	     * @param region
+	     *
+	     * @return {Boolean} true if this region contains the given region, false otherwise
+	     */
+	    containsRegion: function(region){
+	        return this.containsPoint(region.left, region.top)    &&
+	               this.containsPoint(region.right, region.bottom)
+	    },
+
+	    /**
+	     * Returns an object with the difference for {top, bottom} positions betwen this and the given region,
+	     *
+	     * See {@link #diff}
+	     * @param  {Region} region The region to use for diff
+	     * @return {Object}        {top,bottom}
+	     */
+	    diffHeight: function(region){
+	        return this.diff(region, {top: true, bottom: true})
+	    },
+
+	    /**
+	     * Returns an object with the difference for {left, right} positions betwen this and the given region,
+	     *
+	     * See {@link #diff}
+	     * @param  {Region} region The region to use for diff
+	     * @return {Object}        {left,right}
+	     */
+	    diffWidth: function(region){
+	        return this.diff(region, {left: true, right: true})
+	    },
+
+	    /**
+	     * Returns an object with the difference in sizes for the given directions, between this and region
+	     *
+	     * @param  {Region} region     The region to use for diff
+	     * @param  {Object} directions An object with the directions to diff. Can have any of the following keys:
+	     *  * left
+	     *  * right
+	     *  * top
+	     *  * bottom
+	     *
+	     * @return {Object} and object with the same keys as the directions object, but the values being the
+	     * differences between this region and the given region
+	     */
+	    diff: function(region, directions){
+	        var result = {}
+	        var dirName
+
+	        for (dirName in directions) if ( hasOwn(directions, dirName) ) {
+	            result[dirName] = this[dirName] - region[dirName]
+	        }
+
+	        return result
+	    },
+
+	    /**
+	     * Returns the position, in {left,top} properties, of this region
+	     *
+	     * @return {Object} {left,top}
+	     */
+	    getPosition: function(){
+	        return {
+	            left: this.left,
+	            top : this.top
+	        }
+	    },
+
+	    /**
+	     * Returns the point at the given position from this region.
+	     *
+	     * @param {String} position Any of:
+	     *
+	     *  * 'cx' - See {@link #getPointXCenter}
+	     *  * 'cy' - See {@link #getPointYCenter}
+	     *  * 'b'  - See {@link #getPointBottom}
+	     *  * 'bc' - See {@link #getPointBottomCenter}
+	     *  * 'l'  - See {@link #getPointLeft}
+	     *  * 'lc' - See {@link #getPointLeftCenter}
+	     *  * 't'  - See {@link #getPointTop}
+	     *  * 'tc' - See {@link #getPointTopCenter}
+	     *  * 'r'  - See {@link #getPointRight}
+	     *  * 'rc' - See {@link #getPointRightCenter}
+	     *  * 'c'  - See {@link #getPointCenter}
+	     *  * 'tl' - See {@link #getPointTopLeft}
+	     *  * 'bl' - See {@link #getPointBottomLeft}
+	     *  * 'br' - See {@link #getPointBottomRight}
+	     *  * 'tr' - See {@link #getPointTopRight}
+	     *
+	     * @param {Boolean} asLeftTop
+	     *
+	     * @return {Object} either an object with {x,y} or {left,top} if asLeftTop is true
+	     */
+	    getPoint: function(position, asLeftTop){
+
+	        //<debug>
+	        if (!POINT_POSITIONS[position]) {
+	            console.warn('The position ', position, ' could not be found! Available options are tl, bl, tr, br, l, r, t, b.');
+	        }
+	        //</debug>
+
+	        var method = 'getPoint' + POINT_POSITIONS[position],
+	            result = this[method]()
+
+	        if (asLeftTop){
+	            return {
+	                left : result.x,
+	                top  : result.y
+	            }
+	        }
+
+	        return result
+	    },
+
+	    /**
+	     * Returns a point with x = null and y being the middle of the left region segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointYCenter: function(){
+	        return { x: null, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point with y = null and x being the middle of the top region segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointXCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: null }
+	    },
+
+	    /**
+	     * Returns a point with x = null and y the region top position on the y axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointTop: function(){
+	        return { x: null, y: this.top }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region top segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.top }
+	    },
+
+	    /**
+	     * Returns a point that is the top-left point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopLeft: function(){
+	        return { x: this.left, y: this.top}
+	    },
+
+	    /**
+	     * Returns a point that is the top-right point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopRight: function(){
+	        return { x: this.right, y: this.top}
+	    },
+
+	    /**
+	     * Returns a point with x = null and y the region bottom position on the y axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottom: function(){
+	        return { x: null, y: this.bottom }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region bottom segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.bottom }
+	    },
+
+	    /**
+	     * Returns a point that is the bottom-left point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomLeft: function(){
+	        return { x: this.left, y: this.bottom}
+	    },
+
+	    /**
+	     * Returns a point that is the bottom-right point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomRight: function(){
+	        return { x: this.right, y: this.bottom}
+	    },
+
+	    /**
+	     * Returns a point with y = null and x the region left position on the x axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointLeft: function(){
+	        return { x: this.left, y: null }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region left segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointLeftCenter: function(){
+	        return { x: this.left, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point with y = null and x the region right position on the x axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointRight: function(){
+	        return { x: this.right, y: null }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region right segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointRightCenter: function(){
+	        return { x: this.right, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point that is the center of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * @return {Number} returns the height of the region
+	     */
+	    getHeight: function(){
+	        return this.bottom - this.top
+	    },
+
+	    /**
+	     * @return {Number} returns the width of the region
+	     */
+	    getWidth: function(){
+	        return this.right - this.left
+	    },
+
+	    /**
+	     * @return {Number} returns the top property of the region
+	     */
+	    getTop: function(){
+	        return this.top
+	    },
+
+	    /**
+	     * @return {Number} returns the left property of the region
+	     */
+	    getLeft: function(){
+	        return this.left
+	    },
+
+	    /**
+	     * @return {Number} returns the bottom property of the region
+	     */
+	    getBottom: function(){
+	        return this.bottom
+	    },
+
+	    /**
+	     * @return {Number} returns the right property of the region
+	     */
+	    getRight: function(){
+	        return this.right
+	    },
+
+	    /**
+	     * Returns the area of the region
+	     * @return {Number} the computed area
+	     */
+	    getArea: function(){
+	        return this.getWidth() * this.getHeight()
+	    },
+
+	    constrainTo: function(contrain){
+	        var intersect = this.getIntersection(contrain),
+	            shift
+
+	        if (!intersect || !intersect.equals(this)){
+
+	            var contrainWidth  = contrain.getWidth(),
+	                contrainHeight = contrain.getHeight(),
+
+	                shift = {}
+
+	            if (this.getWidth() > contrainWidth){
+	                this.left = contrain.left
+	                this.setWidth(contrainWidth)
+	            }
+
+	            if (this.getHeight() > contrainHeight){
+	                this.top = contrain.top
+	                this.setHeight(contrainHeight)
+	            }
+
+	            shift = {}
+
+	            if (this.right > contrain.right){
+	                shift.left = contrain.right - this.right
+	            }
+
+	            if (this.bottom > contrain.bottom){
+	                shift.top = contrain.bottom - this.bottom
+	            }
+
+	            if (this.left < contrain.left){
+	                shift.left = contrain.left - this.left
+	            }
+
+	            if (this.top < contrain.top){
+	                shift.top = contrain.top - this.top
+	            }
+
+	            this.shift(shift)
+
+	            return true
+	        }
+
+	        return false
+	    },
+
+	    /**
+	     * @constructor
+	     *
+	     * Construct a new Region.
+	     *
+	     * Example:
+	     *
+	     *      var r = root.create('z.region', { top: 10, left: 20, bottom: 100, right: 200 })
+	     *
+	     *      //or, the same, but with numbers
+	     *
+	     *      r = root.create('z.region', 10, 200, 100, 20)
+	     *
+	     *      //or, with width and height
+	     *
+	     *      r = root.create('z.region', { top: 10, left: 20, width: 180, height: 90})
+	     *
+	     * @param {Number|Object} top The top pixel position, or an object with top, left, bottom, right properties. If an object is passed,
+	     * instead of having bottom and right, it can have width and height.
+	     *
+	     * @param {Number} right The right pixel position
+	     * @param {Number} bottom The bottom pixel position
+	     * @param {Number} left The left pixel position
+	     *
+	     * @return {Region} this
+	     */
+	    init: function(top, right, bottom, left){
+
+	        if (isObject(top)){
+	            copyList(top, this, ['top','right','bottom','left'])
+
+	            if (top.bottom == null && top.height != null){
+	                this.bottom = this.top + top.height
+	            }
+	            if (top.right == null && top.width != null){
+	                this.right = this.left + top.width
+	            }
+
+	            if (top.emitChangeEvents){
+	                this.emitChangeEvents = top.emitChangeEvents
+	            }
+	        } else {
+	            this.top    = top
+	            this.right  = right
+	            this.bottom = bottom
+	            this.left   = left
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        REGION.validate(this)
+	    },
+
+	    /**
+	     * @property {Number} top
+	     */
+
+	    /**
+	     * @property {Number} right
+	     */
+
+	    /**
+	     * @property {Number} bottom
+	     */
+
+	    /**
+	     * @property {Number} left
+	     */
+
+	    /**
+	     * @property {Number} [0] the top property
+	     */
+
+	    /**
+	     * @property {Number} [1] the left property
+	     */
+
+	    /**
+	     * @method getIntersection
+	     * Returns a region that is the intersection of this region and the given region
+	     * @param  {Region} region The region to intersect with
+	     * @return {Region}        The intersection region
+	     */
+
+	    /**
+	     * @method getUnion
+	     * Returns a region that is the union of this region with the given region
+	     * @param  {Region} region  The region to make union with
+	     * @return {Region}        The union region. The smallest region that contains both this and the given region.
+	     */
+
+	})
+
+	// require('./align')(REGION)
+
+	module.exports = REGION
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;// TinyColor v1.0.0
+	// https://github.com/bgrins/TinyColor
+	// Brian Grinstead, MIT License
+
+	(function() {
+
+	var trimLeft = /^[\s,#]+/,
+	    trimRight = /\s+$/,
+	    tinyCounter = 0,
+	    math = Math,
+	    mathRound = math.round,
+	    mathMin = math.min,
+	    mathMax = math.max,
+	    mathRandom = math.random;
+
+	var tinycolor = function tinycolor (color, opts) {
+
+	    color = (color) ? color : '';
+	    opts = opts || { };
+
+	    // If input is already a tinycolor, return itself
+	    if (color instanceof tinycolor) {
+	       return color;
+	    }
+	    // If we are called as a function, call using new instead
+	    if (!(this instanceof tinycolor)) {
+	        return new tinycolor(color, opts);
+	    }
+
+	    var rgb = inputToRGB(color);
+	    this._r = rgb.r,
+	    this._g = rgb.g,
+	    this._b = rgb.b,
+	    this._a = rgb.a,
+	    this._roundA = mathRound(100*this._a) / 100,
+	    this._format = opts.format || rgb.format;
+	    this._gradientType = opts.gradientType;
+
+	    // Don't let the range of [0,255] come back in [0,1].
+	    // Potentially lose a little bit of precision here, but will fix issues where
+	    // .5 gets interpreted as half of the total, instead of half of 1
+	    // If it was supposed to be 128, this was already taken care of by `inputToRgb`
+	    if (this._r < 1) { this._r = mathRound(this._r); }
+	    if (this._g < 1) { this._g = mathRound(this._g); }
+	    if (this._b < 1) { this._b = mathRound(this._b); }
+
+	    this._ok = rgb.ok;
+	    this._tc_id = tinyCounter++;
+	};
+
+	tinycolor.prototype = {
+	    isDark: function() {
+	        return this.getBrightness() < 128;
+	    },
+	    isLight: function() {
+	        return !this.isDark();
+	    },
+	    isValid: function() {
+	        return this._ok;
+	    },
+	    getFormat: function() {
+	        return this._format;
+	    },
+	    getAlpha: function() {
+	        return this._a;
+	    },
+	    getBrightness: function() {
+	        var rgb = this.toRgb();
+	        return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+	    },
+	    setAlpha: function(value) {
+	        this._a = boundAlpha(value);
+	        this._roundA = mathRound(100*this._a) / 100;
+	        return this;
+	    },
+	    toHsv: function() {
+	        var hsv = rgbToHsv(this._r, this._g, this._b);
+	        return { h: hsv.h * 360, s: hsv.s, v: hsv.v, a: this._a };
+	    },
+	    toHsvString: function() {
+	        var hsv = rgbToHsv(this._r, this._g, this._b);
+	        var h = mathRound(hsv.h * 360), s = mathRound(hsv.s * 100), v = mathRound(hsv.v * 100);
+	        return (this._a == 1) ?
+	          "hsv("  + h + ", " + s + "%, " + v + "%)" :
+	          "hsva(" + h + ", " + s + "%, " + v + "%, "+ this._roundA + ")";
+	    },
+	    toHsl: function() {
+	        var hsl = rgbToHsl(this._r, this._g, this._b);
+	        return { h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this._a };
+	    },
+	    toHslString: function() {
+	        var hsl = rgbToHsl(this._r, this._g, this._b);
+	        var h = mathRound(hsl.h * 360), s = mathRound(hsl.s * 100), l = mathRound(hsl.l * 100);
+	        return (this._a == 1) ?
+	          "hsl("  + h + ", " + s + "%, " + l + "%)" :
+	          "hsla(" + h + ", " + s + "%, " + l + "%, "+ this._roundA + ")";
+	    },
+	    toHex: function(allow3Char) {
+	        return rgbToHex(this._r, this._g, this._b, allow3Char);
+	    },
+	    toHexString: function(allow3Char) {
+	        return '#' + this.toHex(allow3Char);
+	    },
+	    toHex8: function() {
+	        return rgbaToHex(this._r, this._g, this._b, this._a);
+	    },
+	    toHex8String: function() {
+	        return '#' + this.toHex8();
+	    },
+	    toRgb: function() {
+	        return { r: mathRound(this._r), g: mathRound(this._g), b: mathRound(this._b), a: this._a };
+	    },
+	    toRgbString: function() {
+	        return (this._a == 1) ?
+	          "rgb("  + mathRound(this._r) + ", " + mathRound(this._g) + ", " + mathRound(this._b) + ")" :
+	          "rgba(" + mathRound(this._r) + ", " + mathRound(this._g) + ", " + mathRound(this._b) + ", " + this._roundA + ")";
+	    },
+	    toPercentageRgb: function() {
+	        return { r: mathRound(bound01(this._r, 255) * 100) + "%", g: mathRound(bound01(this._g, 255) * 100) + "%", b: mathRound(bound01(this._b, 255) * 100) + "%", a: this._a };
+	    },
+	    toPercentageRgbString: function() {
+	        return (this._a == 1) ?
+	          "rgb("  + mathRound(bound01(this._r, 255) * 100) + "%, " + mathRound(bound01(this._g, 255) * 100) + "%, " + mathRound(bound01(this._b, 255) * 100) + "%)" :
+	          "rgba(" + mathRound(bound01(this._r, 255) * 100) + "%, " + mathRound(bound01(this._g, 255) * 100) + "%, " + mathRound(bound01(this._b, 255) * 100) + "%, " + this._roundA + ")";
+	    },
+	    toName: function() {
+	        if (this._a === 0) {
+	            return "transparent";
+	        }
+
+	        if (this._a < 1) {
+	            return false;
+	        }
+
+	        return hexNames[rgbToHex(this._r, this._g, this._b, true)] || false;
+	    },
+	    toFilter: function(secondColor) {
+	        var hex8String = '#' + rgbaToHex(this._r, this._g, this._b, this._a);
+	        var secondHex8String = hex8String;
+	        var gradientType = this._gradientType ? "GradientType = 1, " : "";
+
+	        if (secondColor) {
+	            var s = tinycolor(secondColor);
+	            secondHex8String = s.toHex8String();
+	        }
+
+	        return "progid:DXImageTransform.Microsoft.gradient("+gradientType+"startColorstr="+hex8String+",endColorstr="+secondHex8String+")";
+	    },
+	    toString: function(format) {
+	        var formatSet = !!format;
+	        format = format || this._format;
+
+	        var formattedString = false;
+	        var hasAlpha = this._a < 1 && this._a >= 0;
+	        var needsAlphaFormat = !formatSet && hasAlpha && (format === "hex" || format === "hex6" || format === "hex3" || format === "name");
+
+	        if (needsAlphaFormat) {
+	            // Special case for "transparent", all other non-alpha formats
+	            // will return rgba when there is transparency.
+	            if (format === "name" && this._a === 0) {
+	                return this.toName();
+	            }
+	            return this.toRgbString();
+	        }
+	        if (format === "rgb") {
+	            formattedString = this.toRgbString();
+	        }
+	        if (format === "prgb") {
+	            formattedString = this.toPercentageRgbString();
+	        }
+	        if (format === "hex" || format === "hex6") {
+	            formattedString = this.toHexString();
+	        }
+	        if (format === "hex3") {
+	            formattedString = this.toHexString(true);
+	        }
+	        if (format === "hex8") {
+	            formattedString = this.toHex8String();
+	        }
+	        if (format === "name") {
+	            formattedString = this.toName();
+	        }
+	        if (format === "hsl") {
+	            formattedString = this.toHslString();
+	        }
+	        if (format === "hsv") {
+	            formattedString = this.toHsvString();
+	        }
+
+	        return formattedString || this.toHexString();
+	    },
+
+	    _applyModification: function(fn, args) {
+	        var color = fn.apply(null, [this].concat([].slice.call(args)));
+	        this._r = color._r;
+	        this._g = color._g;
+	        this._b = color._b;
+	        this.setAlpha(color._a);
+	        return this;
+	    },
+	    lighten: function() {
+	        return this._applyModification(lighten, arguments);
+	    },
+	    brighten: function() {
+	        return this._applyModification(brighten, arguments);
+	    },
+	    darken: function() {
+	        return this._applyModification(darken, arguments);
+	    },
+	    desaturate: function() {
+	        return this._applyModification(desaturate, arguments);
+	    },
+	    saturate: function() {
+	        return this._applyModification(saturate, arguments);
+	    },
+	    greyscale: function() {
+	        return this._applyModification(greyscale, arguments);
+	    },
+	    spin: function() {
+	        return this._applyModification(spin, arguments);
+	    },
+
+	    _applyCombination: function(fn, args) {
+	        return fn.apply(null, [this].concat([].slice.call(args)));
+	    },
+	    analogous: function() {
+	        return this._applyCombination(analogous, arguments);
+	    },
+	    complement: function() {
+	        return this._applyCombination(complement, arguments);
+	    },
+	    monochromatic: function() {
+	        return this._applyCombination(monochromatic, arguments);
+	    },
+	    splitcomplement: function() {
+	        return this._applyCombination(splitcomplement, arguments);
+	    },
+	    triad: function() {
+	        return this._applyCombination(triad, arguments);
+	    },
+	    tetrad: function() {
+	        return this._applyCombination(tetrad, arguments);
+	    }
+	};
+
+	// If input is an object, force 1 into "1.0" to handle ratios properly
+	// String input requires "1.0" as input, so 1 will be treated as 1
+	tinycolor.fromRatio = function(color, opts) {
+	    if (typeof color == "object") {
+	        var newColor = {};
+	        for (var i in color) {
+	            if (color.hasOwnProperty(i)) {
+	                if (i === "a") {
+	                    newColor[i] = color[i];
+	                }
+	                else {
+	                    newColor[i] = convertToPercentage(color[i]);
+	                }
+	            }
+	        }
+	        color = newColor;
+	    }
+
+	    return tinycolor(color, opts);
+	};
+
+	// Given a string or object, convert that input to RGB
+	// Possible string inputs:
+	//
+	//     "red"
+	//     "#f00" or "f00"
+	//     "#ff0000" or "ff0000"
+	//     "#ff000000" or "ff000000"
+	//     "rgb 255 0 0" or "rgb (255, 0, 0)"
+	//     "rgb 1.0 0 0" or "rgb (1, 0, 0)"
+	//     "rgba (255, 0, 0, 1)" or "rgba 255, 0, 0, 1"
+	//     "rgba (1.0, 0, 0, 1)" or "rgba 1.0, 0, 0, 1"
+	//     "hsl(0, 100%, 50%)" or "hsl 0 100% 50%"
+	//     "hsla(0, 100%, 50%, 1)" or "hsla 0 100% 50%, 1"
+	//     "hsv(0, 100%, 100%)" or "hsv 0 100% 100%"
+	//
+	function inputToRGB(color) {
+
+	    var rgb = { r: 0, g: 0, b: 0 };
+	    var a = 1;
+	    var ok = false;
+	    var format = false;
+
+	    if (typeof color == "string") {
+	        color = stringInputToObject(color);
+	    }
+
+	    if (typeof color == "object") {
+	        if (color.hasOwnProperty("r") && color.hasOwnProperty("g") && color.hasOwnProperty("b")) {
+	            rgb = rgbToRgb(color.r, color.g, color.b);
+	            ok = true;
+	            format = String(color.r).substr(-1) === "%" ? "prgb" : "rgb";
+	        }
+	        else if (color.hasOwnProperty("h") && color.hasOwnProperty("s") && color.hasOwnProperty("v")) {
+	            color.s = convertToPercentage(color.s);
+	            color.v = convertToPercentage(color.v);
+	            rgb = hsvToRgb(color.h, color.s, color.v);
+	            ok = true;
+	            format = "hsv";
+	        }
+	        else if (color.hasOwnProperty("h") && color.hasOwnProperty("s") && color.hasOwnProperty("l")) {
+	            color.s = convertToPercentage(color.s);
+	            color.l = convertToPercentage(color.l);
+	            rgb = hslToRgb(color.h, color.s, color.l);
+	            ok = true;
+	            format = "hsl";
+	        }
+
+	        if (color.hasOwnProperty("a")) {
+	            a = color.a;
+	        }
+	    }
+
+	    a = boundAlpha(a);
+
+	    return {
+	        ok: ok,
+	        format: color.format || format,
+	        r: mathMin(255, mathMax(rgb.r, 0)),
+	        g: mathMin(255, mathMax(rgb.g, 0)),
+	        b: mathMin(255, mathMax(rgb.b, 0)),
+	        a: a
+	    };
+	}
+
+
+	// Conversion Functions
+	// --------------------
+
+	// `rgbToHsl`, `rgbToHsv`, `hslToRgb`, `hsvToRgb` modified from:
+	// <http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript>
+
+	// `rgbToRgb`
+	// Handle bounds / percentage checking to conform to CSS color spec
+	// <http://www.w3.org/TR/css3-color/>
+	// *Assumes:* r, g, b in [0, 255] or [0, 1]
+	// *Returns:* { r, g, b } in [0, 255]
+	function rgbToRgb(r, g, b){
+	    return {
+	        r: bound01(r, 255) * 255,
+	        g: bound01(g, 255) * 255,
+	        b: bound01(b, 255) * 255
+	    };
+	}
+
+	// `rgbToHsl`
+	// Converts an RGB color value to HSL.
+	// *Assumes:* r, g, and b are contained in [0, 255] or [0, 1]
+	// *Returns:* { h, s, l } in [0,1]
+	function rgbToHsl(r, g, b) {
+
+	    r = bound01(r, 255);
+	    g = bound01(g, 255);
+	    b = bound01(b, 255);
+
+	    var max = mathMax(r, g, b), min = mathMin(r, g, b);
+	    var h, s, l = (max + min) / 2;
+
+	    if(max == min) {
+	        h = s = 0; // achromatic
+	    }
+	    else {
+	        var d = max - min;
+	        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+	        switch(max) {
+	            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+	            case g: h = (b - r) / d + 2; break;
+	            case b: h = (r - g) / d + 4; break;
+	        }
+
+	        h /= 6;
+	    }
+
+	    return { h: h, s: s, l: l };
+	}
+
+	// `hslToRgb`
+	// Converts an HSL color value to RGB.
+	// *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
+	// *Returns:* { r, g, b } in the set [0, 255]
+	function hslToRgb(h, s, l) {
+	    var r, g, b;
+
+	    h = bound01(h, 360);
+	    s = bound01(s, 100);
+	    l = bound01(l, 100);
+
+	    function hue2rgb(p, q, t) {
+	        if(t < 0) t += 1;
+	        if(t > 1) t -= 1;
+	        if(t < 1/6) return p + (q - p) * 6 * t;
+	        if(t < 1/2) return q;
+	        if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+	        return p;
+	    }
+
+	    if(s === 0) {
+	        r = g = b = l; // achromatic
+	    }
+	    else {
+	        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+	        var p = 2 * l - q;
+	        r = hue2rgb(p, q, h + 1/3);
+	        g = hue2rgb(p, q, h);
+	        b = hue2rgb(p, q, h - 1/3);
+	    }
+
+	    return { r: r * 255, g: g * 255, b: b * 255 };
+	}
+
+	// `rgbToHsv`
+	// Converts an RGB color value to HSV
+	// *Assumes:* r, g, and b are contained in the set [0, 255] or [0, 1]
+	// *Returns:* { h, s, v } in [0,1]
+	function rgbToHsv(r, g, b) {
+
+	    r = bound01(r, 255);
+	    g = bound01(g, 255);
+	    b = bound01(b, 255);
+
+	    var max = mathMax(r, g, b), min = mathMin(r, g, b);
+	    var h, s, v = max;
+
+	    var d = max - min;
+	    s = max === 0 ? 0 : d / max;
+
+	    if(max == min) {
+	        h = 0; // achromatic
+	    }
+	    else {
+	        switch(max) {
+	            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+	            case g: h = (b - r) / d + 2; break;
+	            case b: h = (r - g) / d + 4; break;
+	        }
+	        h /= 6;
+	    }
+	    return { h: h, s: s, v: v };
+	}
+
+	// `hsvToRgb`
+	// Converts an HSV color value to RGB.
+	// *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
+	// *Returns:* { r, g, b } in the set [0, 255]
+	 function hsvToRgb(h, s, v) {
+
+	    h = bound01(h, 360) * 6;
+	    s = bound01(s, 100);
+	    v = bound01(v, 100);
+
+	    var i = math.floor(h),
+	        f = h - i,
+	        p = v * (1 - s),
+	        q = v * (1 - f * s),
+	        t = v * (1 - (1 - f) * s),
+	        mod = i % 6,
+	        r = [v, q, p, p, t, v][mod],
+	        g = [t, v, v, q, p, p][mod],
+	        b = [p, p, t, v, v, q][mod];
+
+	    return { r: r * 255, g: g * 255, b: b * 255 };
+	}
+
+	// `rgbToHex`
+	// Converts an RGB color to hex
+	// Assumes r, g, and b are contained in the set [0, 255]
+	// Returns a 3 or 6 character hex
+	function rgbToHex(r, g, b, allow3Char) {
+
+	    var hex = [
+	        pad2(mathRound(r).toString(16)),
+	        pad2(mathRound(g).toString(16)),
+	        pad2(mathRound(b).toString(16))
+	    ];
+
+	    // Return a 3 character hex if possible
+	    if (allow3Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1)) {
+	        return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
+	    }
+
+	    return hex.join("");
+	}
+	    // `rgbaToHex`
+	    // Converts an RGBA color plus alpha transparency to hex
+	    // Assumes r, g, b and a are contained in the set [0, 255]
+	    // Returns an 8 character hex
+	    function rgbaToHex(r, g, b, a) {
+
+	        var hex = [
+	            pad2(convertDecimalToHex(a)),
+	            pad2(mathRound(r).toString(16)),
+	            pad2(mathRound(g).toString(16)),
+	            pad2(mathRound(b).toString(16))
+	        ];
+
+	        return hex.join("");
+	    }
+
+	// `equals`
+	// Can be called with any tinycolor input
+	tinycolor.equals = function (color1, color2) {
+	    if (!color1 || !color2) { return false; }
+	    return tinycolor(color1).toRgbString() == tinycolor(color2).toRgbString();
+	};
+	tinycolor.random = function() {
+	    return tinycolor.fromRatio({
+	        r: mathRandom(),
+	        g: mathRandom(),
+	        b: mathRandom()
+	    });
+	};
+
+
+	// Modification Functions
+	// ----------------------
+	// Thanks to less.js for some of the basics here
+	// <https://github.com/cloudhead/less.js/blob/master/lib/less/functions.js>
+
+	function desaturate(color, amount) {
+	    amount = (amount === 0) ? 0 : (amount || 10);
+	    var hsl = tinycolor(color).toHsl();
+	    hsl.s -= amount / 100;
+	    hsl.s = clamp01(hsl.s);
+	    return tinycolor(hsl);
+	}
+
+	function saturate(color, amount) {
+	    amount = (amount === 0) ? 0 : (amount || 10);
+	    var hsl = tinycolor(color).toHsl();
+	    hsl.s += amount / 100;
+	    hsl.s = clamp01(hsl.s);
+	    return tinycolor(hsl);
+	}
+
+	function greyscale(color) {
+	    return tinycolor(color).desaturate(100);
+	}
+
+	function lighten (color, amount) {
+	    amount = (amount === 0) ? 0 : (amount || 10);
+	    var hsl = tinycolor(color).toHsl();
+	    hsl.l += amount / 100;
+	    hsl.l = clamp01(hsl.l);
+	    return tinycolor(hsl);
+	}
+
+	function brighten(color, amount) {
+	    amount = (amount === 0) ? 0 : (amount || 10);
+	    var rgb = tinycolor(color).toRgb();
+	    rgb.r = mathMax(0, mathMin(255, rgb.r - mathRound(255 * - (amount / 100))));
+	    rgb.g = mathMax(0, mathMin(255, rgb.g - mathRound(255 * - (amount / 100))));
+	    rgb.b = mathMax(0, mathMin(255, rgb.b - mathRound(255 * - (amount / 100))));
+	    return tinycolor(rgb);
+	}
+
+	function darken (color, amount) {
+	    amount = (amount === 0) ? 0 : (amount || 10);
+	    var hsl = tinycolor(color).toHsl();
+	    hsl.l -= amount / 100;
+	    hsl.l = clamp01(hsl.l);
+	    return tinycolor(hsl);
+	}
+
+	// Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
+	// Values outside of this range will be wrapped into this range.
+	function spin(color, amount) {
+	    var hsl = tinycolor(color).toHsl();
+	    var hue = (mathRound(hsl.h) + amount) % 360;
+	    hsl.h = hue < 0 ? 360 + hue : hue;
+	    return tinycolor(hsl);
+	}
+
+	// Combination Functions
+	// ---------------------
+	// Thanks to jQuery xColor for some of the ideas behind these
+	// <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
+
+	function complement(color) {
+	    var hsl = tinycolor(color).toHsl();
+	    hsl.h = (hsl.h + 180) % 360;
+	    return tinycolor(hsl);
+	}
+
+	function triad(color) {
+	    var hsl = tinycolor(color).toHsl();
+	    var h = hsl.h;
+	    return [
+	        tinycolor(color),
+	        tinycolor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }),
+	        tinycolor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l })
+	    ];
+	}
+
+	function tetrad(color) {
+	    var hsl = tinycolor(color).toHsl();
+	    var h = hsl.h;
+	    return [
+	        tinycolor(color),
+	        tinycolor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
+	        tinycolor({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }),
+	        tinycolor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l })
+	    ];
+	}
+
+	function splitcomplement(color) {
+	    var hsl = tinycolor(color).toHsl();
+	    var h = hsl.h;
+	    return [
+	        tinycolor(color),
+	        tinycolor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l}),
+	        tinycolor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l})
+	    ];
+	}
+
+	function analogous(color, results, slices) {
+	    results = results || 6;
+	    slices = slices || 30;
+
+	    var hsl = tinycolor(color).toHsl();
+	    var part = 360 / slices;
+	    var ret = [tinycolor(color)];
+
+	    for (hsl.h = ((hsl.h - (part * results >> 1)) + 720) % 360; --results; ) {
+	        hsl.h = (hsl.h + part) % 360;
+	        ret.push(tinycolor(hsl));
+	    }
+	    return ret;
+	}
+
+	function monochromatic(color, results) {
+	    results = results || 6;
+	    var hsv = tinycolor(color).toHsv();
+	    var h = hsv.h, s = hsv.s, v = hsv.v;
+	    var ret = [];
+	    var modification = 1 / results;
+
+	    while (results--) {
+	        ret.push(tinycolor({ h: h, s: s, v: v}));
+	        v = (v + modification) % 1;
+	    }
+
+	    return ret;
+	}
+
+	// Utility Functions
+	// ---------------------
+
+	tinycolor.mix = function(color1, color2, amount) {
+	    amount = (amount === 0) ? 0 : (amount || 50);
+
+	    var rgb1 = tinycolor(color1).toRgb();
+	    var rgb2 = tinycolor(color2).toRgb();
+
+	    var p = amount / 100;
+	    var w = p * 2 - 1;
+	    var a = rgb2.a - rgb1.a;
+
+	    var w1;
+
+	    if (w * a == -1) {
+	        w1 = w;
+	    } else {
+	        w1 = (w + a) / (1 + w * a);
+	    }
+
+	    w1 = (w1 + 1) / 2;
+
+	    var w2 = 1 - w1;
+
+	    var rgba = {
+	        r: rgb2.r * w1 + rgb1.r * w2,
+	        g: rgb2.g * w1 + rgb1.g * w2,
+	        b: rgb2.b * w1 + rgb1.b * w2,
+	        a: rgb2.a * p  + rgb1.a * (1 - p)
+	    };
+
+	    return tinycolor(rgba);
+	};
+
+
+	// Readability Functions
+	// ---------------------
+	// <http://www.w3.org/TR/AERT#color-contrast>
+
+	// `readability`
+	// Analyze the 2 colors and returns an object with the following properties:
+	//    `brightness`: difference in brightness between the two colors
+	//    `color`: difference in color/hue between the two colors
+	tinycolor.readability = function(color1, color2) {
+	    var c1 = tinycolor(color1);
+	    var c2 = tinycolor(color2);
+	    var rgb1 = c1.toRgb();
+	    var rgb2 = c2.toRgb();
+	    var brightnessA = c1.getBrightness();
+	    var brightnessB = c2.getBrightness();
+	    var colorDiff = (
+	        Math.max(rgb1.r, rgb2.r) - Math.min(rgb1.r, rgb2.r) +
+	        Math.max(rgb1.g, rgb2.g) - Math.min(rgb1.g, rgb2.g) +
+	        Math.max(rgb1.b, rgb2.b) - Math.min(rgb1.b, rgb2.b)
+	    );
+
+	    return {
+	        brightness: Math.abs(brightnessA - brightnessB),
+	        color: colorDiff
+	    };
+	};
+
+	// `readable`
+	// http://www.w3.org/TR/AERT#color-contrast
+	// Ensure that foreground and background color combinations provide sufficient contrast.
+	// *Example*
+	//    tinycolor.isReadable("#000", "#111") => false
+	tinycolor.isReadable = function(color1, color2) {
+	    var readability = tinycolor.readability(color1, color2);
+	    return readability.brightness > 125 && readability.color > 500;
+	};
+
+	// `mostReadable`
+	// Given a base color and a list of possible foreground or background
+	// colors for that base, returns the most readable color.
+	// *Example*
+	//    tinycolor.mostReadable("#123", ["#fff", "#000"]) => "#000"
+	tinycolor.mostReadable = function(baseColor, colorList) {
+	    var bestColor = null;
+	    var bestScore = 0;
+	    var bestIsReadable = false;
+	    for (var i=0; i < colorList.length; i++) {
+
+	        // We normalize both around the "acceptable" breaking point,
+	        // but rank brightness constrast higher than hue.
+
+	        var readability = tinycolor.readability(baseColor, colorList[i]);
+	        var readable = readability.brightness > 125 && readability.color > 500;
+	        var score = 3 * (readability.brightness / 125) + (readability.color / 500);
+
+	        if ((readable && ! bestIsReadable) ||
+	            (readable && bestIsReadable && score > bestScore) ||
+	            ((! readable) && (! bestIsReadable) && score > bestScore)) {
+	            bestIsReadable = readable;
+	            bestScore = score;
+	            bestColor = tinycolor(colorList[i]);
+	        }
+	    }
+	    return bestColor;
+	};
+
+
+	// Big List of Colors
+	// ------------------
+	// <http://www.w3.org/TR/css3-color/#svg-color>
+	var names = tinycolor.names = {
+	    aliceblue: "f0f8ff",
+	    antiquewhite: "faebd7",
+	    aqua: "0ff",
+	    aquamarine: "7fffd4",
+	    azure: "f0ffff",
+	    beige: "f5f5dc",
+	    bisque: "ffe4c4",
+	    black: "000",
+	    blanchedalmond: "ffebcd",
+	    blue: "00f",
+	    blueviolet: "8a2be2",
+	    brown: "a52a2a",
+	    burlywood: "deb887",
+	    burntsienna: "ea7e5d",
+	    cadetblue: "5f9ea0",
+	    chartreuse: "7fff00",
+	    chocolate: "d2691e",
+	    coral: "ff7f50",
+	    cornflowerblue: "6495ed",
+	    cornsilk: "fff8dc",
+	    crimson: "dc143c",
+	    cyan: "0ff",
+	    darkblue: "00008b",
+	    darkcyan: "008b8b",
+	    darkgoldenrod: "b8860b",
+	    darkgray: "a9a9a9",
+	    darkgreen: "006400",
+	    darkgrey: "a9a9a9",
+	    darkkhaki: "bdb76b",
+	    darkmagenta: "8b008b",
+	    darkolivegreen: "556b2f",
+	    darkorange: "ff8c00",
+	    darkorchid: "9932cc",
+	    darkred: "8b0000",
+	    darksalmon: "e9967a",
+	    darkseagreen: "8fbc8f",
+	    darkslateblue: "483d8b",
+	    darkslategray: "2f4f4f",
+	    darkslategrey: "2f4f4f",
+	    darkturquoise: "00ced1",
+	    darkviolet: "9400d3",
+	    deeppink: "ff1493",
+	    deepskyblue: "00bfff",
+	    dimgray: "696969",
+	    dimgrey: "696969",
+	    dodgerblue: "1e90ff",
+	    firebrick: "b22222",
+	    floralwhite: "fffaf0",
+	    forestgreen: "228b22",
+	    fuchsia: "f0f",
+	    gainsboro: "dcdcdc",
+	    ghostwhite: "f8f8ff",
+	    gold: "ffd700",
+	    goldenrod: "daa520",
+	    gray: "808080",
+	    green: "008000",
+	    greenyellow: "adff2f",
+	    grey: "808080",
+	    honeydew: "f0fff0",
+	    hotpink: "ff69b4",
+	    indianred: "cd5c5c",
+	    indigo: "4b0082",
+	    ivory: "fffff0",
+	    khaki: "f0e68c",
+	    lavender: "e6e6fa",
+	    lavenderblush: "fff0f5",
+	    lawngreen: "7cfc00",
+	    lemonchiffon: "fffacd",
+	    lightblue: "add8e6",
+	    lightcoral: "f08080",
+	    lightcyan: "e0ffff",
+	    lightgoldenrodyellow: "fafad2",
+	    lightgray: "d3d3d3",
+	    lightgreen: "90ee90",
+	    lightgrey: "d3d3d3",
+	    lightpink: "ffb6c1",
+	    lightsalmon: "ffa07a",
+	    lightseagreen: "20b2aa",
+	    lightskyblue: "87cefa",
+	    lightslategray: "789",
+	    lightslategrey: "789",
+	    lightsteelblue: "b0c4de",
+	    lightyellow: "ffffe0",
+	    lime: "0f0",
+	    limegreen: "32cd32",
+	    linen: "faf0e6",
+	    magenta: "f0f",
+	    maroon: "800000",
+	    mediumaquamarine: "66cdaa",
+	    mediumblue: "0000cd",
+	    mediumorchid: "ba55d3",
+	    mediumpurple: "9370db",
+	    mediumseagreen: "3cb371",
+	    mediumslateblue: "7b68ee",
+	    mediumspringgreen: "00fa9a",
+	    mediumturquoise: "48d1cc",
+	    mediumvioletred: "c71585",
+	    midnightblue: "191970",
+	    mintcream: "f5fffa",
+	    mistyrose: "ffe4e1",
+	    moccasin: "ffe4b5",
+	    navajowhite: "ffdead",
+	    navy: "000080",
+	    oldlace: "fdf5e6",
+	    olive: "808000",
+	    olivedrab: "6b8e23",
+	    orange: "ffa500",
+	    orangered: "ff4500",
+	    orchid: "da70d6",
+	    palegoldenrod: "eee8aa",
+	    palegreen: "98fb98",
+	    paleturquoise: "afeeee",
+	    palevioletred: "db7093",
+	    papayawhip: "ffefd5",
+	    peachpuff: "ffdab9",
+	    peru: "cd853f",
+	    pink: "ffc0cb",
+	    plum: "dda0dd",
+	    powderblue: "b0e0e6",
+	    purple: "800080",
+	    red: "f00",
+	    rosybrown: "bc8f8f",
+	    royalblue: "4169e1",
+	    saddlebrown: "8b4513",
+	    salmon: "fa8072",
+	    sandybrown: "f4a460",
+	    seagreen: "2e8b57",
+	    seashell: "fff5ee",
+	    sienna: "a0522d",
+	    silver: "c0c0c0",
+	    skyblue: "87ceeb",
+	    slateblue: "6a5acd",
+	    slategray: "708090",
+	    slategrey: "708090",
+	    snow: "fffafa",
+	    springgreen: "00ff7f",
+	    steelblue: "4682b4",
+	    tan: "d2b48c",
+	    teal: "008080",
+	    thistle: "d8bfd8",
+	    tomato: "ff6347",
+	    turquoise: "40e0d0",
+	    violet: "ee82ee",
+	    wheat: "f5deb3",
+	    white: "fff",
+	    whitesmoke: "f5f5f5",
+	    yellow: "ff0",
+	    yellowgreen: "9acd32"
+	};
+
+	// Make it easy to access colors via `hexNames[hex]`
+	var hexNames = tinycolor.hexNames = flip(names);
+
+
+	// Utilities
+	// ---------
+
+	// `{ 'name1': 'val1' }` becomes `{ 'val1': 'name1' }`
+	function flip(o) {
+	    var flipped = { };
+	    for (var i in o) {
+	        if (o.hasOwnProperty(i)) {
+	            flipped[o[i]] = i;
+	        }
+	    }
+	    return flipped;
+	}
+
+	// Return a valid alpha value [0,1] with all invalid values being set to 1
+	function boundAlpha(a) {
+	    a = parseFloat(a);
+
+	    if (isNaN(a) || a < 0 || a > 1) {
+	        a = 1;
+	    }
+
+	    return a;
+	}
+
+	// Take input from [0, n] and return it as [0, 1]
+	function bound01(n, max) {
+	    if (isOnePointZero(n)) { n = "100%"; }
+
+	    var processPercent = isPercentage(n);
+	    n = mathMin(max, mathMax(0, parseFloat(n)));
+
+	    // Automatically convert percentage into number
+	    if (processPercent) {
+	        n = parseInt(n * max, 10) / 100;
+	    }
+
+	    // Handle floating point rounding errors
+	    if ((math.abs(n - max) < 0.000001)) {
+	        return 1;
+	    }
+
+	    // Convert into [0, 1] range if it isn't already
+	    return (n % max) / parseFloat(max);
+	}
+
+	// Force a number between 0 and 1
+	function clamp01(val) {
+	    return mathMin(1, mathMax(0, val));
+	}
+
+	// Parse a base-16 hex value into a base-10 integer
+	function parseIntFromHex(val) {
+	    return parseInt(val, 16);
+	}
+
+	// Need to handle 1.0 as 100%, since once it is a number, there is no difference between it and 1
+	// <http://stackoverflow.com/questions/7422072/javascript-how-to-detect-number-as-a-decimal-including-1-0>
+	function isOnePointZero(n) {
+	    return typeof n == "string" && n.indexOf('.') != -1 && parseFloat(n) === 1;
+	}
+
+	// Check to see if string passed in is a percentage
+	function isPercentage(n) {
+	    return typeof n === "string" && n.indexOf('%') != -1;
+	}
+
+	// Force a hex value to have 2 characters
+	function pad2(c) {
+	    return c.length == 1 ? '0' + c : '' + c;
+	}
+
+	// Replace a decimal with it's percentage value
+	function convertToPercentage(n) {
+	    if (n <= 1) {
+	        n = (n * 100) + "%";
+	    }
+
+	    return n;
+	}
+
+	// Converts a decimal to a hex value
+	function convertDecimalToHex(d) {
+	    return Math.round(parseFloat(d) * 255).toString(16);
+	}
+	// Converts a hex value to a decimal
+	function convertHexToDecimal(h) {
+	    return (parseIntFromHex(h) / 255);
+	}
+
+	var matchers = (function() {
+
+	    // <http://www.w3.org/TR/css3-values/#integers>
+	    var CSS_INTEGER = "[-\\+]?\\d+%?";
+
+	    // <http://www.w3.org/TR/css3-values/#number-value>
+	    var CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?";
+
+	    // Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
+	    var CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")";
+
+	    // Actual matching.
+	    // Parentheses and commas are optional, but not required.
+	    // Whitespace can take the place of commas or opening paren
+	    var PERMISSIVE_MATCH3 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
+	    var PERMISSIVE_MATCH4 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
+
+	    return {
+	        rgb: new RegExp("rgb" + PERMISSIVE_MATCH3),
+	        rgba: new RegExp("rgba" + PERMISSIVE_MATCH4),
+	        hsl: new RegExp("hsl" + PERMISSIVE_MATCH3),
+	        hsla: new RegExp("hsla" + PERMISSIVE_MATCH4),
+	        hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
+	        hex3: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+	        hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+	        hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+	    };
+	})();
+
+	// `stringInputToObject`
+	// Permissive string parsing.  Take in a number of formats, and output an object
+	// based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
+	function stringInputToObject(color) {
+
+	    color = color.replace(trimLeft,'').replace(trimRight, '').toLowerCase();
+	    var named = false;
+	    if (names[color]) {
+	        color = names[color];
+	        named = true;
+	    }
+	    else if (color == 'transparent') {
+	        return { r: 0, g: 0, b: 0, a: 0, format: "name" };
+	    }
+
+	    // Try to match string input using regular expressions.
+	    // Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
+	    // Just return an object and let the conversion functions handle that.
+	    // This way the result will be the same whether the tinycolor is initialized with string or object.
+	    var match;
+	    if ((match = matchers.rgb.exec(color))) {
+	        return { r: match[1], g: match[2], b: match[3] };
+	    }
+	    if ((match = matchers.rgba.exec(color))) {
+	        return { r: match[1], g: match[2], b: match[3], a: match[4] };
+	    }
+	    if ((match = matchers.hsl.exec(color))) {
+	        return { h: match[1], s: match[2], l: match[3] };
+	    }
+	    if ((match = matchers.hsla.exec(color))) {
+	        return { h: match[1], s: match[2], l: match[3], a: match[4] };
+	    }
+	    if ((match = matchers.hsv.exec(color))) {
+	        return { h: match[1], s: match[2], v: match[3] };
+	    }
+	    if ((match = matchers.hex8.exec(color))) {
+	        return {
+	            a: convertHexToDecimal(match[1]),
+	            r: parseIntFromHex(match[2]),
+	            g: parseIntFromHex(match[3]),
+	            b: parseIntFromHex(match[4]),
+	            format: named ? "name" : "hex8"
+	        };
+	    }
+	    if ((match = matchers.hex6.exec(color))) {
+	        return {
+	            r: parseIntFromHex(match[1]),
+	            g: parseIntFromHex(match[2]),
+	            b: parseIntFromHex(match[3]),
+	            format: named ? "name" : "hex"
+	        };
+	    }
+	    if ((match = matchers.hex3.exec(color))) {
+	        return {
+	            r: parseIntFromHex(match[1] + '' + match[1]),
+	            g: parseIntFromHex(match[2] + '' + match[2]),
+	            b: parseIntFromHex(match[3] + '' + match[3]),
+	            format: named ? "name" : "hex"
+	        };
+	    }
+
+	    return false;
+	}
+
+	// Node: Export function
+	if (typeof module !== "undefined" && module.exports) {
+	    module.exports = tinycolor;
+	}
+	// AMD/requirejs: Define the module
+	else if (true) {
+	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {return tinycolor;}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	}
+	// Browser: Expose to window
+	else {
+	    window.tinycolor = tinycolor;
+	}
+
+	})();
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var F      = __webpack_require__(19)
+	var copy   = __webpack_require__(7).copy
+	var Region = __webpack_require__(16)
+
+	var Helper = function(config){
+	    this.config = config
+	}
+
+	function buildRegion(target){
+
+	    return Region.from(target)
+	}
+
+	function emptyFn(){}
+
+	copy({
+
+	    /**
+	     * Should be called on a mousedown event
+	     *
+	     * @param  {Event} event
+	     * @return {[type]}       [description]
+	     */
+	    initDrag: function(event) {
+
+	        this.onDragInit(event)
+
+	        var onDragStart = F.once(this.onDragStart, this)
+
+	        var mouseMoveListener = (function(event){
+	            onDragStart(event)
+	            this.onDrag(event)
+	        }).bind(this)
+
+	        var mouseUpListener = (function(event){
+
+	            this.onDrop(event)
+
+	            window.removeEventListener('mousemove', mouseMoveListener)
+	            window.removeEventListener('mouseup', mouseUpListener)
+	        }).bind(this)
+
+	        window.addEventListener('mousemove', mouseMoveListener, false)
+	        window.addEventListener('mouseup', mouseUpListener)
+	    },
+
+	    onDragInit: function(event){
+
+	        var config = {}
+	        this.state = {
+	            config: config
+	        }
+
+	        var initPageCoords = this.state.initPageCoords = {
+	            pageX: event.pageX,
+	            pageY: event.pageY
+	        }
+
+	        if (this.config.region){
+	            this.state.initialRegion = buildRegion(this.config.region)
+	            this.state.dragRegion =
+	                config.dragRegion =
+	                    this.state.initialRegion.clone()
+	        }
+	        if (this.config.constrainTo){
+	            this.state.constrainTo = buildRegion(this.config.constrainTo)
+	        }
+
+	        this.callConfig('onDragInit', event)
+	    },
+
+	    /**
+	     * Called when the first mousemove event occurs after drag is initialized
+	     * @param  {Event} event
+	     */
+	    onDragStart: function(event){
+	        this.state.didDrag = this.state.config.didDrag = true
+	        this.callConfig('onDragStart', event)
+	    },
+
+	    /**
+	     * Called on all mousemove events after drag is initialized.
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrag: function(event){
+
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var initPageCoords = this.state.initPageCoords
+
+	        var diff = config.diff = {
+	            left: event.pageX - initPageCoords.pageX,
+	            top : event.pageY - initPageCoords.pageY
+	        }
+
+	        if (this.state.initialRegion){
+	            var dragRegion = config.dragRegion
+
+	            //set the dragRegion to initial coords
+	            dragRegion.set(this.state.initialRegion)
+
+	            //shift it to the new position
+	            dragRegion.shift(diff)
+
+	            if (this.state.constrainTo){
+	                //and finally constrain it if it's the case
+	                dragRegion.constrainTo(this.state.constrainTo)
+
+	                diff.left = dragRegion.left - this.state.initialRegion.left
+	                diff.top  = dragRegion.top - this.state.initialRegion.top
+	            }
+
+	            config.dragRegion = dragRegion
+	        }
+
+	        this.callConfig('onDrag', event)
+	    },
+
+	    /**
+	     * Called on the mouseup event on window
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrop: function(event){
+	        this.callConfig('onDrop', event)
+
+	        this.state = null
+	    },
+
+	    callConfig: function(fnName, event){
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var fn = this.config[fnName]
+
+	        if (fn){
+	            fn.apply(this, args)
+	        }
+	    }
+
+	}, Helper.prototype)
+
+	module.exports = function(event, config){
+
+	    if (config.scope){
+	        var skippedKeys = {
+	            scope      : 1,
+	            region     : 1,
+	            constrainTo: 1
+	        }
+
+	        Object.keys(config).forEach(function(key){
+	            var value = config[key]
+
+	            if (key in skippedKeys){
+	                return
+	            }
+
+	            if (typeof value == 'function'){
+	                config[key] = value.bind(config.scope)
+	            }
+	        })
+	    }
+	    var helper = new Helper(config)
+
+	    helper.initDrag(event)
+
+	    return helper
+
+	}
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	    var setImmediate = function(fn){
+	        setTimeout(fn, 0)
+	    }
+	    var clearImmediate = clearTimeout
+	    /**
+	     * Utility methods for working with functions.
+	     * These methods augment the Function prototype.
+	     *
+	     * Using {@link #before}
+	     *
+	     *      function log(m){
+	     *          console.log(m)
+	     *      }
+	     *
+	     *      var doLog = function (m){
+	     *          console.log('LOG ')
+	     *      }.before(log)
+	     *
+	     *      doLog('test')
+	     *      //will log
+	     *      //"LOG "
+	     *      //and then
+	     *      //"test"
+	     *
+	     *
+	     *
+	     * Using {@link #bindArgs}:
+	     *
+	     *      //returns the sum of all arguments
+	     *      function add(){
+	     *          var sum = 0
+	     *          [].from(arguments).forEach(function(n){
+	     *              sum += n
+	     *          })
+	     *
+	     *          return sum
+	     *      }
+	     *
+	     *      var add1 = add.bindArgs(1)
+	     *
+	     *      add1(2, 3) == 6
+	     *
+	     * Using {@link #lockArgs}:
+	     *
+	     *      function add(){
+	     *          var sum = 0
+	     *          [].from(arguments).forEach(function(n){
+	     *              sum += n
+	     *          })
+	     *
+	     *          return sum
+	     *      }
+	     *
+	     *      var add1_2   = add.lockArgs(1,2)
+	     *      var add1_2_3 = add.lockArgs(1,2,3)
+	     *
+	     *      add1_2(3,4)  == 3 //args are locked to only be 1 and 2
+	     *      add1_2_3(6)  == 6 //args are locked to only be 1, 2 and 3
+	     *
+	     *
+	     *
+	     * Using {@link #compose}:
+	     *
+	     *      function multiply(a,b){
+	     *          return a* b
+	     *      }
+	     *
+	     *      var multiply2 = multiply.curry()(2)
+	     *
+	     *      Function.compose(multiply2( add(5,6) )) == multiply2( add(5,6) )
+	     *
+	     *
+	     * @class Function
+	     */
+
+	    var SLICE = Array.prototype.slice
+
+	    var curry = __webpack_require__(27),
+
+	        findFn = function(fn, target, onFound){
+	            // if (typeof target.find == 'function'){
+	            //     return target.find(fn)
+	            // }
+
+	            onFound = typeof onFound == 'function'?
+	                        onFound:
+	                        function(found, key, target){
+	                            return found
+	                        }
+
+	            if (Array.isArray(target)){
+	                var i   = 0
+	                var len = target.length
+	                var it
+
+	                for(; i < len; i++){
+	                    it = target[i]
+	                    if (fn(it, i, target)){
+	                        return onFound(it, i, target)
+	                    }
+	                }
+
+	                return
+	            }
+
+	            if (typeof target == 'object'){
+	                var keys = Object.keys(target)
+	                var i = 0
+	                var len = keys.length
+	                var k
+	                var it
+
+	                for( ; i < len; i++){
+	                    k  = keys[i]
+	                    it = target[k]
+
+	                    if (fn(it, k, target)){
+	                        return onFound(it, k, target)
+	                    }
+	                }
+	            }
+	        },
+
+	        find = curry(findFn, 2),
+
+	        findIndex = curry(function(fn, target){
+	            return findFn(fn, target, function(it, i){
+	                return i
+	            })
+	        }),
+
+	        bindFunctionsOf = function(obj) {
+	            Object.keys(obj).forEach(function(k){
+	                if (typeof obj[k] == 'function'){
+	                    obj[k] = obj[k].bind(obj)
+	                }
+	            })
+
+	            return obj
+	        },
+
+	        /*
+	         * @param {Function...} an enumeration of functions, each consuming the result of the following function.
+	         *
+	         * For example: compose(c, b, a)(1,4) == c(b(a(1,4)))
+	         *
+	         * @return the result of the first function in the enumeration
+	         */
+	        compose = __webpack_require__(28),
+
+	        chain = __webpack_require__(29),
+
+	        once = __webpack_require__(30),
+
+	        bindArgsArray = __webpack_require__(31),
+
+	        bindArgs = __webpack_require__(32),
+
+	        lockArgsArray = __webpack_require__(33),
+
+	        lockArgs = __webpack_require__(34),
+
+	        skipArgs = function(fn, count){
+	            return function(){
+	                var args = SLICE.call(arguments, count || 0)
+
+	                return fn.apply(this, args)
+	            }
+	        },
+
+	        intercept = function(interceptedFn, interceptingFn, withStopArg){
+
+	            return function(){
+	                var args    = [].from(arguments),
+	                    stopArg = { stop: false }
+
+	                if (withStopArg){
+	                    args.push(stopArg)
+	                }
+
+	                var result = interceptingFn.apply(this, args)
+
+	                if (withStopArg){
+	                    if (stopArg.stop === true){
+	                        return result
+	                    }
+
+	                } else {
+	                    if (result === false){
+	                        return result
+	                    }
+	                }
+
+	                //the interception was not stopped
+	                return interceptedFn.apply(this, arguments)
+	            }
+
+	        },
+
+	        delay = function(fn, delay, scope){
+
+	            var delayIsNumber = delay * 1 == delay
+
+	            if (arguments.length == 2 && !delayIsNumber){
+	                scope = delay
+	                delay = 0
+	            } else {
+	                if (!delayIsNumber){
+	                    delay = 0
+	                }
+	            }
+
+	            return function(){
+	                var self = scope || this,
+	                    args = arguments
+
+	                if (delay < 0){
+	                    fn.apply(self, args)
+	                    return
+	                }
+
+	                if (delay || !setImmediate){
+	                    setTimeout(function(){
+	                        fn.apply(self, args)
+	                    }, delay)
+
+	                } else {
+	                    setImmediate(function(){
+	                        fn.apply(self, args)
+	                    })
+	                }
+	            }
+	        },
+
+	        defer = function(fn, scope){
+	            return delay(fn, 0, scope)
+	        },
+
+	        buffer = function(fn, delay, scope){
+
+	            var timeoutId = -1
+
+	            return function(){
+
+	                var self = scope || this,
+	                    args = arguments
+
+	                if (delay < 0){
+	                    fn.apply(self, args)
+	                    return
+	                }
+
+	                var withTimeout = delay || !setImmediate,
+	                    clearFn = withTimeout?
+	                                clearTimeout:
+	                                clearImmediate,
+	                    setFn   = withTimeout?
+	                                setTimeout:
+	                                setImmediate
+
+	                if (timeoutId !== -1){
+	                    clearFn(timeoutId)
+	                }
+
+	                timeoutId = setFn(function(){
+	                    fn.apply(self, args)
+	                    self = null
+	                }, delay)
+
+	            }
+
+	        },
+
+	        throttle = function(fn, delay, scope) {
+	            var timeoutId = -1,
+	                self,
+	                args
+
+	            return function () {
+
+	                self = scope || this
+	                args = arguments
+
+	                if (timeoutId !== -1) {
+	                    //the function was called once again in the delay interval
+	                } else {
+	                    timeoutId = setTimeout(function () {
+	                        fn.apply(self, args)
+
+	                        self = null
+	                        timeoutId = -1
+	                    }, delay)
+	                }
+
+	            }
+
+	        },
+
+	        spread = function(fn, delay, scope){
+
+	            var timeoutId       = -1
+	            var callCount       = 0
+	            var executeCount    = 0
+	            var nextArgs        = {}
+	            var increaseCounter = true
+	            var resultingFnUnbound
+	            var resultingFn
+
+	            resultingFn = resultingFnUnbound = function(){
+
+	                var args = arguments,
+	                    self = scope || this
+
+	                if (increaseCounter){
+	                    nextArgs[callCount++] = {args: args, scope: self}
+	                }
+
+	                if (timeoutId !== -1){
+	                    //the function was called once again in the delay interval
+	                } else {
+	                    timeoutId = setTimeout(function(){
+	                        fn.apply(self, args)
+
+	                        timeoutId = -1
+	                        executeCount++
+
+	                        if (callCount !== executeCount){
+	                            resultingFn = bindArgsArray(resultingFnUnbound, nextArgs[executeCount].args).bind(nextArgs[executeCount].scope)
+	                            delete nextArgs[executeCount]
+
+	                            increaseCounter = false
+	                            resultingFn.apply(self)
+	                            increaseCounter = true
+	                        } else {
+	                            nextArgs = {}
+	                        }
+	                    }, delay)
+	                }
+
+	            }
+
+	            return resultingFn
+	        },
+
+	        /*
+	         * @param {Array} args the array for which to create a cache key
+	         * @param {Number} [cacheParamNumber] the number of args to use for the cache key. Use this to limit the args that area actually used for the cache key
+	         */
+	        getCacheKey = function(args, cacheParamNumber){
+	            if (cacheParamNumber == null){
+	                cacheParamNumber = -1
+	            }
+
+	            var i        = 0,
+	                len      = Math.min(args.length, cacheParamNumber),
+	                cacheKey = [],
+	                it
+
+	            for ( ; i < len; i++){
+	                it = args[i]
+
+	                if (root.check.isPlainObject(it) || Array.isArray(it)){
+	                    cacheKey.push(JSON.stringify(it))
+	                } else {
+	                    cacheKey.push(String(it))
+	                }
+	            }
+
+	            return cacheKey.join(', ')
+	        },
+
+	        /*
+	         * @param {Function} fn - the function to cache results for
+	         * @param {Number} skipCacheParamNumber - the index of the boolean parameter that makes this function skip the caching and
+	         * actually return computed results.
+	         * @param {Function|String} cacheBucketMethod - a function or the name of a method on this object which makes caching distributed across multiple buckets.
+	         * If given, cached results will be searched into the cache corresponding to this bucket. If no result found, return computed result.
+	         *
+	         * For example this param is very useful when a function from a prototype is cached,
+	         * but we want to return the same cached results only for one object that inherits that proto, not for all objects. Thus, for example for Wes.Element,
+	         * we use the 'getId' cacheBucketMethod to indicate cached results for one object only.
+	         * @param {Function} [cacheKeyBuilder] A function to be used to compose the cache key
+	         *
+	         * @return {Function} a new function, which returns results from cache, if they are available, otherwise uses the given fn to compute the results.
+	         * This returned function has a 'clearCache' function attached, which clears the caching. If a parameter ( a bucket id) is  provided,
+	         * only clears the cache in the specified cache bucket.
+	         */
+	        cache = function(fn, config){
+	            config = config || {}
+
+	            var bucketCache = {},
+	                cache       = {},
+	                skipCacheParamNumber = config.skipCacheIndex,
+	                cacheBucketMethod    = config.cacheBucket,
+	                cacheKeyBuilder      = config.cacheKey,
+	                cacheArgsLength      = skipCacheParamNumber == null?
+	                                            fn.length:
+	                                            skipCacheParamNumber,
+	                cachingFn
+
+	            cachingFn = function(){
+	                var result,
+	                    skipCache = skipCacheParamNumber != null?
+	                                                arguments[skipCacheParamNumber] === true:
+	                                                false,
+	                    args = skipCache?
+	                                    SLICE.call(arguments, 0, cacheArgsLength):
+	                                    SLICE.call(arguments),
+
+	                    cacheBucketId = cacheBucketMethod != null?
+	                                        typeof cacheBucketMethod == 'function'?
+	                                            cacheBucketMethod():
+	                                            typeof this[cacheBucketMethod] == 'function'?
+	                                                this[cacheBucketMethod]():
+	                                                null
+	                                        :
+	                                        null,
+
+
+	                    cacheObject = cacheBucketId?
+	                                        bucketCache[cacheBucketId]:
+	                                        cache,
+
+	                    cacheKey = (cacheKeyBuilder || getCacheKey)(args, cacheArgsLength)
+
+	                if (cacheBucketId && !cacheObject){
+	                    cacheObject = bucketCache[cacheBucketId] = {}
+	                }
+
+	                if (skipCache || cacheObject[cacheKey] == null){
+	                    cacheObject[cacheKey] = result = fn.apply(this, args)
+	                } else {
+	                    result = cacheObject[cacheKey]
+	                }
+
+	                return result
+	            }
+
+	            /*
+	             * @param {String|Object|Number} [bucketId] the bucket for which to clear the cache. If none given, clears all the cache for this function.
+	             */
+	            cachingFn.clearCache = function(bucketId){
+	                if (bucketId){
+	                    delete bucketCache[String(bucketId)]
+	                } else {
+	                    cache = {}
+	                    bucketCache = {}
+	                }
+	            }
+
+	            /*
+	             *
+	             * @param {Array} cacheArgs The array of objects from which to create the cache key
+	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
+	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
+	             */
+	            cachingFn.getCache = function(cacheArgs, cacheParamNumber, cacheKeyBuilder){
+	                return cachingFn.getBucketCache(null, cacheArgs, cacheParamNumber, cacheKeyBuilder)
+	            }
+
+	            /*
+	             *
+	             * @param {String} bucketId The id of the cache bucket from which to retrieve the cached value
+	             * @param {Array} cacheArgs The array of objects from which to create the cache key
+	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
+	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
+	             */
+	            cachingFn.getBucketCache = function(bucketId, cacheArgs, cacheParamNumber, cacheKeyBuilder){
+	                var cacheObject = cache,
+	                    cacheKey = (cacheKeyBuilder || getCacheKey)(cacheArgs, cacheParamNumber)
+
+	                if (bucketId){
+	                    bucketId = String(bucketId);
+
+	                    cacheObject = bucketCache[bucketId] = bucketCache[bucketId] || {}
+	                }
+
+	                return cacheObject[cacheKey]
+	            }
+
+	            /*
+	             *
+	             * @param {Object} value The value to set in the cache
+	             * @param {Array} cacheArgs The array of objects from which to create the cache key
+	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
+	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
+	             */
+	            cachingFn.setCache = function(value, cacheArgs, cacheParamNumber, cacheKeyBuilder){
+	                return cachingFn.setBucketCache(null, value, cacheArgs, cacheParamNumber, cacheKeyBuilder)
+	            }
+
+	            /*
+	             *
+	             * @param {String} bucketId The id of the cache bucket for which to set the cache value
+	             * @param {Object} value The value to set in the cache
+	             * @param {Array} cacheArgs The array of objects from which to create the cache key
+	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
+	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
+	             */
+	            cachingFn.setBucketCache = function(bucketId, value, cacheArgs, cacheParamNumber, cacheKeyBuilder){
+
+	                var cacheObject = cache,
+	                    cacheKey = (cacheKeyBuilder || getCacheKey)(cacheArgs, cacheParamNumber)
+
+	                if (bucketId){
+	                    bucketId = String(bucketId)
+
+	                    cacheObject = bucketCache[bucketId] = bucketCache[bucketId] || {};
+	                }
+
+	                return cacheObject[cacheKey] = value
+	            }
+
+	            return cachingFn
+	        }
+
+	module.exports = {
+
+	    map: __webpack_require__(35),
+
+	    dot: __webpack_require__(36),
+
+	    maxArgs: __webpack_require__(37),
+
+	    /**
+	     * @method compose
+	     *
+	     * Example:
+	     *
+	     *      zippy.Function.compose(c, b, a)
+	     *
+	     * See {@link Function#compose}
+	     */
+	    compose: compose,
+
+	    /**
+	     * See {@link Function#self}
+	     */
+	    self: function(fn){
+	        return fn
+	    },
+
+	    /**
+	     * See {@link Function#buffer}
+	     */
+	    buffer: buffer,
+
+	    /**
+	     * See {@link Function#delay}
+	     */
+	    delay: delay,
+
+	    /**
+	     * See {@link Function#defer}
+	     * @param {Function} fn
+	     * @param {Object} scope
+	     */
+	    defer:defer,
+
+	    /**
+	     * See {@link Function#skipArgs}
+	     * @param {Function} fn
+	     * @param {Number} [count=0] how many args to skip when calling the resulting function
+	     * @return {Function} The function that will call the original fn without the first count args.
+	     */
+	    skipArgs: skipArgs,
+
+	    /**
+	     * See {@link Function#intercept}
+	     */
+	    intercept: function(fn, interceptedFn, withStopArgs){
+	        return intercept(interceptedFn, fn, withStopArgs)
+	    },
+
+	    /**
+	     * See {@link Function#throttle}
+	     */
+	    throttle: throttle,
+
+	    /**
+	     * See {@link Function#spread}
+	     */
+	    spread: spread,
+
+	    /**
+	     * See {@link Function#chain}
+	     */
+	    chain: function(fn, where, mainFn){
+	        return chain(where, mainFn, fn)
+	    },
+
+	    /**
+	     * See {@link Function#before}
+	     */
+	    before: function(fn, otherFn){
+	        return chain('before', otherFn, fn)
+	    },
+
+	    /**
+	     * See {@link Function#after}
+	     */
+	    after: function(fn, otherFn){
+	        return chain('after', otherFn, fn)
+	    },
+
+	    /**
+	     * See {@link Function#curry}
+	     */
+	    curry: curry,
+
+	    /**
+	     * See {@link Function#once}
+	     */
+	    once: once,
+
+	    /**
+	     * See {@link Function#bindArgs}
+	     */
+	    bindArgs: bindArgs,
+
+	    /**
+	     * See {@link Function#bindArgsArray}
+	     */
+	    bindArgsArray: bindArgsArray,
+
+	    /**
+	     * See {@link Function#lockArgs}
+	     */
+	    lockArgs: lockArgs,
+
+	    /**
+	     * See {@link Function#lockArgsArray}
+	     */
+	    lockArgsArray: lockArgsArray,
+
+	    bindFunctionsOf: bindFunctionsOf,
+
+	    find: find,
+
+	    findIndex: findIndex,
+
+	    newify: __webpack_require__(38)
+	}
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var hasOwn = Object.prototype.hasOwnProperty
+
+	function curry(fn, n){
+
+	    if (typeof n !== 'number'){
+	        n = fn.length
+	    }
+
+	    function getCurryClosure(prevArgs){
+
+	        function curryClosure() {
+
+	            var len  = arguments.length
+	            var args = [].concat(prevArgs)
+
+	            if (len){
+	                args.push.apply(args, arguments)
+	            }
+
+	            if (args.length < n){
+	                return getCurryClosure(args)
+	            }
+
+	            return fn.apply(this, args)
+	        }
+
+	        return curryClosure
+	    }
+
+	    return getCurryClosure([])
+	}
+
+
+	module.exports = curry(function(object, property){
+	    return hasOwn.call(object, property)
+	})
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var HAS_OWN       = Object.prototype.hasOwnProperty,
+	        STR_OBJECT    = 'object',
+	        STR_UNDEFINED = 'undefined'
+
+	    return {
+
+	        /**
+	         * Copies all properties from source to destination
+	         *
+	         *      copy({name: 'jon',age:5}, this);
+	         *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copy: function(source, destination){
+
+	            destination = destination || {}
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	                    destination[i] = source[i]
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyIf({name: 'jon',age:5}, {age:7})
+	         *      // => { name: 'jon', age: 7}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copyIf: function(source, destination){
+	            destination = destination || {}
+
+	            if (source != null && typeof source === STR_OBJECT){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
+
+	                    destination[i] = source[i]
+
+	                }
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties from source to a new object, with the given value. This object is returned
+	         *
+	         *      copyAs({name: 'jon',age:5})
+	         *      // => the resulting object will have the 'name' and 'age' properties set to 1
+	         *
+	         * @param {Object} source
+	         * @param {Object/Number/String} [value=1]
+	         *
+	         * @return {Object} destination
+	         */
+	        copyAs: function(source, value){
+
+	            var destination = {}
+
+	            value = value || 1
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	                    destination[i] = value
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the list, from source to destination
+	         *
+	         *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	         *      // => {name: 'jon', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyList: function(source, destination, list){
+	            if (arguments.length == 2){
+	                list = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+	            list        = list || []
+
+	            var i   = 0,
+	                len = list.length,
+	                propName
+
+	            for( ; i < len; i++ ){
+	                propName = list[i]
+
+	                if ( typeof source[propName] !== STR_UNDEFINED ) {
+	                    destination[list[i]] = source[list[i]]
+	                }
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	         *      // => {name: 'jon', age: 10}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyListIf: function(source, destination, list){
+	            if (arguments.length == 2){
+	                list = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+	            list        = list || []
+
+	            var propName,
+	                i   = 0,
+	                len = list.length
+
+	            for(; i<len ; i++){
+	                propName = list[i]
+	                if (
+	                        (typeof source[propName]      !== STR_UNDEFINED) &&
+	                        (typeof destination[propName] === STR_UNDEFINED)
+	                    ){
+	                    destination[propName] = source[propName]
+	                }
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination
+	         *
+	         *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	         *      // => {name: 'jon', age: 5, theYear: 2006}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeys: function(source, destination, namedKeys){
+	            if (arguments.length == 2){
+	                namedKeys = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+
+	            if (
+	                   source != null && typeof source    === STR_OBJECT &&
+	                namedKeys != null && typeof namedKeys === STR_OBJECT
+	            ) {
+	                var typeOfNamedProperty,
+	                    namedPropertyValue
+
+	                for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+	                    namedPropertyValue  = namedKeys[propName]
+	                    typeOfNamedProperty = typeof namedPropertyValue
+
+	                    if (typeof source[propName] !== STR_UNDEFINED){
+	                        destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
+	                    }
+	                }
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination,
+	         * but only if the property does not already exist in the destination object
+	         *
+	         *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	         *      // => {aname: 'test', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeysIf: function(source, destination, namedKeys){
+	            if (arguments.length == 2){
+	                namedKeys   = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+
+	            if (
+	                       source != null && typeof source    === STR_OBJECT &&
+	                    namedKeys != null && typeof namedKeys === STR_OBJECT
+	                ) {
+
+	                    var typeOfNamedProperty,
+	                        namedPropertyValue,
+	                        newPropertyName
+
+	                    for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+
+	                        namedPropertyValue  = namedKeys[propName]
+	                        typeOfNamedProperty = typeof namedPropertyValue
+	                        newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
+
+	                        if (
+	                                typeof      source[propName]        !== STR_UNDEFINED &&
+	                                typeof destination[newPropertyName] === STR_UNDEFINED
+	                            ) {
+	                            destination[newPropertyName] = source[propName]
+	                        }
+
+	                    }
+	                }
+
+	            return destination
+	        },
+
+	        copyExceptKeys: function(source, destination, exceptKeys){
+	            destination = destination || {}
+	            exceptKeys  = exceptKeys  || {}
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) && !HAS_OWN.call(exceptKeys, i) ) {
+
+	                    destination[i] = source[i]
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies the named keys from source to destination.
+	         * For the keys that are functions, copies the functions bound to the source
+	         *
+	         * @param  {Object} source      The source object
+	         * @param  {Object} destination The target object
+	         * @param  {Object} namedKeys   An object with the names of the keys to copy The values from the keys in this object
+	         *                              need to be either numbers or booleans if you want to copy the property under the same name,
+	         *                              or a string if you want to copy the property under a different name
+	         * @return {Object}             Returns the destination object
+	         */
+	        bindCopyKeys: function(source, destination, namedKeys){
+	            if (arguments.length == 2){
+	                namedKeys = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+
+	            if (
+	                       source != null && typeof source    === STR_OBJECT &&
+	                    namedKeys != null && typeof namedKeys === STR_OBJECT
+	                ) {
+
+
+	                var typeOfNamedProperty,
+	                    namedPropertyValue,
+
+	                    typeOfSourceProperty,
+	                    propValue
+
+
+	                for(var propName in namedKeys) if (HAS_OWN.call(namedKeys, propName)) {
+
+	                    namedPropertyValue = namedKeys[propName]
+	                    typeOfNamedProperty = typeof namedPropertyValue
+
+	                    propValue = source[propName]
+	                    typeOfSourceProperty = typeof propValue
+
+
+	                    if ( typeOfSourceProperty !== STR_UNDEFINED ) {
+
+	                        destination[
+	                            typeOfNamedProperty == 'string'?
+	                                            namedPropertyValue :
+	                                            propName
+	                            ] = typeOfSourceProperty == 'function' ?
+	                                            propValue.bind(source):
+	                                            propValue
+	                    }
+	                }
+	            }
+
+	            return destination
+	        }
+	    }
+
+	}()
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(26)
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN = Object.prototype.hasOwnProperty
+
+	var classy = __webpack_require__(24)
+	var FunctionQueue = __webpack_require__(53)
+	var withQueue     = __webpack_require__(25)
+
+	var copyUtils = __webpack_require__(54)
+	var returnFalse = function(){
+	    return false
+	}
+	var hasOwn = function(object, propertyName){
+	    return HAS_OWN.call(object, propertyName)
+	}
+	var isClass = function(v){
+	     return !!(v && v.$superClass && v.prototype && v.extend && v.override)
+	}
+
+
+	/**
+	 * @class EventEmitter @extends Mixin
+	 *
+	 * # z.eventemitter
+	 *
+	 * This mixin class provides an interface for registering and publishing events.
+	 *
+	 * It is very important to grasp a good understanding of the EventEmitter, since most framework classes have this mixin applied.
+	 * Two of the EventEmitter methods make the most important part of the public API:
+	 *
+	 *  * on / addListener
+	 *  * emit
+	 *
+	 * For registering events, use:
+	 *
+	 *      emitter.on('click', function(){ ... })
+	 *
+	 * For publishing events, use:
+	 *
+	 *      emitter.emit('click', firstParam, secondParam)
+	 *
+	 * ## Registering events
+	 *
+	 * You can use the {@link addListener} method to register to events, or it's shorter alias, {@link #on}.
+	 *
+	 * The {@link #on} method accepts a variation of signatures, so let's explain them:
+	 *
+	 *      //1. event name as a string, then the function to register;
+	 *      //optionally a scope and an options object
+	 *      emitter.on('click', function(){ }[ , scope [, options]])
+	 *
+	 *      //2. event names specified as string with whitespace;
+	 *      //the function will be called both on 'start' and 'stop'
+	 *      emitter.on('start stop', function(){})
+	 *
+	 * In the variation above, we basically have
+	 *
+	 *  * the event name (a string - with spaces in case you want to listen to multiple events)
+	 *  * the listening function
+	 *  * an optional scope for the function
+	 *  * an optional options argument for the function
+	 *
+	 * Now, in this variation, for both the event name and the function, you can specify arrays.
+	 *
+	 *      emitter.on([ event_name_1, event_name_2], function(){})
+	 *
+	 * or
+	 *     emitter.on([ event_name_1, event_name_2], [ function a(){}, function b(){}, function c(){}])
+	 *
+	 * This means that whenever event_name_1 is emitted, all functions (both a, b and c will be called).
+	 * The same applies to event_name_2. Even more, the event names can be strings with whitespaces, so they can refer to event more events.
+	 *
+	 * To summarize, we have
+	 *
+	 *      emitter.on( stringOrArray, functionOrArray, optionalScope, options )
+	 *
+	 * {@link EventEmitter#on EventEmitter.on} also has a second form
+	 *
+	 *      var scope = { ... }
+	 *      emitter.on({
+	 *          scope : scope
+	 *          start : function(){
+	 *              //this == scope
+	 *          },
+	 *          click: function(){
+	 *          }
+	 *      })
+	 *
+	 * So you can register listeners using an object notation. The keys are the event names,
+	 * and the values are the functions you are registering.
+	 *
+	 * In this object notation, some keys can be the options for the registering functions:
+	 *
+	 *      emitter.on({
+	 *          scope: this, // the scope in which to bind the functions
+	 *          start: function(){ //function to be called when the 'start' event is emitted
+	 *          },
+	 *          stop: function(){ //function to be called when the 'stop' event is emitted
+	 *          },
+	 *          buffer: 10 //an option. This will buffer the calls to the start and stop functions by 10 ms.
+	 *      })
+	 *
+	 * Just like in the previous form, where you can have functions, you can have arrays of functions
+	 *
+	 *      function onClick(){}
+	 *
+	 *      var a  = function(){},
+	 *          b  = function(){}
+	 *
+	 *      emitter.on({
+	 *          scope: this,
+	 *          click: onClick,
+	 *
+	 *          //a space separated key is also accepted, and refers to all the events inside the string
+	 *          'start stop': [ a, b] // whenever start or stop is emitted, call all the functions in the array
+	 *      })
+	 *
+	 * There is another form you can use for specifying functions.
+	 *
+	 *      emitter.on({
+	 *          stop: function(){
+	 *          },
+	 *          start: function(){
+	 *          },
+	 *          idle: {
+	 *              fn: function(){
+	 *              },
+	 *              throttle: 10,
+	 *              scope: 'x'
+	 *          }
+	 *      })
+	 *
+	 * Whenever you can pass-in functions, you can also specify an object that has a *fn* property set to a function. This is especially useful
+	 * when you are using the {@link EventEmitter#on} with an object,
+	 * and you want for a specific function to specify a scope or options different than those of the other functions.
+	 *
+	 * ## Functions as strings
+	 *
+	 * Another way of attaching functions, supported in all forms described above, is specifying functions as strings.
+	 *
+	 * When the EventEmitter emits an event, and loops over the registered listeners, if it finds one that is a string, it looks for a property
+	 * with that name on the scope of the listener. If that property is a function, it stores it instead of the string, and executes the function just as it normally does.
+	 *
+	 * NOTE: once the "string" listener is resolved to a function, the resolved function is stored, and the next time the event is triggered, the same function is used,
+	 * even if the value of that property on the scope object for the listener has changed.
+	 *
+	 * #### Example:
+	 *
+	 *      var scope = {
+	 *          log: function(msg){
+	 *              console.log(msg)
+	 *              return msg
+	 *          }
+	 *      }
+	 *
+	 *      emitter.on({
+	 *          scope: scope,
+	 *          sendmessage: 'log'
+	 *      })
+	 *
+	 *      emitter.emit('sendmessage', 'hello world')
+	 *      //this event will look for the "log" property, on the scope object.
+	 *      //since that is a function, the function will be called, so it logs
+	 *      //"hello world"
+	 *
+	 * Now, if we change the "log" property on the scope
+	 *
+	 *      scope.log = function(msg){
+	 *          alert(msg)
+	 *      }
+	 *
+	 * And emit again
+	 *
+	 *      emitter.emit('send message', 'this will be a log')
+	 *
+	 *      //since the "log" function has already been resolved
+	 *      //the message is still logged to the console, and no alert wil be called.
+	 *
+	 *
+	 * ## Emitting events
+	 *
+	 * Emitting events is as simple as calling the {@link #emit EventEmitter.emit} method.
+	 *
+	 *      emitter.emit('start', 'firstParam', 5, 'thirdParam')
+	 *      //all the parameters that follow the event name are going to be passed to the registered functions
+	 *
+	 *      emitter.on('stop', function(a,b,c){
+	 *
+	 *      })
+	 *
+	 *      emitter.emit('stop', 5, 'test', 'me')
+	 *      //the function registered as a 'stop' listener will have its arguments mapped to
+	 *      // a => 5
+	 *      // b => 'test'
+	 *      // c => 'me'
+	 *
+	 * #### Example:
+	 *
+	 *      //Define a Computer class, which has EventEmitter mixed-in
+	 *
+	 *      root.define({
+	 *          alias: 'computer',
+	 *
+	 *          mixins: [ 'z.eventemitter' ],
+	 *
+	 *          state: false,
+	 *
+	 *          init: function(name){
+	 *              this.name = name
+	 *          },
+	 *
+	 *          //the start method emits the "poweron" event
+	 *          start: function(){
+	 *              if (this.state){
+	 *                  //the computer is already started
+	 *                  return this
+	 *              }
+	 *
+	 *              this.state = true
+	 *
+	 *              //emit the "poweron" event, sending the computer state as first param
+	 *              //and the computer instance as second param
+	 *              this.emit('poweron', this.state, this)
+	 *
+	 *              return this
+	 *          },
+	 *
+	 *          //the start method emits the "poweroff" event
+	 *          stop: function(){
+	 *              if (!this.state){
+	 *                  //the computer is already stopped
+	 *                  return this
+	 *              }
+	 *
+	 *              this.state = false
+	 *
+	 *              //emit the "poweroff" event, sending the computer state as first param
+	 *              //and the computer instance as second param
+	 *              this.emit('poweron', this.state, this)
+	 *
+	 *              return this
+	 *          }
+	 *      })
+	 *
+	 *
+	 *      //we create an instance of the Computer class (it's alias is "computer")
+	 *      var macAir = root.create('computer', 'MacBook Air')
+	 *
+	 *      //attach poweron and poweroff listeners
+	 *      macAir.on({
+	 *          poweron: function(state, comp){
+	 *              console.log(comp.name + ' has been turned on')
+	 *          }
+	 *          poweroff: function(state, comp){
+	 *              console.log(comp.name + ' has been turned off')
+	 *          },
+	 *          'poweron poweroff': function(state){
+	 *              console.log(comp.name + ' state has changed. It is now ' + (state?'on':'off') + '.')
+	 *          }
+	 *      })
+	 *
+	 *      macAir.start()
+	 *      //logs "MacBook Air has been turned on"
+	 *      //and "MacBook Air state has changed. It is now on."
+	 *
+	 *      macAir.stop()
+	 *      //logs "MacBook Air has been turned off"
+	 *      //and "MacBook Air state has changed. It is now off."
+	 *
+	 * ## Removing listeners
+	 *
+	 * Removing listeners is as simple as calling {@link #removeListener EventEmitter.removeListener}, or, its shorter alias, {@link #off EventEmitter.off}
+	 *
+	 *      //removes all listeners to the start event, that where bound to a scope that equals to context
+	 *      emitter.off('start', context)
+	 *
+	 *      //removes all listeners to the start event, no matter the scope
+	 *      emitter.off('start')
+	 *
+	 *      //removes all listeners to the start and stop events found on this emitter
+	 *      emitter.off('start stop') //or emitter.off(['start','stop'])
+	 *
+	 *      //removes all listeners from this emitter
+	 *      emitter.off() //or emitter.removeListener()
+	 *
+	 * ## Event options
+	 *
+	 * There are a number of options available for binding events:
+	 *
+	 *  * once (Boolean)      - Binds the function only once, that is, removes it after the event is emitted.
+	 *  * buffer (Number)     - Binds the function via {@link Function#buffer}
+	 *  * delay (Number)      - Binds the function via {@link Function#delay}
+	 *  * defer (Boolean)     - Binds the function via {@link Function#defer}
+	 *  * throttle (Number)   - Binds the function via {@link Function#throttle}
+	 *  * quickStop (Boolean) - Binds the function and enables this function to cancel any subsequent listeners for this event.
+	 *  * selector (String)   - Selector used by the Element class.
+	 *
+	 * #### Example:
+	 *
+	 *      var animal = {
+	 *          sound: 'ooo'
+	 *          makeSound: function(sound){
+	 *              this.emit('makesound', sound || this.sound)
+	 *          }
+	 *      }
+	 *
+	 *      //make the animal object be an EventEmitter
+	 *      root.mixin(animal, 'z.eventemitter')
+	 *
+	 *      animal.on('makesound', function(sound){ console.log(sound)}, scope, { once: true })
+	 *
+	 *      animal.makeSound('meow')
+	 *      //the listener is called, and "meow" is logged
+	 *      //then the listener is removed, since it was attached "once"
+	 *
+	 *      animal.makeSound('meow')
+	 *      //nothing gets logged
+	 *
+	 *      animal.on({
+	 *          scope: 'cat',
+	 *          makesound: function(sound){
+	 *              console.log(this, 'sound: ', sound)
+	 *          },
+	 *
+	 *          delay: 100
+	 *      })
+	 *
+	 *      animal.makeSound('meow')
+	 *      animal.makeSound('meow')
+	 *      //since the function is delayed,
+	 *      //the listener will only be called after 100ms from the last call,
+	 *      //so it only logs "cat sound: meow" once, after 100ms
+	 *
+	 *
+	 *      //you can also specify options using config.options
+	 *      animal.on({
+	 *          makesound: function(){
+	 *          },
+	 *
+	 *          throttle: 50,
+	 *          options: {
+	 *              throttle: 100
+	 *          }
+	 *      })
+	 *      //config.options has higher priority than any option specified directly on the config
+	 *      //so the function will be throttled 100ms, not 50
+	 *
+	 * ## Function scope
+	 *
+	 * If you don't specify a scope for your attached functions, the scope will be the EventEmitter.
+	 *
+	 *      animal.on('makesound', function(){
+	 *          //the scope is the EventEmitter
+	 *          this == animal
+	 *      })
+	 *
+	 *      //or you can pass it explicitly
+	 *
+	 *      animal.on('makesound', function(){
+	 *          console.log(this) //logs 'test'
+	 *      }, 'test')
+	 *
+	 *      //or using a config object
+	 *      animal.on({
+	 *          scope: { name: 'zippy' },
+	 *          makesound: function(){},
+	 *          wakeup: function(){},
+	 *          die: {
+	 *              fn: function(){},
+	 *              once: true,
+	 *              scope: "He's dead, Jim"
+	 *          }
+	 *      })
+	 *      //the makesound and wakeup listeners will be called in the scope specifed by
+	 *      //scope: {name: 'zippy'}
+	 *      //but the "die" listener will have the scope equal to the given string and will only be called once
+	 *
+	 * ## Creating EventEmitter objects
+	 *
+	 * Creating event emitters is just a matter of mixing the EventEmitter into a target class or object
+	 *
+	 * #### Example:
+	 *
+	 *      root.define({
+	 *          alias: 'person',
+	 *
+	 *          mixins: [
+	 *              'z.eventemitter'
+	 *          ],
+	 *
+	 *          init: function(config){
+	 *              config = config || {}
+	 *              this.name = config.name
+	 *          },
+	 *
+	 *          setName: function(name){
+	 *              var oldName = this.name
+	 *
+	 *              this.name = name
+	 *
+	 *              this.emit('namechange', this, name, oldName)
+	 *
+	 *              return this
+	 *          }
+	 *      })
+	 *
+	 *      var p = root.getInstance({
+	 *              alias: 'person',
+	 *              name : 'John'
+	 *          }),
+	 *          onChangeName = function(person, newName, oldName){
+	 *              console.log(person,' has just changed its name, from ' + oldName + ' to ' + newName + '.')
+	 *          }
+	 *
+	 *      p.on('changename', onChangeName)
+	 *      p.setName('Michael')
+	 *
+	 * If you simply want to make an object become an EventEmitter, simply do
+	 *
+	 *      var person = {
+	 *          name: 'Pat',
+	 *          setName: function(name){
+	 *              var oldName = this.name
+	 *              this.name = name
+	 *              this.emit('changename', this, name, oldName)
+	 *          }
+	 *      }
+	 *
+	 *      root.mixin(person, 'eventemitter')
+	 *
+	 *      person.on('changename', function(person, newName, oldName){
+	 *          console.log(persona, ' has just renamed to ', newName)
+	 *      });
+	 *      person.setName('Richard')
+	 *
+	 */
+
+	var SLICE = Array.prototype.slice
+	var IS_FN = function(fn){return typeof fn == 'function'}
+	var IS_FN_LIKE = function (obj) {
+	        return obj ? IS_FN(obj) || IS_FN(obj.fn) || typeof obj.fn === 'string' : false
+	    }
+
+	var CLEAR_QUEUE = function (queue) {
+	        queue.clear()
+	    }
+	var EVENT_QUEUE = new FunctionQueue({ allowFunctionsAsString: true, keepFunctionReferences: true })
+
+	var EventEmitter = classy.defineMixin({
+
+	    $copyIf: {
+
+	        hasListenersFor: function(name){
+	            return !!this.getListenerCountFor.apply(this, arguments)
+	        },
+
+	        getListenerCountFor: function (name) {
+	            var result = 0
+
+	            this.withQueue(name, function (queue) {
+	                result = queue.getLength()
+	            }, { skipEmpty: true })
+
+	            return result
+	        }
+	    },
+
+	    $override: {
+	        /**
+	         * @private
+	         *
+	         * Adds a listener in the normalized form
+	         *
+	         * @param {Object}   config The listener config
+	         *
+	         * @param {String}   config.name The event name.
+	         *
+	         * NOTE: this should have already been parsed, and be a non-whitespace string, the name of a single event.
+	         *
+	         * @param {Function} config.fn The function to bind to the event
+	         * @param {Object}   [config.scope] The optional scope
+	         * @param {Object}   [config.options] The optional options for the bound function.
+	         *
+	         * @return {EventEmitter} this
+	         */
+	        addNormalizedListener: function (config) {
+
+	            this.callTarget()
+
+	            var eventName = config.name,
+	                fn        = config.fn,
+	                scope     = config.scope,
+	                options   = config.options
+
+	            this.withQueue(eventName, function (queue) {
+	                queue.add(fn, scope, options)
+	            })
+
+	            return this
+	        }
+	    },
+
+	    $before: {
+
+	        eventEmitter: true,
+
+	        availableEmitterOptions: {
+	            once      : 1,
+	            buffer    : 1,
+	            delay     : 1,
+	            defer     : 1,
+	            throttle  : 1,
+	            quickStop : 1,
+	            selector  : 1,
+	            capture   : 1
+	        },
+
+	        destroy: function () {
+	            this.off()
+	        },
+
+	        init: function (config) {
+	            this.eventQueueState = this.eventQueueState || {}
+
+	            if (isClass(this) || !this.initEventEmitter) {
+
+	                if (this.listeners) {
+	                    this.on(this.listeners)
+	                }
+
+	                if (config && config.listeners && config.listeners != this.listeners) {
+	                    this.on(config.listeners)
+	                }
+
+	                this.initEventEmitter = true
+	            }
+
+	            return this
+	        },
+
+	        withQueue: function (eventName, fn, config) {
+
+	            var queueStateName = 'eventQueueState',
+	                checkEmpty     = config && config.checkEmpty
+
+	            if (checkEmpty){
+	                config.skipEmpty = true
+	            }
+
+	            var called = withQueue.call(this, eventName, function(queue){
+	                fn.call(this, queue)
+
+	                if (config && config.checkEmpty && !queue.getLength() ){
+	                     delete this[queueStateName][eventName]
+	                }
+
+	            }, queueStateName, EVENT_QUEUE, config)
+
+	            if (checkEmpty && !called){
+	                delete this[queueStateName][eventName]
+	            }
+
+
+	            return this
+
+	        },
+
+	        //private
+	        removeOneEventListener: function (eventName, fn, scope, config, queue) {
+	            queue.remove(fn, scope)
+	        },
+
+	        /**
+	         * @private
+	         * Removes a listener in the normalized form
+	         *
+	         * @param {Object}   config The listener config
+	         *
+	         * @param {String}   config.name The event name.
+	         *
+	         * @param {Function} config.fn The function to look for
+	         * @param {Object}   [config.scope] The optional scope
+	         *
+	         * @return {EventEmitter} this
+	         */
+	        removeNormalizedListener: function (config) {
+	            var eventName = config.name,
+	                fn        = config.fn,
+	                scope     = config.scope
+
+	            if (config.defaultScope) {
+	                scope = null
+	            }
+
+	            if (!fn){
+	                this.removeAllListenersFor(eventName)
+	            } else {
+
+	                this.withQueue(eventName, function (queue) {
+
+	                    this.removeOneEventListener(eventName, fn, scope, config, queue)
+
+	                }, { checkEmpty: true })
+	            }
+
+	            return this
+	        },
+
+	        /**
+	         * @chainable
+	         * @private
+	         * Removes all listeners from the specified event.
+	         *
+	         * @param  {String} eventName The event for which to remove all listeners
+	         * @return {EventEmitter} this EventEmitter
+	         */
+	        removeAllListenersFor: function (eventName) {
+	            return this.withQueue(eventName, CLEAR_QUEUE, { checkEmpty: true }), this
+	        },
+
+	        /**
+	         * @private
+	         * Removes all attached listeners from this EventEmitter
+	         *
+	         * @return {EventEmitter} this
+	         */
+	        removeAllListeners: function () {
+	            var state = this.eventQueueState,
+	                event
+
+	            //we could simply clear the queue, but some classes that have
+	            //this mixed in may need to be interested for the removing of all
+	            //functions for each event in particular
+	            for (event in state) if (hasOwn(state, event)) {
+	                this.removeAllListenersFor(event)
+	            }
+
+	            this.eventQueueState = {}
+
+	            return this
+	        },
+
+	        getNormalizedArray: function (eventName, fnLike, scope, options) {
+	            var availableOptions = this.availableEmitterOptions,
+	                args = arguments,
+	                result = [],
+	                opts
+
+	            if (args.length > 1 || (args.length == 1 && (typeof eventName == 'string') || Array.isArray(eventName))) {
+	                //we also make the args.length == 1 check and eventName is string or array,
+	                //because in the case of a getNormalizedArray call, for removing listeners,
+	                //very often you will want to do: node.removeListener('click') or node.removeListener(['click','mouseup'])
+
+	                if (Array.isArray(eventName)) {
+
+	                    //this method has been called with an array of event names,
+	                    //so simply append the result of calling this method for every item in the array
+	                    eventName.forEach(function (name) {
+
+	                        result.push.apply(result, this.getNormalizedArray(name, fnLike, scope, options))
+
+	                    }, this)
+
+	                    //and return that result
+	                    return result
+	                }
+
+	                if (Array.isArray(fnLike)) {
+
+	                    //this method has been called with an array of functions,
+	                    //so again, simply append all results of calling this method for each function in the array
+	                    fnLike.forEach(function (fn) {
+
+	                        result.push.apply(result, this.getNormalizedArray(eventName, fn, scope, options))
+
+	                    }, this)
+
+	                    //and return the result
+	                    return result
+	                }
+
+	                var fn
+
+	                opts = options
+
+	                if (IS_FN(fnLike)) {
+
+	                    fn = fnLike
+
+	                } else if (typeof fnLike == 'string') {
+
+	                    fn = fnLike
+
+	                } else if (IS_FN_LIKE(fnLike)) {
+
+	                    fn = fnLike.fn
+	                    opts = copyUtils.copy(options)
+
+	                    copyUtils.copyKeys(fnLike, opts, availableOptions)
+
+	                    if (fnLike.options) {
+	                        copyUtils.copy(fnLike.options, opts)
+	                    }
+
+	                    if (fnLike.scope) {
+	                        scope = fnLike.scope
+	                    }
+	                }
+
+	                if (~eventName.indexOf(' ')) {
+
+	                    eventName.split(' ').forEach(function (eventName) {
+	                        if (eventName) {
+	                            result.push({
+	                                defaultScope: scope == null,
+	                                name: eventName,
+	                                fn: fn,
+	                                options: opts,
+	                                scope: scope || this
+	                            })
+	                        }
+	                    }, this)
+
+	                } else {
+
+	                    result.push({
+	                        defaultScope: scope == null,
+	                        name: eventName,
+	                        fn: fn,
+	                        options: opts,
+	                        scope: scope || this
+	                    })
+
+	                }
+
+
+	                return result
+	            }
+
+	            var propName,
+	                propValue,
+	                config = eventName
+
+	            opts = copyUtils.copyKeys(config, {}, availableOptions)
+
+	            if (config.options) {
+	                copyUtils.copy(config.options, opts)
+	            }
+
+	            for (propName in config) if (hasOwn(config, propName)) {
+
+	                propValue = config [ propName ]
+
+	                if (
+	                    IS_FN_LIKE(propValue) ||
+	                        Array.isArray(propValue) ||
+	                        (typeof propValue == 'string' && !(propName in availableOptions) && propName != 'scope')
+	                    ) {
+
+	                    // if (config.options){
+	                    //     opts = root.copy(opts)
+
+	                    //     root.copy(config.options, opts)
+	                    // }
+
+	                    result.push.apply(result, this.getNormalizedArray(propName, propValue, config.scope, opts))
+	                }
+	            }
+
+	            return result
+	        },
+
+	        /**
+	         * Adds a listener to this EventEmitter
+	         *
+	         * There are a number of ways to call the addListener method, which are described above, in the documentation of the class.
+	         *
+	         * Here's a brief overview:
+	         *
+	         *      //event name and function
+	         *      emitter.addListener('start', function(){})
+	         *
+	         *      //name, function, optional scope, and options
+	         *      emitter.addListener('start', function(){}, scope, options)
+	         *
+	         * Whenever you can provide an event name or a function, you can also provide an array of event names or functions
+	         *
+	         *      //both a and b functions will be called when start is emitted, as well as when stop is emitted
+	         *      emitter.on(['start', 'stop'], [function a(){}, function b(){}])
+	         *
+	         * You can also have an object config
+	         *
+	         *      var context = ...
+	         *
+	         *      emitter.on({
+	         *          scope: context,
+	         *          start: function(){
+	         *          },
+	         *          stop: function(){
+	         *          }
+	         *      })
+	         *
+	         * @param {String/Array/Object} name The event name to which to bind the listener, an array of event names, or an object config
+	         * @param {Function/Function[]} [fn] The function or the function array that will be attached to the event.
+	         * @param {Object}   scope   An optional scope for the attached function/functions
+	         * @param {Object}   options An object config for the attached function/functions
+	         * @return {EventEmitter} this EventEmitter
+	         *
+	         * @chainable
+	         */
+	        addListener: function (name, fn, scope, options) {
+
+	            var args = arguments,
+	                result = this
+
+	            if (args.length == 1 && (typeof name == 'string')) {
+	                throw new Error('Promise not supported yet for events.')
+	                var deferred = root.create('z.deferred')
+
+	                result = deferred.getPromise()
+
+	                args.push(fn = function () {
+	                    deferred.resolve.apply(deferred, arguments)
+	                })
+	            }
+
+	            this.getNormalizedArray.apply(this, args)
+	                .forEach(function(config){
+
+	                    this.ensureEventOptions(config)
+	                    this.addNormalizedListener(config)
+
+	                }, this)
+
+	            return result
+	        },
+
+	        /**
+	         * Alias to {@link #addListener}
+	         */
+	        on: function () {
+	            return this.addListener.apply(this, arguments)
+	        },
+
+	        /**
+	         * Removes listeners from this event emitter.
+	         *
+	         * @param {String/String[]} [eventName] The event for which to remove the listeners. If this method is called
+	         * without any parameter (so no event name given), it will remove all listeners.
+	         *
+	         * If it is called with an eventName, it will remove all the listeners attached for the given event.
+	         *
+	         * If the optional scope is given, only remove those listeners from the specified event that were attached in the given scope.
+	         *
+	         * @param {Object} [scope] If an eventName is provided, you can optionally specify the scope to only remove the listeners attached
+	         * for this event in the given scope.
+	         *
+	         * @return {EventEmitter} this event emitter
+	         */
+	        removeListener: function () {
+
+	            var args = arguments
+
+	            if (!args.length) {
+	                this.removeAllListeners()
+	            } else {
+
+	                this.getNormalizedArray.apply(this, args)
+	                    .forEach(function(config){
+
+	                        this.ensureEventOptions(config)
+	                        this.removeNormalizedListener(config)
+
+	                    }, this)
+	            }
+
+	            return this
+	        },
+
+	        /**
+	         * Alias to {@link #removeListener}
+	         */
+	        off: function () {
+	            return this.removeListener.apply(this, arguments)
+	        },
+
+	        /**
+	         * Attaches the functions just once. After the first time the event is triggered, these functions are removed.
+	         *
+	         * This has the same signature with {@link #on} .
+	         *
+	         * @return {EventEmitter} this
+	         */
+	        once: function () {
+
+	            this.getNormalizedArray.apply(this, arguments)
+	                .forEach(function (config) {
+
+	                    this.ensureEventOptions(config)
+
+	                    config.options.once = true
+
+	                    this.addNormalizedListener(config)
+	                }, this)
+
+	            return this
+
+	        },
+
+	        ensureEventOptions: function(config){
+	            config.options = config.options || {}
+	        },
+
+	        /**
+	         * Alias to {@link #once}
+	         */
+	        one: function () {
+	            return this.once.apply(this, arguments)
+	        },
+
+	        /**
+	        * @param {String} name
+	        * @param {...Object} args The enumeration of parameters to send to the listening functions of this event.
+	        * @return {Boolean} false if any of the event listeners returns the Boolean false, true otherwise
+	        */
+	        emit: function (name /*, args ... */) {
+
+	            return this.emitEvent(name, SLICE.call(arguments, 1))
+
+	        },
+
+	        emitAppEvent: function(name /*, args ... */) {
+	            var args = SLICE.call(arguments, 1)
+	            var e    = this.createAppEventObject(name, args)
+
+	            if (this.emitEvent(name, args.concat(e)) === false){
+	                e.stop = true
+	            }
+
+	            return e
+	        },
+
+	        createAppEventObject: function(name, args) {
+	            var e = { stop: false }
+
+	            e.appEvent = true
+	            e.type     = name
+	            e.source   = this
+	            e.current  = this
+	            e.targets  = [this]
+
+	            e.args = args
+
+	            return e
+	        },
+
+	        emitEvent: function(name, args, config){
+	            if (name == '*'){
+	                //<debug>
+	                console.log('You cannot emit the generic event')
+	                //</debug>
+	                return false
+	            }
+
+	            var result
+
+	            this.lastEventName = name
+
+	            this.withQueue(name, function (queue) {
+	                if (this.mutedEvents && this.mutedEvents[name]){
+	                    config = config || {}
+	                    config.filter = returnFalse
+	                }
+	                result = queue.applyWith(this /*default scope, if none given*/, args, config)
+	            })
+
+	            this.withQueue('*', function(queue){
+	                if (this.mutedEvents && this.mutedEvents[name]){
+	                    config = config || {}
+	                    config.filter = returnFalse
+	                }
+
+	                //if there is no listener for '*', this function will not be called
+	                queue.applyWith(this, [name].concat(args), config)
+	            }, { skipEmpty: true })
+
+	            return result
+	        },
+
+	        /**
+	         * Alias to {@link #emit}
+	         */
+	        trigger: function () {
+	            return this.emit.apply(this, arguments)
+	        },
+
+	        /**
+	         * Returns the name of the last event that has been emitted.
+	         *
+	         * @return {String} The name of the last event that has been emitted.
+	         */
+	        getLastEventName: function () {
+	            return this.lastEventName
+	        },
+
+	        quickEmit: function (name /*, args... */) {
+	            var args = SLICE.call(arguments, 1),
+	                result
+
+	            this.lastEventName = name
+
+	            this.withQueue(name, function (queue) {
+	                result = queue.applyWith(this, args, { quickStop: true })
+	            })
+
+	            return result
+	        },
+
+	        muteEvents: function(events){
+
+	            this.mutedEvents = this.mutedEvents || {}
+
+	            ;(events || []).forEach(function(name){
+	                this.mutedEvents[name] = 1
+	            }, this)
+
+	            return this
+	        },
+
+	        unmuteEvents: function(events){
+	            if (this.mutedEvents)  {
+
+	                if (events){
+	                    events.forEach(function(name){
+	                        delete this.mutedEvents[name]
+	                    }, this)
+	                } else {
+	                    delete this.mutedEvents
+	                }
+	            }
+
+	            return this
+	        }
+	    }
+
+	})
+
+	var FN = function(obj){
+	    return obj?
+	            classy.mixin(obj, EventEmitter):
+	            new EventEmitter()
+	}
+
+	FN.mixin = EventEmitter
+
+	module.exports = FN
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+
+	 This file is part of the ZippyUI Framework
+
+	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
+
+	 The source code is distributed under the terms of the MIT license.
+	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
+
+	 */
+	module.exports = function(){
+
+	    'use strict'
+
+	    var core = __webpack_require__(50)
+
+	    var isSubclassOf = __webpack_require__(39)
+
+	    function isSameOrSubclassOf(subClass, superClass){
+	        return isSubclassOf(subClass, superClass, { allowSame: true })
+	    }
+
+	    __webpack_require__(40)
+
+	    var copyUtils = __webpack_require__(51)
+
+	    return {
+
+	        _: copyUtils.copy(copyUtils),
+
+	        //primitives
+	        BaseClass      : core.BaseClass,
+	        extend         : core.extend,
+	        createClass    : core.createClass,
+	        overrideClass  : core.overrideClass,
+	        core: core,
+
+	        //enhanced
+	        define   : __webpack_require__(41),
+	        override : __webpack_require__(42),
+	        getClass : __webpack_require__(43),
+
+	        classRegistry: __webpack_require__(44),
+
+	        defineMixin: __webpack_require__(45),
+	        mixin      : __webpack_require__(52).mixin,
+
+	        create      : __webpack_require__(46),
+	        getInstance : __webpack_require__(47),
+
+	        destroyClass   : __webpack_require__(48),
+	        getParentClass : __webpack_require__(49),
+
+	        isSubclassOf       : isSubclassOf,
+	        isSameOrSubclassOf : isSameOrSubclassOf,
+	        isClassLike        : isSameOrSubclassOf
+	    }
+	}()
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var withQueueStates = __webpack_require__(55)
+
+	module.exports = function(name, fn, stateName, QUEUE, config){
+
+	    var skipEmpty = !!(config && config.skipEmpty)
+	    var result = false
+
+	    withQueueStates.call(this, function(allStates, Q){
+	        if (skipEmpty && !allStates[name]){
+	            return
+	        }
+
+	        result = this
+
+	        var state = allStates[name] || {}
+
+	        // restore the queue with the state for the given name
+	        Q.from(state)
+
+	        fn.call(this, Q)
+
+	        //save the queue state
+
+	        state = Q.toStateObject()
+
+	        if (state !== undefined){
+	            allStates[name] = state
+	        } else {
+	            delete allStates[name]
+	        }
+
+	    }, stateName, QUEUE)
+
+	    return result
+	}
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = {
+	    'numeric'  : __webpack_require__(56),
+	    'number'   : __webpack_require__(57),
+	    'int'      : __webpack_require__(58),
+	    'float'    : __webpack_require__(59),
+	    'string'   : __webpack_require__(60),
+	    'function' : __webpack_require__(61),
+	    'object'   : __webpack_require__(62),
+	    'arguments': __webpack_require__(63),
+	    'boolean'  : __webpack_require__(64),
+	    'date'     : __webpack_require__(65),
+	    'regexp'   : __webpack_require__(66),
+	    'array'    : __webpack_require__(67)
+	}
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	function curry(fn, n){
+
+	    if (typeof n !== 'number'){
+	        n = fn.length
+	    }
+
+	    function getCurryClosure(prevArgs){
+
+	        function curryClosure() {
+
+	            var len  = arguments.length
+	            var args = [].concat(prevArgs)
+
+	            if (len){
+	                args.push.apply(args, arguments)
+	            }
+
+	            if (args.length < n){
+	                return getCurryClosure(args)
+	            }
+
+	            return fn.apply(this, args)
+	        }
+
+	        return curryClosure
+	    }
+
+	    return getCurryClosure([])
+	}
+
+	module.exports = curry
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	function composeTwo(f, g) {
+	    return function () {
+	        return f(g.apply(this, arguments))
+	    }
+	}
+
+	/*
+	 * @param {Function...} an enumeration of functions, each consuming the result of the following function.
+	 *
+	 * For example: compose(c, b, a)(1,4) == c(b(a(1,4)))
+	 *
+	 * @return the result of the first function in the enumeration
+	 */
+	module.exports = function(){
+
+	    var args = arguments
+	    var len  = args.length
+	    var i    = 0
+	    var f    = args[0]
+
+	    while (++i < len) {
+	        f = composeTwo(f, args[i])
+	    }
+
+	    return f
+	}
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	function chain(where, fn, secondFn){
+
+	    return function(){
+	        if (where === 'before'){
+	            secondFn.apply(this, arguments)
+	        }
+
+	        var result = fn.apply(this, arguments)
+
+	        if (where !== 'before'){
+	            secondFn.apply(this, arguments)
+	        }
+
+	        return result
+	    }
+	}
+
+	module.exports = chain
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use once'
+
+	function once(fn, scope){
+
+	    var called
+	    var result
+
+	    return function(){
+	        if (called){
+	            return result
+	        }
+
+	        called = true
+
+	        return result = fn.apply(scope || this, arguments)
+	    }
+	}
+
+	module.exports = once
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var SLICE = Array.prototype.slice
+
+	module.exports = function(fn, args){
+	    return function(){
+	        var thisArgs = SLICE.call(args || [])
+
+	        if (arguments.length){
+	            thisArgs.push.apply(thisArgs, arguments)
+	        }
+
+	        return fn.apply(this, thisArgs)
+	    }
+	}
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var SLICE = Array.prototype.slice
+	var bindArgsArray = __webpack_require__(31)
+
+	module.exports = function(fn){
+	    return bindArgsArray(fn, SLICE.call(arguments,1))
+	}
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var SLICE = Array.prototype.slice
+
+	module.exports = function(fn, args){
+
+	    return function(){
+	        if (!Array.isArray(args)){
+	            args = SLICE.call(args || [])
+	        }
+
+	        return fn.apply(this, args)
+	    }
+	}
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var SLICE = Array.prototype.slice
+	var lockArgsArray = __webpack_require__(33)
+
+	module.exports = function(fn){
+	    return lockArgsArray(fn, SLICE.call(arguments, 1))
+	}
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var curry = __webpack_require__(27)
+
+	module.exports = curry(function(fn, value){
+	    return value != undefined && typeof value.map?
+	            value.map(fn):
+	            fn(value)
+	})
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var curry = __webpack_require__(27)
+
+	module.exports = curry(function(prop, value){
+	    return value != undefined? value[prop]: undefined
+	})
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var SLICE = Array.prototype.slice
+	var curry = __webpack_require__(27)
+
+	module.exports = function(fn, count){
+	    return function(){
+	        return fn.apply(this, SLICE.call(arguments, 0, count))
+	    }
+	}
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var newify = __webpack_require__(82)
+	var curry  = __webpack_require__(27)
+
+	module.exports = curry(newify)
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getClass = __webpack_require__(43)
+
+	module.exports = function(subClass, superClass, config){
+
+	    'use strict'
+
+	    subClass   = getClass(subClass)
+	    superClass = getClass(superClass)
+
+	    if (!subClass || !superClass){
+	        return false
+	    }
+
+	    if (config && config.allowSame && subClass === superClass){
+	        return true
+	    }
+
+	    while (subClass && subClass.$superClass != superClass){
+	        subClass = subClass.$superClass
+	    }
+
+	    return !!subClass
+	}
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+
+	 This file is part of the ZippyUI Framework
+
+	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
+
+	 The source code is distributed under the terms of the MIT license.
+	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
+
+	 */
+
+	'use strict'
+
+	var core = __webpack_require__(50)
+	var copy = __webpack_require__(51).copy
+	var when = [ '$before', '$after', '$override', '$copyIf' ]
+
+	module.exports = __webpack_require__(41)({
+
+	    alias: 'z.mixin',
+
+	    callTarget: function(){},
+
+	    statics: {
+	        init: function(){
+	            var source = this.$initialConfig || {}
+
+	            when.forEach(function(it){
+	                //copy all methods from prototype[when] to prototype
+	                if (source[it]){
+	                    core.copyClassConfig(this, source[it], {proto: true })
+	                }
+
+	                //copy all methods from Class[when] to Class
+	                if (this[it]){
+	                    core.copyClassConfig(this, this[it], { proto: false })
+	                }
+	            }, this)
+
+	        },
+
+	        /**
+	         * @private
+	         * @static
+	         *
+	         * @param  {Object} overrideConfig The config passed to the override call.
+	         *
+	         * Example:
+	         *         root.override(alias, config) //this config will be passed to beforeOverride
+	         *
+	         * @return {Object} the new config to be used for overriding.
+	         *
+	         * beforeOverride should either return the same config, or a new config based on the one it was given.
+	         *
+	         * This is useful for mixins since we don't want to override the $override, $before or $after properties,
+	         * but rather the properties inside those objects.
+	         */
+	        beforeOverride: function(overrideConfig){
+	            var result = {},
+	                proto  = this.prototype
+
+	            when.forEach(function(it){
+	                var config = overrideConfig[it]
+
+	                if (config != null){
+	                    copy(config, result)
+
+	                    //also copy to the proto[it],
+	                    //so new methods are found when iterating over proto[it]
+	                    copy(config, proto[it])
+	                }
+	            })
+
+	            return result
+	        }
+	    }
+	})
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getClass     = __webpack_require__(43)
+	var processClass = __webpack_require__(68)
+
+	var Registry = __webpack_require__(44)
+	var core     = __webpack_require__(50)
+
+	var ClassProcessor = __webpack_require__(69)
+
+	function preprocessClass(classConfig, parent){
+	    ClassProcessor.preprocess(classConfig)
+	}
+
+	var IDS    = 0
+	var PREFIX = 'ZClass-'
+
+	function generateAlias(){
+	    return PREFIX + (IDS++)
+	}
+
+
+	module.exports = function(parentClass, classConfig){
+
+	    'use strict'
+
+	    if (arguments.length == 1){
+	        classConfig = parentClass
+	        parentClass = null
+	    }
+
+	    var parent = parentClass || classConfig.extend
+	    var alias  = classConfig.alias    || (classConfig.alias = generateAlias())
+
+	    parent = getClass(parent) || parent
+
+	    //<debug>
+	    if (!parent){
+	        console.warn('Could not find class to extend (' + classConfig.extend + '). Extending base class.')
+	    }
+	    //</debug>
+
+	    preprocessClass(classConfig, parent)
+
+	    return core.createClass(parent, classConfig, function(Class){
+
+	        //<debug>
+	        if (Registry[alias]){
+	            console.warn('A class with alias ' + alias + ' is already registered. It will be overwritten!')
+	        }
+	        //</debug>
+
+	        Registry[alias] = Class
+
+	        processClass(Class)
+	    })
+	}
+
+/***/ },
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getClass = __webpack_require__(43)
+
+	/**
+	 * @method override
+	 *
+	 * Zpy.override allows you to override a class. This can be often used to override default values
+	 *
+	 * Example:
+	 *      Zpy.override('z.visualcmp', {
+	 *          titleHeight: 40,
+	 *
+	 *          getTitle: function(){
+	 *              return this.callOverriden() + '!'
+	 *          }
+	 *      })
+	 *
+	 * @param  {Class/String} Class The class you want to override, or an alias of an existing class
+	 * @param  {Object} classConfig The object with the overrides
+	 * @return {Class} returns the class that has just beedn overriden
+	 */
+	module.exports = function(Class, classConfig){
+
+	    'use strict'
+
+	    var TheClass = getClass(Class)
+
+	    TheClass && TheClass.override(classConfig)
+
+	    return TheClass
+	}
+
+/***/ },
+/* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @method getClass
+	 *
+	 * This method can be used to get a reference to an existing class. Pass in either a class alias (a string),
+	 * an instance of a class, or the class itself. It will return the class.
+	 *
+	 * @param  {String/Object/Class} alias The alias for the class you are looking for, an instance of a class or the class itself
+	 *
+	 * @return {Class}       The class or undefined if no class is found
+	 */
+
+	var REGISTRY   = __webpack_require__(44)
+	var BASE_CLASS = __webpack_require__(50).BaseClass
+
+	module.exports = function getClass(alias){
+	    if (!alias){
+	        return BASE_CLASS
+	    }
+
+	    if (typeof alias != 'string'){
+	        //alias is probably an instance or a Class
+	        alias = alias.alias || (alias.prototype? alias.prototype.alias: alias)
+	    }
+
+	    return REGISTRY[alias]
+
+	}
+
+/***/ },
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = {}
+
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var define = __webpack_require__(41)
+	var copyIf = __webpack_require__(51).copyIf
+
+	module.exports = function(members){
+
+	    'use strict'
+
+	    return define(copyIf({ extend: 'z.mixin'}, members))
+	}
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var SLICE = Array.prototype.slice
+
+	var getClass = __webpack_require__(43)
+	var newify   = __webpack_require__(83)
+
+	/**
+	 * @method create
+	 *
+	 * Use Zpy.create to create instances.
+	 * The first parameter you should pass in is an alias (or anything accepted by {@link #getClass}), and the rest
+	 * of the parameters are passed on to the class constructor
+	 * example:
+	 *
+	 *     Zpy.create('animal', 'dog', 'puffy')
+	 *     //will look for a class with the alias == 'animal'
+	 *     //and call it's constructor with the 'dog' and 'puffy' paramaters
+	 *
+	 *     //equivalent to
+	 *     new Animal('dog','puffy')
+	 *
+	 * @param  {Class/String/Object} alias The class alias, or anything accepted by {@link #getClass}
+	 * @return {Object} an instance of the specified class.
+	 */
+	module.exports = function(alias /* args... */){
+
+	    'use strict'
+
+	    var Class = getClass(alias)
+	    var args  = SLICE.call(arguments, 1)
+
+	    return newify(Class, args)
+	}
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseClass = __webpack_require__(50).BaseClass
+	var getClass  = __webpack_require__(43)
+
+	/**
+	 * @method getInstance
+	 *
+	 * Use this method to create instances. If a class is given, or an alias or an object with the alias set,
+	 * that class is resolved, and if it found, an instance of that class is created, with the config being
+	 * passed to the Class constructor (the init method)
+	 *
+	 * If config is an instance, that instance is simply returned
+	 *
+	 * @param {Object} config A string (a class alias), a config object with the alias property set
+	 * or a class.
+	 *
+	 * @return {Zpy.BaseClass} a new instance corresponding to the class denoted by config.
+	 */
+	module.exports = function(config){
+
+	    'use strict'
+
+	    if (config instanceof BaseClass){
+	        return config
+	    }
+
+	    config = typeof config == 'string'?
+	                { alias: config }:
+	                config || {}
+
+	    var klass = getClass(config)
+
+	    //<debug>
+	    if (!klass){
+	        console.warn('Cannot find class for ', config)
+	    }
+	    //</debug>
+
+	    if (klass && klass.prototype.singleton){
+	        return klass.getInstance()
+	    }
+
+	    return new klass(config)
+	}
+
+/***/ },
+/* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @method destroyClass
+	 *
+	 * Calls the static destroy method on the given class, and unregisters the class from the framework registry.
+	 *
+	 * @param  {String/Object/Class} Class a class - as expected by {@link #getClass}
+	 *
+	 */
+
+	var getClass   = __webpack_require__(43)
+	var core       = __webpack_require__(50)
+	var BaseClass  = core.BaseClass
+
+	module.exports = function(Class){
+
+	    'use strict'
+
+	    Class = getClass(Class)
+
+	    if (Class && (Class != BaseClass)){
+	        Class.destroy()
+	    }
+	}
+
+/***/ },
+/* 49 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseClass = __webpack_require__(50).BaseClass
+	var getClass  = __webpack_require__(43)
+
+	/**
+	 * @method getParentClass
+	 *
+	 * @param  {String/Object/Class} alias an argument specifying the class (as expected by {@link #getClass})
+	 * @return {Class} the top parent class (all the way up in the class hierarchy), if there is one.
+	 *
+	 * NOTE: All framework classes inherit from BaseClass, but is not returned from this call.
+	 */
+	module.exports = function(alias){
+
+	    'use strict'
+
+	    var Class = getClass(alias)
+
+	    if (Class && Class != BaseClass && Class.$superClass != BaseClass){
+	        while (Class.$superClass && Class.$superClass != BaseClass){
+	            Class = Class.$superClass
+	        }
+
+	        return Class
+	    }
+	}
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var newify = __webpack_require__(83)
+
+	    var extend = __webpack_require__(70)
+	    var copy   = __webpack_require__(51).copy
+
+	    var hasOwnProperty = Object.prototype.hasOwnProperty
+	    var canDefineProperty = __webpack_require__(71)
+	    var canGetOwnPropertyDescriptor = __webpack_require__(72)
+
+	    var getOwnPropertyDescriptor = canGetOwnPropertyDescriptor? Object.getOwnPropertyDescriptor: null
+
+	    var copyDescriptors = __webpack_require__(73)
+
+	    var Base = function(){}
+
+	    Base.prototype.init = function(){
+	        return this
+	    }
+
+	    Base.prototype.self = function(){
+	        return this
+	    }
+
+	    function prepareSingletonStatics(statics){
+	        statics = statics || {}
+
+	        statics.getInstance = function(){
+
+	            if (!this.INSTANCE){
+	                this.INSTANCE = newify(this, arguments)
+	            }
+
+	            return this.INSTANCE
+	        }
+
+	        statics.getInstanceIf = function(){
+	            if (this.INSTANCE){
+	                return this.INSTANCE
+	            }
+	        }
+
+	        return statics
+	    }
+
+	    function createClass(Parent, config, callback){
+
+	        if (arguments.length == 1){
+	            config = Parent
+	            Parent = Base
+	        } else {
+	            Parent = Parent || Base
+	        }
+
+	        function Class(){
+	            if (!(this instanceof Class) && Class.prototype.forceInstance){
+	                return newify(Class, arguments)
+	            }
+
+	            if (!this){
+	                throw 'Cannot call class constructor with undefined context.'
+	            }
+
+	            if (this.singleton){
+	                if (this.$ownClass.INSTANCE){
+	                    throw 'Cannot re-instantiate singleton for class ' + Class
+	                }
+
+	                this.$ownClass.INSTANCE = this
+	            }
+
+	            return this.init.apply(this, arguments)
+	        }
+
+	        extend(Parent, Class)
+
+	        copyDescriptors(Parent.prototype, Class.prototype)
+	        copyDescriptors(Parent, Class)
+
+	        //remove statics from config
+	        var statics = config.statics || {}
+	        var $own    = statics.$own
+
+	        statics.$own   = null
+	        config.statics = null
+
+	        Class.$initialConfig = copyClassConfig(Class, config)
+
+	        if (config.singleton){
+	            prepareSingletonStatics(statics)
+	        }
+
+	        //copy static properties from Parent to Class
+	        copyClassConfig( Class,  Parent, {
+	            proto     : false,
+	            skipOwn   : true,
+	            skipProps : copy(Parent.$own, {
+	                $own           : 1,
+	                $ownClass      : 1,
+	                $superClass    : 1,
+	                $initialConfig : 1
+	            })
+	        })
+
+	        //copy static properties from config statics to class
+	        copyClassConfig( Class, statics, { proto: false })
+
+	        //copy static own properties
+	        if ($own){
+	            copyClassConfig( Class, $own, { proto: false, own: true })
+	        }
+
+	        if (typeof callback != 'function') {
+	            //no callback was provided, so it's safe to call the Class.init method, if one exists
+	            if (Class.init){
+	                Class.init()
+	            }
+	        } else {
+	            //a callback was given, so don't call Class.init,
+	            //but call the callback instead, which will take care to call Class.init
+	            callback(Class)
+	        }
+
+	        return Class
+	    }
+
+	    var assignClassProperty = __webpack_require__(74)
+
+	    function copyClassConfig(Class, config, targetConfig, resultConfig){
+	        targetConfig = targetConfig || { proto: true }
+
+	        var result       = resultConfig || {},
+
+	            own          = !canDefineProperty && targetConfig.own,
+	            configOwn    = config.$own,
+	            skipOwn      = !canDefineProperty && targetConfig.skipOwn && configOwn,
+	            skipProps    = targetConfig.skipProps
+
+	        var key
+	        var valueDescriptor
+	        var keyResult
+
+	        for (key in config) if (hasOwnProperty.call(config, key)) {
+
+	            if (skipOwn && configOwn[key]){
+	                //this property should not be copied -> skip to next property
+	                continue
+	            }
+
+	            if (skipProps && skipProps[key]){
+	                continue
+	            }
+
+	            valueDescriptor = canGetOwnPropertyDescriptor?
+	                                    getOwnPropertyDescriptor(config, key):
+	                                    config[key]
+
+	            keyResult = assignClassProperty(Class, key, valueDescriptor, targetConfig)
+
+	            if (own){
+	                result[key] = 1
+	            } else {
+	                if (canGetOwnPropertyDescriptor){
+	                    Object.defineProperty(result, key, valueDescriptor)
+	                } else {
+	                    result[key] = keyResult
+	                }
+	            }
+
+	        }
+
+	        if (own){
+	            Class.$own = result
+	        }
+
+	        return result
+	    }
+
+	    function overrideClass(Class, config){
+	        if (typeof Class.beforeOverride == 'function'){
+	            config = Class.beforeOverride(config)
+	        }
+
+	        var statics = config.statics || {}
+	        var $own    = statics.$own
+
+	        statics.$own   = null
+	        config.statics = null
+
+	        if (config.singleton){
+	            prepareSingletonStatics(statics)
+	        }
+
+	        copyClassConfig( Class, config, null, Class.$initialConfig)
+
+	        copyClassConfig( Class, statics, { proto: false })
+
+	        if ($own){
+	            copyClassConfig( Class, $own, { proto: false, own: true })
+	        }
+	    }
+
+	    function overrideObject(targetObject, config){
+	        copyClassConfig( targetObject, config, { proto: false })
+	    }
+
+	    return {
+	        canDefineProperty: canDefineProperty,
+	        extend           : extend,
+	        createClass      : createClass,
+	        overrideClass    : overrideClass,
+	        overrideObject   : overrideObject,
+
+	        copyClassConfig  : copyClassConfig,
+	        BaseClass        : Base
+	    }
+	}()
+
+/***/ },
+/* 51 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+
+	 This file is part of the ZippyUI Framework
+
+	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
+
+	 The source code is distributed under the terms of the MIT license.
+	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
+
+	 */
+	module.exports = __webpack_require__(88)
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+
+	 This file is part of the ZippyUI Framework
+
+	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
+
+	 The source code is distributed under the terms of the MIT license.
+	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
+
+	 */
+	module.exports = function(){
+
+	    'use strict'
+
+	    var core = __webpack_require__(50)
+
+	    var FN = __webpack_require__(75)
+	    var bindArgs = FN.bindArgs
+	    var copyIf   = __webpack_require__(51).copyIf
+	    var getClass = __webpack_require__(43)
+
+	    var HAS_OWN   = Object.prototype.hasOwnProperty
+	    var hasOwn    = function(obj, name){ return HAS_OWN.call(obj, name) }
+	    var emptyFn   = function(){}
+	    var mixinMeta = [ '$copyIf', '$override', '$after', '$before' ]
+
+	    function processMixins(target){
+	        var mixins = target.mixins || []
+
+	        mixins.forEach(function(m){
+	            mixinFn(target, m)
+	        })
+	    }
+
+	    function prepareTarget(target){
+	        if (!target.addMixin){
+
+	            var fn = function(m){
+	                mixinFn(this, m)
+	            }
+
+	            if (core.canDefineProperty){
+	                Object.defineProperties(target, {
+	                    addMixin: {
+	                        value: fn
+	                    }
+	                })
+	            } else {
+	                target.addMixin = fn
+	            }
+	        }
+	    }
+
+	    function targetHasMixin(target, mixinIdentifier){
+	        if (target.$mixins && ~target.$mixins.indexOf(mixinIdentifier)){
+	            //mixin already applied
+	            return true
+	        }
+
+	        prepareTarget(target)
+
+	        target.$mixins = target.$mixins?
+	                            [].concat(target.$mixins):
+	                            []
+
+	        target.$mixins.push(mixinIdentifier)
+
+	        return false
+	    }
+
+	    /*
+	     * For each $copyIf, $override, $before, $after, as WHEN, do the following:
+	     *
+	     * Iterate over source[WHEN], and for each property KEY in source[WHEN], copy source[KEY]
+	     * to either target[WHEN][KEY] (if the target is given)
+	     * or to source[WHEN][KEY]
+	     *
+	     * This function is called during the mixin process in 2 cases:
+	     *
+	     * 1. when the source is the mixin prototype. Since all mixin methods have been copied on the prototype, where they have been
+	     * enhanced so that they can use callSuper and callOverriden; now we need to copy all needed methods to mixin.$override, to mixin.$copyIf, etc
+	     *
+	     * 2. when the source is the mixin class. Since all mixin methods have been copied as static methods on the class (where they have
+	     * been enhanced so that they can use callSuper and callOverriden) now we need to build a statics mixin target, with the keys $override, $copyIf, etc...
+	     * that are objects with key/value pairs, where the values are the functions copied from the Mixin Class.
+	     *
+	     */
+	    function copyMetaFrom(source, target){
+
+	        mixinMeta.forEach(function(when){
+	            var mixinWhen  = source[when],
+	                targetWhen = mixinWhen
+
+	            if (mixinWhen != null){
+
+	                if (target){
+	                    targetWhen = target[when] = target[when] || {}
+	                }
+
+	                for (var key in mixinWhen) if (hasOwn(mixinWhen, key)){
+	                    targetWhen[key] = source[key]
+	                }
+	            }
+	        })
+
+	        return target
+
+	    }
+
+	    /**
+	     * @method mixin
+	     *
+	     * A mixin should be an object with $override, $before and/or $after properties:
+	     *
+	     * Example:
+	     *     var logger = {
+	     *         $override: {
+	     *             log: function(message){
+	     *                 console.log(message)
+	     *             }
+	     *         }
+	     *     }
+	     *
+	     *      function Person(name){
+	     *          this.name = name
+	     *      }
+	     *
+	     *      Person.prototype.getName = function(){ return this.name }
+	     *
+	     *      var p = new Person()
+	     *
+	     *
+	     *
+	     * @param  {Object} target The mixin target
+	     * @param  {Object} mixin  The object to mix into target
+	     * @param  {Object} [config] Optional config for mixin.
+	     * @param  {Object} [config.skipProperties] An object with properties that are not going to be mixed in.
+	     * @param  {Object} [config.skipStatics] An object with properties that are not going to be mixed in.
+	     */
+	    function mixinFn(target, mixin, config){
+
+	        if (arguments.length == 1){
+	            mixin = target
+	            target = {}
+	        }
+
+	        if (!mixin){
+	            return target
+	        }
+
+	        config = config || {}
+
+	        var MixinClass      = getClass(mixin)
+	        var mixinIdentifier = config.mixinIdentifier || mixin
+
+	        if (MixinClass){
+
+	            if (typeof mixin == 'string'){
+	                mixin = { alias: mixin }
+	            }
+
+	            if (mixin == MixinClass){
+	                //the mixin is the Class, so take its prototype
+	                mixin = MixinClass.prototype
+	            } else {
+	                copyIf(MixinClass.prototype, mixin)
+	            }
+
+	            //go over all keys from mixin.$override, $after, ... and override them with
+	            //values from the mixin proto
+	            copyMetaFrom(mixin)
+
+	            mixinIdentifier = mixin.alias
+
+	        }
+
+	        if ( target.$ownClass && !config.skipStatics) {
+
+	            var mixinStatics = MixinClass?
+	                                    //go over all keys from MixinClass.$override, $after, ... and build a new object with $override, $after ...
+	                                    //that contain the corresponding static values copied from the MixinClass
+	                                    copyMetaFrom(MixinClass, {}):
+	                                    mixin.statics
+
+	            if ( mixinStatics && mixinMeta.some(function(when){ return !! mixinStatics[when] }) ) {
+	                config.skipWarning = true
+
+	                var staticsMixinIdentifier = 'statics.' + mixinIdentifier
+
+	                //The mixin class also targets the target's Class
+	                mixinFn(target.$ownClass, mixinStatics, { skipStatics: true, mixinIdentifier: staticsMixinIdentifier})
+	            }
+	        }
+
+	        doMixin(target, mixin, mixinIdentifier, config)
+
+	        return target
+	    }
+
+	    function doMixin(target, mixin, mixinIdentifier, config){
+	        mixinIdentifier = mixinIdentifier || mixin.alias
+
+	        if (! targetHasMixin(target, mixinIdentifier) ) {
+	            applyMixin(target, mixin, config)
+	        }
+	    }
+
+	    function prepareTargetFn(target, propName, newFn){
+
+	        var oldTarget = target[propName],
+	            targetFn  = typeof oldTarget == 'function'?
+	                            oldTarget:
+	                            emptyFn
+
+	        return function(){
+	            var args = arguments,
+	                oldCallTarget     = this.callTarget,
+	                oldCallTargetWith = this.callTargetWith
+
+	            this.callTarget = function(){
+	                return targetFn.apply(this, args)
+	            }
+	            this.callTargetWith = function(){
+	                return targetFn.apply(this, arguments)
+	            }
+
+	            var result = newFn.apply(this, args)
+
+	            this.callTarget = oldCallTarget
+	            this.callTargetWith = oldCallTargetWith
+
+	            return result
+	        }
+	    }
+
+	    function assignFunction(when, target, propName, newFn){
+
+	        target[propName] = when?
+	                                FN[when](newFn, target[propName]):
+	                                prepareTargetFn(target, propName, newFn)
+	    }
+
+	    function applyWhen(when, originalWhen, target, props, config){
+	        var prop,
+	            value,
+	            skipProps = config? config.skipProperties: null,
+	            result
+
+	        for (prop in props) if ( hasOwn(props, prop) ){
+
+	            if (prop == 'init'){
+	                result = {
+	                    when  : when,
+	                    props : props
+	                }
+
+	                continue
+	            }
+
+	            if (skipProps && skipProps[prop]){
+	                continue
+	            }
+
+	            value = props[prop]
+
+	            if (originalWhen == '$copyIf'){
+	                if (typeof target[prop] == 'undefined'){
+	                    target[prop] = value
+	                }
+
+	                continue
+	            }
+
+	            if (typeof value == 'function'){
+
+	                if (typeof target[prop] == 'function'){
+
+	                    assignFunction(when, target, prop, value)
+
+	                } else {
+	                    target[prop] = value
+	                }
+
+	            } else {
+	                if (!when || typeof target[prop] == 'undefined'){
+	                    target[prop] = value
+	                }
+	            }
+	        }
+
+	        return result
+	    }
+
+	    /*
+	     * Applies the mixin init method on target.
+	     * The initOn property on the mixin dictates when to init the mixin.
+	     *
+	     * Example:
+	     *
+	     *      root.defineMixin({
+	     *          alias: 'observable',
+	     *
+	     *          initOn: 'configure',
+	     *
+	     *          $before: {
+	     *              init: function(){
+	     *                  ...
+	     *              }
+	     *          }
+	     *      })
+	     *
+	     *      root.define({
+	     *          alias : 'computer',
+	     *
+	     *          mixins: [{ alias: 'observable', initOn: 'showDisplay' }],
+	     *
+	     *          init: function(){
+	     *              // init computer properties
+	     *
+	     *              //then configure computer
+	     *              this.configure()
+	     *
+	     *              //then show display
+	     *              this.showDisplay()
+	     *          },
+	     *
+	     *          //before this method is actually called, call the obserable.init method
+	     *          showDisplay: function(){
+	     *          }
+	     *      })
+	     * @param  {Object} target The target object
+	     * @param  {Object} mixin The mixin object
+	     * @param  {Object} [initConfig] Optional mixin application config
+	     */
+	    function applyInit(target, mixin, initConfig){
+	        if (initConfig){
+	            var init         = initConfig.props.init,
+	                initWhen     = initConfig.when,
+	                initOnMethod = mixin.initOn || 'init'
+
+	            assignFunction(initWhen, target, initOnMethod, init)
+	        }
+	    }
+
+	    var applyBefore   = bindArgs(applyWhen, 'before', '$before')
+	    var applyAfter    = bindArgs(applyWhen, 'after' , '$after')
+	    var applyCopyIf   = bindArgs(applyWhen, 'copyIf', '$copyIf')
+	    var applyOverride = bindArgs(applyWhen, ''      , '$override')
+
+	    function applyMixin(target, mixin, config){
+
+	        target.callTarget = target.callTarget || emptyFn
+
+	        config = config || {}
+
+	        //<debug>
+	        if (!config.skipWarning && !mixin.$before && !mixin.$after && !mixin.$override && !mixin.$copyIf){
+	            console.warn('No $before, $after or $override properties on the mixin ', mixin,'. This will result in nothing being mixed in.')
+	        }
+	        //</debug>
+
+	        var beforeWithInit = applyBefore  (target, mixin.$before  , config)
+	        var afterWithInit  = applyAfter   (target, mixin.$after   , config)
+
+	        applyCopyIf  (target, mixin.$copyIf  , config)
+
+	        var overrideWithInit = applyOverride(target, mixin.$override, config)
+
+	        applyInit(target, mixin, beforeWithInit || afterWithInit || overrideWithInit)
+
+	    }
+
+	    return {
+
+	        mixin : mixinFn,
+
+	        preprocess: function(classConfig, parent){
+	        },
+
+	        process : function(Class){
+	            processMixins(Class.prototype)
+	            processMixins(Class)
+	        }
+
+	    }
+	}()
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var classy = __webpack_require__(24)
+	var copyUtils = __webpack_require__(54)
+	var functionally = __webpack_require__(19)
+	var sortDescFn = function( a, b){ return b - a }
+	var SLICE  = Array.prototype.slice
+
+	/**
+	 * This is a wrapper around an array of functions and offers the possibility to call them all with the same params.
+	 *
+	 * Example 1:
+	 *
+	 *      var Q = require('fn-queue')
+	 *      var queue = Q()
+	 *
+	 *      queue.add(function logger(msg){
+	 *          console.log(msg)
+	 *      })
+	 *      queue.add(function serverLogger(msg){
+	 *          //send msg to server
+	 *      })
+	 *
+	 *      queue.execute('application has crashed')
+	 *      //this call will call both logger and serverLogger, with the string param
+	 *
+	 * Example 2:
+	 *
+	 *      var fnQueue = new Q()
+	 *
+	 *      fnQueue.add(function(a,b){ return a + b })
+	 *             .add(function(a,b){ return a * b })
+	 *
+	 *
+	 * Functions can also be added to the queue with different modifier options:
+	 *
+	 * Supported options:
+	 *      * {Boolean} once  - executes the function once, then removes it from the queue. Uses Function.once
+	 *      * {Boolean} defer - execute the function using Function.defer
+	 *      * {Number}  delay - execute the function using Function.delay
+	 *      * {Number}  buffer   - execute the function using Function.buffer
+	 *      * {Number}  throttle - execute the function using Function.throttle
+	 *
+	 * If a function is added to the queue with one of those options, it is replaced with the modified version
+	 * of the function (after applying the corresponding method from Function.prototype)
+	 *
+	 * There are different ways of calling the function queue (executing all the functions in the queue). Here's the complete list:
+	 *
+	 *      queue.execute(firstArg, secondArg, ...)
+	 *
+	 *      queue.call(scope, firstArg, secondArg, ...)
+	 *
+	 *      queue.apply(scope, [ firstArg, secondArg, ...] )
+	 *
+	 *      queue.applyWith(scope, [firstArg, secondArg, ... ], config)
+	 *      //for the available config options see FunctionQueue.applyWith
+	 *
+	 *
+	 */
+
+
+	var FnQueue = classy.define({
+
+	    /**
+	     * @cfg {Boolean} allowFunctionsAsString By default, only functions are allowed in the FunctionQueue. Nevertheless, if you configure the queue
+	     * with allowFunctionsAsStrings: true, you will be able to add strings into the queue. These are resolved to functions when the FunctionQueue is called.
+	     *
+	     * When the FunctionQueue gets executed, it iterates over its functions. When a string is met, it takes the context object, and looks for a
+	     * property with that name, and if a function is found, it gets called.
+	     *
+	     * Example:
+	     *     var context1 = {
+	     *             sum: function(a,b){
+	     *                 return a + b
+	     *             }
+	     *         },
+	     *         context2 = {
+	     *             diff: function(a,b){
+	     *                 return a - b
+	     *             }
+	     *         }
+	     *
+	     *
+	     *      queue.add('sum', context1)
+	     *      queue.add('diff')
+	     *
+	     *      var results = queue.applyWith(context2, [5, 2], { allResults: true })
+	     *
+	     *      //results is [7, 3]
+	     *      //the queue looks for 'sum' first, on the scope. 'sum' had its scope bound
+	     *      //to context1, so the queue checks if a function is found at context1['sum'].
+	     *      //since there is a function there, it calls it
+	     *
+	     *      //next comes 'diff'. the queue looks for a scope, but 'diff' was not bound to a scope.
+	     *      //so we use the given scope, that is, context2. Since we find a function
+	     *      //at context2['diff'], it gets called.
+	     *
+	     */
+	    allowFunctionsAsString: false,
+
+	    /**
+	     * @cfg {Boolean} keepFunctionReferences This property dictates the behavior of the queue when functions are specified as strings.
+	     * When a queue is called, the "string" functions are resolved, from the context.
+	     *
+	     * If keepFunctionReferences is true, the resolved functions are kept in memory and are going to be called on
+	     * subsequent calls to the function queue.
+	     *
+	     * If keepFunctionReferences is false, "string" functions are resolved each time the queue is called.
+	     */
+	    keepFunctionReferences: false,
+
+	    forceInstance: true,
+
+	    statics: {
+
+	        fly: (function(){
+	            var fly
+
+	            return function(config){
+	                fly = fly || new FnQueue(config)
+
+	                if (config && config.state){
+	                    fly.from(config.state)
+	                }
+
+	                return fly
+	            }
+
+	        })()
+	    },
+
+	    maxLength: null,
+
+	    init: function(config){
+	        copyUtils.copy(config, this)
+	        this.clear()
+	    },
+
+	    /**
+	     * Modifies the queue to reflect the state as provided by the stateObject
+	     *
+	     * @param  {Object} stateObject An object with a queue state. This object is returned by {@link #toStateObject}
+	     * @return {FunctionQueue} this
+	     */
+	    from: function(stateObject){
+	        stateObject = stateObject || {}
+
+	        //unmodified fns
+	        this._fns    = stateObject._fns    = stateObject._fns    || []
+
+	        this.fns     = stateObject.fns     = stateObject.fns     || []
+	        this.scopes  = stateObject.scopes  = stateObject.scopes  || []
+	        this.options = stateObject.options = stateObject.options || []
+
+	        this.length  = this.fns.length
+
+	        return this
+	    },
+
+	    /**
+	     * Saves the state of the queue in an object, and returns that object
+	     * @param  {Object} [stateObject] Optional. The object to use for state persistence. If none given, a new object will be passed used.
+	     * @return {Object} the object with the state of the queue. If obj is given, this is the object that will be returned
+	     */
+	    toStateObject: function(obj){
+
+	        if (!this.getLength()){
+	            return
+	        }
+
+	        obj = obj || {}
+
+	        obj._fns    = this._fns
+	        obj.fns     = this.fns
+	        obj.scopes  = this.scopes
+	        obj.options = this.options
+
+	        return obj
+	    },
+
+	    /**
+	     * Clears this queue by removing all functions.
+	     *
+	     * After the queue is cleared, its length is 0 ( getLength() == 0 ), and it {@link #isEmpty is empty}
+	     *
+	     * @chainable
+	     * @return {FunctionQueue} this queue
+	     */
+	    clear: function(){
+	        return this.from()
+	    },
+
+	    /**
+	     * An alias to {@link #clear}
+	     * @chainable
+	     *
+	     * @return {FunctionQueue} this queue
+	     */
+	    destroy: function(){
+	        this.clear()
+
+	        delete this.fns
+	        delete this._fns
+	        delete this.scopes
+	        delete this.options
+
+	        return this
+	    },
+
+	    /**
+	     * @return {FunctionQueue} a FunctionQueue that is a clone of this queue
+	     */
+	    clone: function(){
+	        var queue = new FnQueue()
+
+	        queue._fns    = this._fns.slice()
+	        queue.fns     = this.fns.slice()
+	        queue.scopes  = this.scopes.slice()
+	        queue.options = this.options.slice()
+
+	        queue.length = queue.fns.length
+	        queue.maxLength = this.maxLength
+
+	        return queue
+	    },
+
+	    /**
+	     * Returns the count of the functions that this queue stores.
+	     *
+	     * @return {Number}
+	     */
+	    getLength: function(){
+	        return this.length
+	    },
+
+	    /**
+	     * Returns true if getLength() is 0
+	     * @return {Boolean} True if the queue is empty, false otherwise
+	     */
+	    isEmpty: function(){
+	        return !this.getLength()
+	    },
+
+	    /**
+	     * Add a function to the queue, optionally with a scope and some options.
+	     *
+	     * @chainable
+	     *
+	     * @param {Function} fn The function to add to the queue
+	     * @param {Object} [scope] Optional scope in which the function will be called when this queue is called.
+	     * @param {Object} [options] Options for calling the function
+	     *
+	     * Available options are:
+	     *      * {Boolean} once  - executes the function once, then removes it from the queue.Uses Function.once
+	     *      * {Boolean} defer - execute the function using Function.defer.
+	     *      * {Number}  delay - execute the function using Function.delay.
+	     *      * {Number}  buffer   - execute the function using Function.buffer.
+	     *      * {Number}  throttle - execute the function using Function.throttle.
+	     *
+	     * @return {FunctionQueue} this
+	     */
+	    add: function(fn, scope, options){
+
+	        return this.insert(this.length, fn, scope, options)
+
+	    },
+
+	    /**
+	     * Insert a function in the queue at the given index.
+	     *
+	     * See {@link #add} for an explanation of the parameters
+	     * @param {Number} index The index at which to make the insert
+	     * @param {Function} fn
+	     * @param {Object} [scope]
+	     * @param {Object} [options]
+	     *
+	     * @return {FunctionQueue} this
+	     */
+	    insert: function(index, fn, scope, options){
+
+	        var usePush
+	        if (index >= this.length){
+	            index   = this.length
+	            usePush = true
+	        }
+
+	        var isFn   = typeof fn == 'function',
+	            theFn  = fn,
+	            _theFn = fn,
+	            result
+
+	        if (!isFn){
+
+	            if (!this.allowFunctionsAsString || typeof fn != 'string'){
+	                return this
+	            }
+
+	        } else {
+	            result = this.getModifiedFunction( fn, options ),
+
+	            theFn  = result.fn
+
+	            if (!result.modified){
+	                _theFn = undefined
+	            }
+	        }
+
+	        this._dirty = true
+
+	        if (usePush){
+	            this._fns
+	                .push(_theFn)
+
+	            this.fns
+	                .push(theFn)
+
+	            this.scopes
+	                .push(scope || undefined)
+
+	            this.options
+	                .push(options)
+	        } else {
+	            this._fns
+	                .splice(index, 0, _theFn)
+
+	            this.fns
+	                .splice(index, 0, theFn)
+
+	            this.scopes
+	                .splice(index, 0, scope || undefined)
+
+	            this.options
+	                .splice(index, 0, options)
+	        }
+
+	        this.length = this.fns.length
+
+	        if (this.maxLength != null){
+	            this.adjustLength()
+	        }
+
+	        return this
+	    },
+
+	    /**
+	     * @private
+	     */
+	    adjustLength: function(){
+	        if (this.maxLength < this.length){
+	            this._fns.shift()
+	            this.fns.shift()
+	            this.scopes.shift()
+	            this.options.shift()
+
+	            this.length = this.fns.length
+	        }
+	    },
+
+	    getModifiedFunction: function(fn, options){
+	        var initialFn = fn,
+	            modified  = false
+
+	        if ( options ) {
+
+	            if ( options.buffer != null) {
+	                fn = functionally.buffer( fn, options.buffer )
+
+	                modified = true
+	            }
+
+	            if ( options.delay != null) {
+	                fn = functionally.delay( fn, options.delay )
+
+	                modified = true
+	            }
+
+	            if ( options.defer != null) {
+	                fn = functionally.defer( fn )
+
+	                modified = true
+	            }
+
+	            if ( options.throttle != null) {
+	                fn = functionally.throttle( fn, options.throttle )
+
+	                modified = true
+	            }
+
+	        }
+
+	        return {
+	            modified: modified,
+	            fn: fn
+	        }
+	    },
+
+	    /**
+	     * @chainable
+	     * Adds a given function at the beginning of the queue.
+	     * See {@link #add}
+	     *
+	     * @param {Function} fn
+	     * @param {Object}   [scope]
+	     * @param {Object}   [options]
+	     * @return {FunctionQueue}
+	     */
+	    addStart: function(fn, scope, options){
+	        return this.insert(0, fn, scope, options)
+	    },
+
+	    /**
+	     * Calls this queue, that is, calls all functions stored in this queue.
+	     *
+	     * The signature of this method is the same as that of *Function.call*
+	     *
+	     * Example:
+	     *
+	     *      var q = new require('fn-queue')()
+	     *      q.add(function add(a,b){ return a + b})
+	     *      q.add(function multiply(a,b){ return a * b})
+	     *
+	     *      q.call(null, 4, 5)
+	     *      //will call add(4,5) and multiply(4,5)
+	     *
+	     * @param  {Object} scope The scope in which to call the functions
+	     *
+	     * NOTE that if the functions already had their scope bound, when were added to the queue,
+	     * that scope is used.
+	     *
+	     * @param {...Object} args The enumerated arguments for the functions.
+	     * @return {Boolean} The result of the call. If any of the functions return the boolean false, the result will be false, otherwise, true.
+	     */
+	    call: function(scope /*, args... */ ){
+	        return this.apply( scope, SLICE.call(arguments, 1) )
+	    },
+
+	    /**
+	     * Calls this queue with the enumerated given params. Similar to {@link #call}, but without the scope param.
+	     *
+	     * @param {...Object} args
+	     * @return {Boolean}
+	     */
+	    execute: function(/* args ... */ ){
+	        return this.apply(undefined, arguments)
+	    },
+
+	    collect: function(/* args ... */){
+	        return this.applyWith(undefined, arguments, { allResults: true })
+	    },
+
+	    /**
+	     * Calls apply for each function in the queue.
+	     *
+	     * The signature of this method is the same as that of *Function.apply*
+	     *
+	     * @param {Object} scope the scope in which to call the functions.
+	     *
+	     * NOTE that if the functions already had their scope bound, when were added to the queue,
+	     * that scope is used.
+	     *
+	     * If you want to override the scope, use applyWith(scope, args, { forceScope: true})
+	     *
+	     * @param {Array} [args] the arguments to pass to the functions when they are called
+	     *
+	     * @return {Boolean}
+	     */
+	    apply: function(scope, args){
+	        return this.applyWith(scope, args)
+	    },
+
+	    /**
+	     *
+	     * @param {Object}   scope
+	     *                    The scope in which to call the functions in the queue.
+	     *
+	     * NOTE that if the functions already had their scope bound, when were added to the queue,
+	     * that scope is used.
+	     *
+	     * If you want to force using this scope, use config.forceScope
+	     *
+	     * @param {Array}    [args] an array with the arguments to be used when calling each function in the queue
+	     * @param {Object}   [config]
+	     *
+	     * @param {Booolean} [config.forceScope]  If this is true, the scope in which the functions will be called
+	     * will be scope - the first argument of this function, if it's not null or undefined
+	     *
+	     * @param {Boolean}  [config.quickStop] If this is true, and a function from the queue returns false, all the other following functions will
+	     * not be executed.
+	     *
+	     * @param {Boolean}  [config.allResults] If this is true, return an array of all the results of the functions in the queue,
+	     * instead of just a boolean value
+	     *
+	     * @return {Boolean/Array} If any of the functions in the queue returns the boolean false, the result of this call will be false. Otherwise, true.
+	     * If config.allResults is true, return an array instead, with the results of all the functions in the queue that have been executed.
+	     */
+	    applyWith: function(scope, args, config){
+
+	        this._dirty = false
+
+	        var fns     = this.fns.slice(),
+	            _fns    = this._fns.slice(),
+	            scopes  = this.scopes.slice(),
+	            options = this.options.slice(),
+
+	            allowStrings = this.allowFunctionsAsString,
+	            keepRefs     = this.keepFunctionReferences,
+
+	            forceScope = config && config.forceScope,
+	            quickStop  = config && config.quickStop,
+	            allResults = config && config.allResults,
+
+	            filterFn   = config && config.filter,
+
+	            itFn,
+	            itOption,
+	            itScope,
+	            itResult,
+	            itIsFn,
+	            itModifiedFnResult,
+
+	            i   = 0,
+	            len = fns.length,
+
+	            toRemoveIndexes = [],
+	            result          = true,
+	            results         = allResults? []: null
+
+	        for (; i < len; i++ ) {
+
+	            itIsFn   = true
+	            itFn     = fns    [i]
+	            itScope  = scopes [i]
+	            itOption = options[i]
+
+	            if ((itScope == null || forceScope) && scope != null){
+	                itScope = scope
+	            }
+
+	            if (allowStrings && typeof itFn == 'string') {
+
+	                if ( typeof itScope[itFn] == 'function' ){
+
+	                    itModifiedFnResult = this.getModifiedFunction(itScope[itFn], itOption)
+
+	                    if (keepRefs && !this._dirty){
+	                        _fns[i] = this._fns[i] = fns[i]
+	                        fns [i] = this.fns[i]  = itModifiedFnResult.fn
+	                    }
+
+	                    itFn = itModifiedFnResult.fn
+	                } else {
+	                    itIsFn = false
+	                }
+	            }
+
+	            if (itIsFn && filterFn && !filterFn(itFn, itScope, itOption)){
+	                continue
+	            }
+
+	            if (itOption && (itOption.once === true)){
+	                toRemoveIndexes.push(i)
+	            }
+
+	            if (!itIsFn){
+	                continue
+	            }
+
+	            itResult = itFn.apply(itScope, args)
+
+	            if (allResults){
+	                results.push(itResult)
+	            }
+
+	            if ( itResult === false ){
+	                result = false
+
+	                if ( quickStop || (itOption && itOption.quickStop) ){
+	                    break
+	                }
+	            }
+
+	        }
+
+	        if (toRemoveIndexes.length){
+	            this.removeAt(toRemoveIndexes)
+	        }
+
+	        return allResults?
+	                    results:
+	                    result
+	    },
+
+	    forEach: function(fn, scope){
+
+	        scope = scope || this
+
+	        var fns     = this.fns,
+	            scopes  = this.scopes,
+	            options = this.options,
+
+	            itFn,
+	            itScope,
+	            itOption,
+
+	            i   = 0,
+	            len = fns.length
+
+	        for (; i < len; i++ ) {
+
+	            itFn     = fns    [i]
+	            itScope  = scopes [i]
+	            itOption = options[i]
+
+	            if (fn.call(scope, itFn, itScope, itOption, i) === false){
+	                break
+	            }
+	        }
+	    },
+
+	    /**
+	     * Remove the given function from the queue, optionally taking the scope into account.
+	     *
+	     * @param  {Function} fn The function to remove
+	     * @param  {Object} [scope] The scope in which the function was bound. If you specify the scope, and
+	     * a function is found to be equal to the given fn, but the scope is not the same, it will not be removed.
+	     * Otherwise, it you skip the scope, all functions in the queue that equal the given fn are removed, no matter the scope.
+	     *
+	     * @return {z.fnqueue} this
+	     */
+	    remove: function(fn, scope){
+	        var fns             = this.fns,
+	            _fns            = this._fns,
+	            scopes          = this.scopes,
+	            scopeDefined    = scope != null,
+	            toRemoveIndexes = []
+
+	        fns.forEach(function(itFn, index, allFns){
+	            var _itFn       = _fns[index],
+	                fnsAreEqual = (fn == itFn || fn == _itFn)
+
+	            if ( fnsAreEqual && (!scopeDefined || scopes[index] === scope) ){
+	                toRemoveIndexes.push(index)
+	            }
+
+	        })
+
+	        if (toRemoveIndexes.length){
+	            this.removeAt(toRemoveIndexes)
+	        }
+
+	        return this
+	    },
+
+	    removeAt: function(indexOrArray){
+
+	        this._dirty = true
+
+	        var indexes = Array.isArray(indexOrArray)?
+	                      indexOrArray :
+	                      [ indexOrArray ],
+	            i = 0,
+	            it,
+	            len = indexes.length
+
+	        indexes.sort(sortDescFn)
+
+	        for (; i<len ; i++ ){
+	            it = indexes[i]
+
+	            this._fns
+	                .splice(it, 1)
+
+	            this.fns
+	                .splice(it, 1)
+
+	            this.options
+	                .splice(it, 1)
+
+	            this.scopes
+	                .splice(it, 1)
+	        }
+
+	        this.length = this.fns.length
+
+	        return this
+	    }
+	})
+
+	//<debug>
+	FnQueue.displayName = 'FunctionQueue'
+	FnQueue.constructor.displayName = 'FunctionQueue'
+	//</debug>
+
+	module.exports = FnQueue
+
+
+/***/ },
+/* 54 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var HAS_OWN       = Object.prototype.hasOwnProperty,
+	        STR_OBJECT    = 'object',
+	        STR_UNDEFINED = 'undefined'
+
+	    return {
+
+	        /**
+	         * Copies all properties from source to destination
+	         *
+	         *      copy({name: 'jon',age:5}, this);
+	         *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copy: __webpack_require__(76),
+
+	        /**
+	         * Copies all properties from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyIf({name: 'jon',age:5}, {age:7})
+	         *      // => { name: 'jon', age: 7}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copyIf: __webpack_require__(77),
+
+	        /**
+	         * Copies all properties from source to a new object, with the given value. This object is returned
+	         *
+	         *      copyAs({name: 'jon',age:5})
+	         *      // => the resulting object will have the 'name' and 'age' properties set to 1
+	         *
+	         * @param {Object} source
+	         * @param {Object/Number/String} [value=1]
+	         *
+	         * @return {Object} destination
+	         */
+	        copyAs: function(source, value){
+
+	            var destination = {}
+
+	            value = value || 1
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	                    destination[i] = value
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the list, from source to destination
+	         *
+	         *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	         *      // => {name: 'jon', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyList: __webpack_require__(78),
+
+	        /**
+	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	         *      // => {name: 'jon', age: 10}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyListIf: __webpack_require__(79),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination
+	         *
+	         *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	         *      // => {name: 'jon', age: 5, theYear: 2006}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeys: __webpack_require__(80),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination,
+	         * but only if the property does not already exist in the destination object
+	         *
+	         *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	         *      // => {aname: 'test', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeysIf: __webpack_require__(81),
+
+	        copyExceptKeys: function(source, destination, exceptKeys){
+	            destination = destination || {}
+	            exceptKeys  = exceptKeys  || {}
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) && !HAS_OWN.call(exceptKeys, i) ) {
+
+	                    destination[i] = source[i]
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies the named keys from source to destination.
+	         * For the keys that are functions, copies the functions bound to the source
+	         *
+	         * @param  {Object} source      The source object
+	         * @param  {Object} destination The target object
+	         * @param  {Object} namedKeys   An object with the names of the keys to copy The values from the keys in this object
+	         *                              need to be either numbers or booleans if you want to copy the property under the same name,
+	         *                              or a string if you want to copy the property under a different name
+	         * @return {Object}             Returns the destination object
+	         */
+	        bindCopyKeys: function(source, destination, namedKeys){
+	            if (arguments.length == 2){
+	                namedKeys = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+
+	            if (
+	                       source != null && typeof source    === STR_OBJECT &&
+	                    namedKeys != null && typeof namedKeys === STR_OBJECT
+	                ) {
+
+
+	                var typeOfNamedProperty,
+	                    namedPropertyValue,
+
+	                    typeOfSourceProperty,
+	                    propValue
+
+
+	                for(var propName in namedKeys) if (HAS_OWN.call(namedKeys, propName)) {
+
+	                    namedPropertyValue = namedKeys[propName]
+	                    typeOfNamedProperty = typeof namedPropertyValue
+
+	                    propValue = source[propName]
+	                    typeOfSourceProperty = typeof propValue
+
+
+	                    if ( typeOfSourceProperty !== STR_UNDEFINED ) {
+
+	                        destination[
+	                            typeOfNamedProperty == 'string'?
+	                                            namedPropertyValue :
+	                                            propName
+	                            ] = typeOfSourceProperty == 'function' ?
+	                                            propValue.bind(source):
+	                                            propValue
+	                    }
+	                }
+	            }
+
+	            return destination
+	        }
+	    }
+
+	}()
+
+/***/ },
+/* 55 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var FunctionQueue = __webpack_require__(53)
+
+	var Q = new FunctionQueue({
+	    allowFunctionsAsString: true,
+	    keepFunctionReferences: true
+	})
+
+	module.exports = function(fn, stateName, QUEUE){
+
+	    QUEUE = QUEUE || Q
+
+	    this[stateName] = this[stateName] || {}
+
+	    var prevQueueState = QUEUE.toStateObject()
+
+	    if (fn){
+	        fn.call(this, this[stateName], QUEUE)
+	    }
+
+	    //restore the queue back to its original state
+	    QUEUE.from(prevQueueState)
+
+	    return this
+	}
+
+/***/ },
+/* 56 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = function(value){
+	    return !isNaN( parseFloat( value ) ) && isFinite( value )
+	}
+
+/***/ },
+/* 57 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = function(value){
+	    return typeof value === 'number' && isFinite(value)
+	}
+
+/***/ },
+/* 58 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var number = __webpack_require__(57)
+
+	module.exports = function(value){
+	    return number(value) && (value === parseInt(value, 10))
+	}
+
+/***/ },
+/* 59 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var number = __webpack_require__(57)
+
+	module.exports = function(value){
+	    return number(value) && (value === parseFloat(value, 10)) && !(value === parseInt(value, 10))
+	}
+
+/***/ },
+/* 60 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = function(value){
+	    return typeof value == 'string'
+	}
+
+/***/ },
+/* 61 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var objectToString = Object.prototype.toString
+
+	module.exports = function(value){
+	    return objectToString.apply(value) === '[object Function]'
+	}
+
+/***/ },
+/* 62 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var objectToString = Object.prototype.toString
+
+	module.exports = function(value){
+	    return objectToString.apply(value) === '[object Object]'
+	}
+
+/***/ },
+/* 63 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var objectToString = Object.prototype.toString
+
+	module.exports = function(value){
+	    return objectToString.apply(value) === '[object Arguments]' || !!value.callee
+	}
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = function(value){
+	    return typeof value == 'boolean'
+	}
+
+/***/ },
+/* 65 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var objectToString = Object.prototype.toString
+
+	module.exports = function(value){
+	    return objectToString.apply(value) === '[object Date]'
+	}
+
+/***/ },
+/* 66 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var objectToString = Object.prototype.toString
+
+	module.exports = function(value){
+	    return objectToString.apply(value) === '[object RegExp]'
+	}
+
+/***/ },
+/* 67 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = function(value){
+	    return Array.isArray(value)
+	}
+
+/***/ },
+/* 68 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var copyKeys = __webpack_require__(51).copyKeys
+
+	function aliasMethods(config){
+	    //this refers to a class
+	    copyKeys(this.prototype, this.prototype, config)
+	    
+	    return this
+	}
+
+	var extendClass     = __webpack_require__(84)
+	var overrideClass   = __webpack_require__(85)
+	var unregisterClass = __webpack_require__(86)
+
+	var ClassProcessor = __webpack_require__(69)
+
+	module.exports = function(Class){
+
+	    'use strict'
+
+	    Class.extend       = extendClass
+	    Class.override     = overrideClass
+	    Class.aliasMethods = aliasMethods
+
+	    if (typeof Class.destroy == 'function'){
+	        var classDestroy = Class.destroy
+
+	        Class.destroy = function(){
+	            classDestroy.call(this)
+	            unregisterClass.call(this)
+	        }
+	    } else {
+	        Class.destroy = unregisterClass
+	    }
+
+	    ClassProcessor.process(Class)
+
+	    if (Class.init){
+	        Class.init()
+	    }
+	}
+
+/***/ },
+/* 69 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+
+	 This file is part of the ZippyUI Framework
+
+	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
+
+	 The source code is distributed under the terms of the MIT license.
+	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
+
+	 */
+	module.exports = function(){
+
+	    'use strict'
+
+	    var attached = []
+
+	    var result = {
+
+	        attach: function(fn){
+	            attached.push(fn)
+	        },
+
+	        preprocess: function(classConfig, parent){
+	            attached.forEach(function(processor){
+	                processor.preprocess && processor.preprocess(classConfig, parent)
+	            })
+	        },
+
+	        process: function(Class){
+	            attached.forEach(function(processor){
+	                processor.process(Class)
+	            })
+	            return Class
+	        }
+	    }
+
+	    result.attach(__webpack_require__(52))
+
+	    return result
+	}()
+
+/***/ },
+/* 70 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var Class = function(){}
+
+	    return function(parent, child){
+
+	        Class.prototype = parent.prototype
+
+	        //set the prototype
+	        child.prototype = new Class()
+
+	        //restore the constructor
+	        child.prototype.constructor = child
+
+	        //set-up $ownClass and $superClass both on proto and on the returned fn
+	        child.prototype.$ownClass   = child
+	        child.prototype.$superClass = parent
+	        child.$ownClass   = child
+	        child.$superClass = parent
+
+	        return child
+	    }
+	}()
+
+/***/ },
+/* 71 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = (function(){
+	    var o = {}
+
+	    try {
+	        Object.defineProperty(o, 'name', {
+	            value: 'x'
+	        })
+
+	        return true
+	    } catch (ex) { }
+
+	    return false
+
+	})()
+
+/***/ },
+/* 72 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	module.exports = (function(){
+	    return 'getOwnPropertyDescriptor' in Object && typeof Object.getOwnPropertyDescriptor == 'function'
+	})()
+
+/***/ },
+/* 73 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var canGetOwnPropertyDescriptor = __webpack_require__(72)
+
+	function copy(source, target){
+	    Object.getOwnPropertyNames(source).forEach(function(name){
+	        var sourceDescriptor = Object.getOwnPropertyDescriptor(source, name)
+
+	        if (!sourceDescriptor.get && !sourceDescriptor.set){
+	            //dont copy non getters/setters, since this is handled by prototype inheritance
+	            return
+	        }
+
+	        Object.defineProperty(target, name, sourceDescriptor)
+	    })
+	}
+
+	module.exports = canGetOwnPropertyDescriptor? copy: function(){}
+
+/***/ },
+/* 74 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var copy = __webpack_require__(51).copy
+	var modifyFn = __webpack_require__(87)
+
+	var canDefineProperty           = __webpack_require__(71)
+	var canGetOwnPropertyDescriptor = __webpack_require__(72)
+
+	var assignClassProperty = function(Class, propName, propDescriptor, config){
+
+	    var target      = config.proto?
+	                        Class.prototype:
+	                        Class
+
+	    var superClass  = Class.$superClass
+	    var superTarget = superClass?
+	                        config.proto?
+	                            superClass.prototype:
+	                            superClass
+	                        :
+	                        undefined
+
+	    var own = config.own
+	    var targetPropDescriptor
+
+	    if (canGetOwnPropertyDescriptor && (propDescriptor.get === undefined || propDescriptor.set == undefined)){
+	        targetPropDescriptor = Object.getOwnPropertyDescriptor(target, propName)
+
+	        if (targetPropDescriptor && propDescriptor.get === undefined && targetPropDescriptor.get !== undefined){
+	            propDescriptor.get = targetPropDescriptor.get
+	        }
+	        if (targetPropDescriptor && propDescriptor.set === undefined && targetPropDescriptor.set !== undefined){
+	            propDescriptor.set = targetPropDescriptor.set
+	        }
+	    }
+
+	    var getterOrSetter = propDescriptor.get || propDescriptor.set
+	    var newPropDescriptor
+	    var propValue
+
+	    if (getterOrSetter){
+	        newPropDescriptor = copy(propDescriptor)
+
+	        if (propDescriptor.get !== undefined){
+	            newPropDescriptor.get = modifyFn(propName, propDescriptor.get, superTarget, superClass, target, { getter: true })
+	        }
+	        if (propDescriptor.set !== undefined){
+	            newPropDescriptor.set = modifyFn(propName, propDescriptor.set, superTarget, superClass, target, { setter: true })
+	        }
+	        propDescriptor = newPropDescriptor
+	    } else {
+	        propValue = propDescriptor.value
+
+	        if (typeof propValue == 'function'){
+
+	            propValue = modifyFn(propName, propValue, superTarget, superClass, target)
+	        }
+	    }
+
+	    if (own){
+	        if (canDefineProperty){
+	            Object.defineProperty(target, propName, {
+	                value      : propValue,
+	                enumerable : false
+	            })
+	        } else {
+	            target[propName] = propValue
+	        }
+	    } else {
+
+	        if (getterOrSetter){
+	            Object.defineProperty(target, propName, propDescriptor)
+	        } else {
+	            target[propName] = propValue
+	        }
+	    }
+
+	    return propValue
+	}
+
+	module.exports = assignClassProperty
+
+/***/ },
+/* 75 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    var SLICE = Array.prototype.slice
+
+	    function bindArgsArray(fn, args){
+	        return function(){
+	            var thisArgs = SLICE.call(args || [])
+
+	            if (arguments.length){
+	                thisArgs.push.apply(thisArgs, arguments)
+	            }
+
+	            return fn.apply(this, thisArgs)
+	        }
+	    }
+
+	    function bindArgs(fn){
+	        return bindArgsArray(fn, SLICE.call(arguments,1))
+	    }
+
+	    function chain(where, fn, secondFn){
+	        var fns = [
+	            where === 'before'? secondFn: fn,
+	            where !== 'before'? secondFn: fn
+	        ]
+
+	        return function(){
+	            if (where === 'before'){
+	                secondFn.apply(this, arguments)
+	            }
+
+	            var result = fn.apply(this, arguments)
+
+	            if (where !== 'before'){
+	                secondFn.apply(this, arguments)
+	            }
+
+	            return result
+	        }
+	    }
+
+	    function before(fn, otherFn){
+	        return chain('before', otherFn, fn)
+	    }
+
+	    function after(fn, otherFn){
+	        return chain('after', otherFn, fn)
+	    }
+
+	    return {
+	        before: before,
+	        after: after,
+	        bindArgs: bindArgs,
+	        bindArgsArray: bindArgsArray
+	    }
+	}()
+
+/***/ },
+/* 76 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+
+	/**
+	 * Copies all properties from source to destination
+	 *
+	 *      copy({name: 'jon',age:5}, this);
+	 *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT ){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	            destination[i] = source[i]
+	        }
+
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 77 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyIf({name: 'jon',age:5}, {age:7})
+	 *      // => { name: 'jon', age: 7}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
+
+	            destination[i] = source[i]
+
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 78 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination
+	 *
+	 *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	 *      // => {name: 'jon', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len; i++ ){
+	        propName = list[i]
+
+	        if ( typeof source[propName] !== STR_UNDEFINED ) {
+	            destination[list[i]] = source[list[i]]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 79 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	 *      // => {name: 'jon', age: 10}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len ; i++ ){
+	        propName = list[i]
+	        if (
+	                (typeof source[propName]      !== STR_UNDEFINED) &&
+	                (typeof destination[propName] === STR_UNDEFINED)
+	            ){
+	            destination[propName] = source[propName]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 80 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyList = __webpack_require__(78)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination
+	 *
+	 *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	 *      // => {name: 'jon', age: 5, theYear: 2006}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyList(source, destination, namedKeys)
+	    }
+
+	    if (
+	           source != null && typeof source    === STR_OBJECT &&
+	        namedKeys != null && typeof namedKeys === STR_OBJECT
+	    ) {
+	        var typeOfNamedProperty
+	        var namedPropertyValue
+
+	        for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+	            namedPropertyValue  = namedKeys[propName]
+	            typeOfNamedProperty = typeof namedPropertyValue
+
+	            if (typeof source[propName] !== STR_UNDEFINED){
+	                destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
+	            }
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 81 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyListIf = __webpack_require__(79)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination,
+	 * but only if the property does not already exist in the destination object
+	 *
+	 *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	 *      // => {aname: 'test', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyListIf(source, destination, namedKeys)
+	    }
+
+	    if (
+	               source != null && typeof source    === STR_OBJECT &&
+	            namedKeys != null && typeof namedKeys === STR_OBJECT
+	        ) {
+
+	            var typeOfNamedProperty
+	            var namedPropertyValue
+	            var newPropertyName
+
+	            for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+
+	                namedPropertyValue  = namedKeys[propName]
+	                typeOfNamedProperty = typeof namedPropertyValue
+	                newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
+
+	                if (
+	                        typeof      source[propName]        !== STR_UNDEFINED &&
+	                        typeof destination[newPropertyName] === STR_UNDEFINED
+	                    ) {
+	                    destination[newPropertyName] = source[propName]
+	                }
+
+	            }
+	        }
+
+	    return destination
+	}
+
+/***/ },
+/* 82 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getInstantiatorFunction = __webpack_require__(89)
+
+	module.exports = function(fn, args){
+		return getInstantiatorFunction(args.length)(fn, args)
+	}
+
+/***/ },
+/* 83 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getInstantiatorFunction = __webpack_require__(90)
+
+	module.exports = function(fn, args){
+		return getInstantiatorFunction(args.length)(fn, args)
+	}
+
+/***/ },
+/* 84 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	module.exports = function(config){
+
+	    'use strict'
+
+	    var define = __webpack_require__(41)
+
+	    //this refers to a Class
+
+	    config = config || {}
+	    config.extend = config.extend || this.prototype.alias
+
+	    return define(config)
+	}
+
+/***/ },
+/* 85 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(config){
+
+	    'use strict'
+
+	    //this refers to a Class
+	    return __webpack_require__(50).overrideClass(this, config)
+	}
+
+/***/ },
+/* 86 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var REGISTRY = __webpack_require__(44)
+
+	module.exports = function unregisterClass(){
+
+	    'use strict'
+
+	    //this refers to a Class
+
+	    var alias = this.prototype.alias
+	    REGISTRY[alias] = null
+
+	    delete REGISTRY[alias]
+	}
+
+/***/ },
+/* 87 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var callSuperRe     = /\bcallSuper|callSuperWith\b/
+	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
+
+	var ClassFunctionBuilder = __webpack_require__(91)
+	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
+	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
+
+	var emptyObject = {}
+
+	function modify(name, fn, superTarget, superClass, target, getterSetterConfig){
+	    var hasCallSuper     = callSuperRe.test    (fn)
+	    var hasCallOverriden = callOverridenRe.test(fn)
+
+	    getterSetterConfig = getterSetterConfig || {}
+
+	    if ( hasCallSuper ){
+	        fn = buildSuperFn(name, fn, superTarget, superClass, getterSetterConfig)
+	    }
+
+	    if ( hasCallOverriden ){
+	        fn = buildOverridenFn(name, fn, target, getterSetterConfig)
+	    }
+
+	    return fn
+	}
+
+	module.exports = modify
+
+/***/ },
+/* 88 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var HAS_OWN       = Object.prototype.hasOwnProperty,
+	        STR_OBJECT    = 'object',
+	        STR_UNDEFINED = 'undefined'
+
+	    return {
+
+	        /**
+	         * Copies all properties from source to destination
+	         *
+	         *      copy({name: 'jon',age:5}, this);
+	         *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copy: __webpack_require__(92),
+
+	        /**
+	         * Copies all properties from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyIf({name: 'jon',age:5}, {age:7})
+	         *      // => { name: 'jon', age: 7}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copyIf: __webpack_require__(93),
+
+	        /**
+	         * Copies all properties from source to a new object, with the given value. This object is returned
+	         *
+	         *      copyAs({name: 'jon',age:5})
+	         *      // => the resulting object will have the 'name' and 'age' properties set to 1
+	         *
+	         * @param {Object} source
+	         * @param {Object/Number/String} [value=1]
+	         *
+	         * @return {Object} destination
+	         */
+	        copyAs: function(source, value){
+
+	            var destination = {}
+
+	            value = value || 1
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	                    destination[i] = value
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the list, from source to destination
+	         *
+	         *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	         *      // => {name: 'jon', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyList: __webpack_require__(94),
+
+	        /**
+	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	         *      // => {name: 'jon', age: 10}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyListIf: __webpack_require__(95),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination
+	         *
+	         *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	         *      // => {name: 'jon', age: 5, theYear: 2006}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeys: __webpack_require__(96),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination,
+	         * but only if the property does not already exist in the destination object
+	         *
+	         *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	         *      // => {aname: 'test', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeysIf: __webpack_require__(97),
+
+	        copyExceptKeys: function(source, destination, exceptKeys){
+	            destination = destination || {}
+	            exceptKeys  = exceptKeys  || {}
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) && !HAS_OWN.call(exceptKeys, i) ) {
+
+	                    destination[i] = source[i]
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies the named keys from source to destination.
+	         * For the keys that are functions, copies the functions bound to the source
+	         *
+	         * @param  {Object} source      The source object
+	         * @param  {Object} destination The target object
+	         * @param  {Object} namedKeys   An object with the names of the keys to copy The values from the keys in this object
+	         *                              need to be either numbers or booleans if you want to copy the property under the same name,
+	         *                              or a string if you want to copy the property under a different name
+	         * @return {Object}             Returns the destination object
+	         */
+	        bindCopyKeys: function(source, destination, namedKeys){
+	            if (arguments.length == 2){
+	                namedKeys = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+
+	            if (
+	                       source != null && typeof source    === STR_OBJECT &&
+	                    namedKeys != null && typeof namedKeys === STR_OBJECT
+	                ) {
+
+
+	                var typeOfNamedProperty,
+	                    namedPropertyValue,
+
+	                    typeOfSourceProperty,
+	                    propValue
+
+
+	                for(var propName in namedKeys) if (HAS_OWN.call(namedKeys, propName)) {
+
+	                    namedPropertyValue = namedKeys[propName]
+	                    typeOfNamedProperty = typeof namedPropertyValue
+
+	                    propValue = source[propName]
+	                    typeOfSourceProperty = typeof propValue
+
+
+	                    if ( typeOfSourceProperty !== STR_UNDEFINED ) {
+
+	                        destination[
+	                            typeOfNamedProperty == 'string'?
+	                                            namedPropertyValue :
+	                                            propName
+	                            ] = typeOfSourceProperty == 'function' ?
+	                                            propValue.bind(source):
+	                                            propValue
+	                    }
+	                }
+	            }
+
+	            return destination
+	        }
+	    }
+
+	}()
+
+/***/ },
+/* 89 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict';
+
+	    var fns = {}
+
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
+	}()
+
+/***/ },
+/* 90 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict';
+
+	    var fns = {}
+
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
+	}()
+
+/***/ },
+/* 91 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var emptyFn = function(){}
+	    var getDescriptor = Object.getOwnPropertyDescriptor
+
+	    function buildSuperFn(name, fn, superHost, superClass, getterSetterConfig){
+
+	        function execute(args){
+
+	            var accessor = getterSetterConfig.getter?
+	                                'get':
+	                                getterSetterConfig.setter?
+	                                    'set':
+	                                    null
+	            var descriptor = accessor?
+	                                getDescriptor(superHost, name):
+	                                null
+
+	            var fn   = accessor?
+	                            descriptor? descriptor[accessor]: null
+	                            :
+	                            superHost[name]
+
+
+	            var isFn = typeof fn == 'function'
+
+	            if (!isFn && name == 'init'){
+	                //if the superClass is not from the classy registry,
+	                //it means it is a simple function and we accept those as well
+	                if (!superClass.$superClass){
+	                    fn   = superClass
+	                    isFn = true
+	                }
+	            }
+
+	            if (isFn){
+	                return fn.apply(this, args)
+	            }
+	        }
+
+	        return function() {
+	            var tmpSuper     = this.callSuper
+	            var tmpSuperWith = this.callSuperWith
+	            var args         = arguments
+
+	            /*
+	             * Use callSuperWith method in order to pass in different parameter values from those that have been used
+	             * @param argumentsPassed
+	             * @return {Mixed} the result of the super method
+	             */
+	            this.callSuperWith = function(){
+	                return execute.call(this, arguments)
+	            }
+
+	            /*
+	             * Use the callSuper method to call the super method and pass the arguments array
+	             * Example usage:
+	             *      setName: function(name){
+	             *          this.callSuper() //you don't have to explicitly pass 'arguments', since it automagically does so :)
+	             *      }
+	             * @return {Mixed} the result of the super method
+	             */
+	            this.callSuper = function(){
+	                return execute.call(this, args)
+	            }
+
+	            var ret = fn.apply(this, args)
+
+	            this.callSuper     = tmpSuper
+	            this.callSuperWith = tmpSuperWith
+
+	            return ret
+	        }
+	    }
+
+	    function buildOverridenFn(name, currentFn, host, getterSetterConfig){
+
+	        var accessor = getterSetterConfig.getter?
+	                            'get':
+	                            getterSetterConfig.setter?
+	                                'set':
+	                                null
+
+	        var descriptor = accessor?
+	                            getDescriptor(host, name):
+	                            null
+
+	        var overridenFn = accessor?
+	                            descriptor? descriptor[accessor]: null
+	                            :
+	                            host[name]
+
+	        if (typeof overridenFn == 'undefined') {
+	            //this check is needed for the following scenario - if a method is overriden, and it also calls
+	            //to callOverriden, but has no method to override (so is the first in the override chain)
+
+	            //in this case, currentFn calls to callOverriden, and will later be also overriden.
+	            //so on the callStack, when currentFn is called in the context of another function,
+	            //callOverriden will still be bound, and currentFn will call it, while it should be a no-op
+
+	            //so in order to avoid all this scenario
+	            //just make sure we have one more method in the override chain (the base overriden method)
+	            //and that this method is the empty function
+	            overridenFn = emptyFn
+	        }
+
+	        return function() {
+	            var tmpOverriden     = this.callOverriden,
+	                tmpOverridenWith = this.callOverridenWith,
+	                args             = arguments
+
+	            /*
+	             * Use callOverridenWith method in order to pass in different parameter values from those that have been used
+	             * @return {Mixed} the result of the overriden method
+	             */
+	            this.callOverridenWith = function(){
+	                return overridenFn.apply(this, arguments)
+	            }
+
+	            /*
+	             * Use the callOverriden method to call the overriden method and pass the arguments array
+	             * Example usage:
+	             *      setName: function(name){
+	             *          this.callOverriden() //you don't have to explicitly pass 'arguments', since it automagically does so :)
+	             *      }
+	             * @return {Mixed} the result of the overriden method
+	             */
+	            this.callOverriden = function(){
+	                return overridenFn.apply(this, args)
+	            }
+
+	            var ret = currentFn.apply(this, args)
+
+	            this.callOverriden     = tmpOverriden
+	            this.callOverridenWith = tmpOverridenWith
+
+	            return ret
+	        }
+	    }
+
+	    return {
+	        buildSuperFn     : buildSuperFn,
+	        buildOverridenFn : buildOverridenFn
+	    }
+	}()
+
+/***/ },
+/* 92 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+
+	/**
+	 * Copies all properties from source to destination
+	 *
+	 *      copy({name: 'jon',age:5}, this);
+	 *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT ){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	            destination[i] = source[i]
+	        }
+
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 93 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyIf({name: 'jon',age:5}, {age:7})
+	 *      // => { name: 'jon', age: 7}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
+
+	            destination[i] = source[i]
+
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 94 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination
+	 *
+	 *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	 *      // => {name: 'jon', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len; i++ ){
+	        propName = list[i]
+
+	        if ( typeof source[propName] !== STR_UNDEFINED ) {
+	            destination[list[i]] = source[list[i]]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 95 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	 *      // => {name: 'jon', age: 10}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len ; i++ ){
+	        propName = list[i]
+	        if (
+	                (typeof source[propName]      !== STR_UNDEFINED) &&
+	                (typeof destination[propName] === STR_UNDEFINED)
+	            ){
+	            destination[propName] = source[propName]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 96 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyList = __webpack_require__(94)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination
+	 *
+	 *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	 *      // => {name: 'jon', age: 5, theYear: 2006}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyList(source, destination, namedKeys)
+	    }
+
+	    if (
+	           source != null && typeof source    === STR_OBJECT &&
+	        namedKeys != null && typeof namedKeys === STR_OBJECT
+	    ) {
+	        var typeOfNamedProperty
+	        var namedPropertyValue
+
+	        for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+	            namedPropertyValue  = namedKeys[propName]
+	            typeOfNamedProperty = typeof namedPropertyValue
+
+	            if (typeof source[propName] !== STR_UNDEFINED){
+	                destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
+	            }
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 97 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyListIf = __webpack_require__(95)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination,
+	 * but only if the property does not already exist in the destination object
+	 *
+	 *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	 *      // => {aname: 'test', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyListIf(source, destination, namedKeys)
+	    }
+
+	    if (
+	               source != null && typeof source    === STR_OBJECT &&
+	            namedKeys != null && typeof namedKeys === STR_OBJECT
+	        ) {
+
+	            var typeOfNamedProperty
+	            var namedPropertyValue
+	            var newPropertyName
+
+	            for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+
+	                namedPropertyValue  = namedKeys[propName]
+	                typeOfNamedProperty = typeof namedPropertyValue
+	                newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
+
+	                if (
+	                        typeof      source[propName]        !== STR_UNDEFINED &&
+	                        typeof destination[newPropertyName] === STR_UNDEFINED
+	                    ) {
+	                    destination[newPropertyName] = source[propName]
+	                }
+
+	            }
+	        }
+
+	    return destination
+	}
+
+/***/ }
+/******/ ])
+});
