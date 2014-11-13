@@ -1,6 +1,6 @@
 {
   "name": "react-color-picker",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "author": "radubrehar <radu@jslog.com>",
   "description": "React Color Picker",
   "main": [
@@ -19,7 +19,7 @@
     "react-component",
     "color",
     "picker",
-    "color-picker"
+    "color-picker",
     "hex"
   ],
   "dependencies": {
