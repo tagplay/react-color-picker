@@ -26,7 +26,7 @@ Use version `>=2.0.0` for React `>=0.12.0`. For previous React versions, use `==
 
 ## Usage
 
-react-color-picker does not include `React` (not even in `dist/react-color-picker.js`) so you'll have to manually include that.
+`react-color-picker` does not include `React` (not even in `dist/react-color-picker.js`) so you'll have to manually include that.
 
 You can have either **controlled** (using **value**) or **uncontrolled** (using **defaultValue**) pickers.
 
@@ -128,8 +128,8 @@ Called after mouse up - when the color has been selected
 
 ## Development
 
-In order to prepare a new build, run
+In order to make new build, run
 
 ```sh
-$ npm run prepare
+$ npm run build
 ```

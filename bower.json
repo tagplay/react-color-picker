@@ -15,9 +15,11 @@
     "style"
   ],
   "keywords": [
-    "color",
     "react",
+    "react-component",
+    "color",
     "picker",
+    "color-picker"
     "hex"
   ],
   "dependencies": {
