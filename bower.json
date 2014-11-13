@@ -1,0 +1,30 @@
+{
+  "name": "react-color-picker",
+  "version": "2.1.1",
+  "author": "radubrehar <radu@jslog.com>",
+  "description": "React Color Picker",
+  "main": [
+    "dist/react-color-picker.js",
+    "dist/react-color-picker.min.js"
+  ],
+  "ignore": [
+    "**/.*",
+    ".idea",
+    "lib",
+    "src",
+    "style"
+  ],
+  "keywords": [
+    "color",
+    "react",
+    "picker",
+    "hex"
+  ],
+  "dependencies": {
+    "react": "~0.12.0"
+  },
+  "license": "MIT",
+  "resolutions": {
+    "react": "~0.12.0"
+  }
+}

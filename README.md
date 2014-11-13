@@ -1,25 +1,32 @@
-react-color-picker
-=================
+# React Color Picker
 
-> React Color Picker
+Demo: [jslog.com/react-color-picker](http://jslog.com/react-color-picker)
+
+![Color Picker](https://cloud.githubusercontent.com/assets/512416/5023604/0761ac7a-6aca-11e4-90db-d8678be7c267.PNG)
 
 ## Install
+
+#### NPM
 
 ```sh
 $ npm install react-color-picker
 ```
 
-or use `dist/react-color-picker.js`, which uses umd (exported as `ColorPicker`)
+#### Bower
 
-Use version >=2.0.0 for React >=0.12.0. For prev react versions, use v 1.4.1
+```sh
+bower install react-color-picker
+```
 
-## Demo
+#### Other
 
-[jslog.com/react-color-picker](http://jslog.com/react-color-picker)
+Use `dist/react-color-picker.js`, which uses umd (exported as `ColorPicker`).
+
+Use version `>=2.0.0` for React `>=0.12.0`. For previous React versions, use `==1.4.1`.
 
 ## Usage
 
-ColorPicker does not include `React` (not even in `dist/react-color-picker.js`) so you'll have to manually include that.
+react-color-picker does not include `React` (not even in `dist/react-color-picker.js`) so you'll have to manually include that.
 
 You can have either **controlled** (using **value**) or **uncontrolled** (using **defaultValue**) pickers.
 
