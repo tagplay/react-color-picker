@@ -1,6 +1,6 @@
-'use strict'
+'use strict';
 
-require('./resources/style/index.styl')
+require('./style/index.styl')
 
 var React              = require('react')
 var ColorPicker        = require('./src/index')

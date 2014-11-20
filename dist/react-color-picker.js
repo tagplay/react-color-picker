@@ -499,7 +499,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict'
 
-	var tinycolor = __webpack_require__(18)
+	var tinycolor = __webpack_require__(17)
 
 	if (typeof window != 'undefined'){
 	    window.tinycolor = tinycolor
@@ -770,11 +770,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
 	var Region = __webpack_require__(16)
 	var copy   = __webpack_require__(7).copy
-	var DragHelper = __webpack_require__(17)
+	var DragHelper = __webpack_require__(18)
 	var toHsv = __webpack_require__(5).toHsv
 
 	function emptyFn(){}
@@ -1226,1485 +1226,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	var hasOwn    = __webpack_require__(20)
-	var copyUtils = __webpack_require__(7)
-	var copyList  = copyUtils.copyList
-	var F         = __webpack_require__(19)
-	var isObject  = __webpack_require__(21).object
-
-	/**
-	 * @class Region
-	 *
-	 * # z.region
-	 *
-	 * The Region class is an abstraction that allows the developer to refer to rectangles on the screen,
-	 * and move them around, make diffs and unions, detect intersections, compute areas, etc.
-	 *
-	 * ## Creating a region
-	 *
-	 *
-	 *
-	 *      var region = require('region')({
-	 *          top  : 10,
-	 *          left : 10,
-	 *          bottom: 100,
-	 *          right : 100
-	 *      })
-	 *      //this region is a square, 90x90, starting from (10,10) to (100,100)
-	 *
-	 *      var second = require('region')({ top: 10, left: 100, right: 200, bottom: 60})
-	 *      var union  = region.getUnion(second)
-	 *
-	 *      //the "union" region is a union between "region" and "second"
-	 *
-	 * ## Element regions
-	 *
-	 * The {@link Element} class has {@link Element#getRegion} and {@link Element#setRegion} methods, so you can easily
-	 * retrieve and set element size and position.
-	 *
-	 *      var bodyElement = Element.select('body'),
-	 *          bodyRegion  = bodyElement.getRegion()
-	 *
-	 *      bodyRegion.setWidth(100).setHeight(200)
-	 *
-	 *      //this makes the body just 100px in width and 200px in height
-	 *      bodyElement.setRegion(bodyRegion)
-	 *
-	 *      //you can even bind an element to a region
-	 *
-	 *      var reg = bodyElement.getRegion({bound: true})
-	 *
-	 *      reg.setWidth(200) //also sets the width of the bodyElement
-	 *
-	 */
-
-	var classy = __webpack_require__(23)
-	var EventEmitter = __webpack_require__(22).mixin
-
-	var MAX       = Math.max,
-	    MIN       = Math.min,
-	    POINT_POSITIONS = {
-	        cy: 'YCenter',
-	        cx: 'XCenter',
-	        t : 'Top',
-	        tc: 'TopCenter',
-	        tl: 'TopLeft',
-	        tr: 'TopRight',
-	        b : 'Bottom',
-	        bc: 'BottomCenter',
-	        bl: 'BottomLeft',
-	        br: 'BottomRight',
-	        l : 'Left',
-	        lc: 'LeftCenter',
-	        r : 'Right',
-	        rc: 'RightCenter',
-	        c : 'Center'
-	    }
-
-	var REGION = classy.define({
-
-	    forceInstance: true,
-
-	    mixins: [
-	        EventEmitter
-	    ],
-
-	    statics: {
-	        init: function(){
-	            var exportAsNonStatic = {
-	                getIntersection      : true,
-	                getIntersectionArea  : true,
-	                getIntersectionHeight: true,
-	                getIntersectionWidth : true,
-	                getUnion             : true
-	            }
-	            var thisProto = this.prototype
-	            var newName
-
-	            var exportHasOwn = hasOwn(exportAsNonStatic)
-	            var methodName
-
-	            for (methodName in exportAsNonStatic) if (exportHasOwn(methodName)) {
-	                newName = exportAsNonStatic[methodName]
-	                if (typeof newName != 'string'){
-	                    newName = methodName
-	                }
-
-	                (function(proto, methodName, protoMethodName){
-
-	                    proto[methodName] = function(region){
-	                        //<debug>
-	                        if (!this.$ownClass[protoMethodName]){
-	                            console.warn('cannot find method ', protoMethodName,' on ', this.$ownClass)
-	                        }
-	                        //</debug>
-	                        return this.$ownClass[protoMethodName](this, region)
-	                    }
-
-	                })(thisProto, newName, methodName)
-	            }
-	        },
-
-	        /**
-	         * @static
-	         * Returns true if the given region is valid, false otherwise.
-	         * @param  {Region} region The region to check
-	         * @return {Boolean}        True, if the region is valid, false otherwise.
-	         * A region is valid if
-	         *  * left <= right  &&
-	         *  * top  <= bottom
-	         */
-	        validate: function(region){
-
-	            var isValid = true
-
-	            if (region.right < region.left){
-	                isValid = false
-	                region.right = region.left
-	            }
-
-	            if (region.bottom < region.top){
-	                isValid = false
-	                region.bottom = region.top
-	            }
-
-	            return isValid
-	        },
-
-	        /**
-	         * Returns the region corresponding to the documentElement
-	         * @return {Region} The region corresponding to the documentElement. This region is the maximum region visible on the screen.
-	         */
-	        getDocRegion: function(){
-	            return REGION.fromDOM(document.documentElement)
-	        },
-
-	        from: function(reg){
-	            if (reg.__IS_REGION){
-	                return reg
-	            }
-
-	            if (typeof document){
-	                if (typeof HTMLElement != 'undefined' && reg instanceof HTMLElement){
-	                    return REGION.fromDOM(reg)
-	                }
-
-	                if (reg.type && reg.pageX != undefined && reg.pageY != undefined){
-	                    return REGION.fromEvent(reg)
-	                }
-	            }
-
-	            return REGION(reg)
-	        },
-
-	        fromEvent: function(event){
-	            return REGION.fromPoint({
-	                x: event.pageX,
-	                y: event.pageY
-	            })
-	        },
-
-	        fromDOM: function(dom){
-	            var rect    = dom.getBoundingClientRect()
-	            var docElem = document.documentElement
-	            var win     = window
-
-	            var top  = rect.top + win.pageYOffset - docElem.clientTop
-	            var left = rect.left + win.pageXOffset - docElem.clientLeft
-
-	            return new REGION({
-	                top   : rect.top,
-	                left  : rect.left,
-	                bottom: rect.bottom,
-	                right : rect.right
-	            })
-	        },
-
-	        /**
-	         * @static
-	         * Returns a region that is the intersection of the given two regions
-	         * @param  {Region} first  The first region
-	         * @param  {Region} second The second region
-	         * @return {Region/Boolean}        The intersection region or false if no intersection found
-	         */
-	        getIntersection: function(first, second){
-
-	            var area = this.getIntersectionArea(first, second)
-
-	            if (area){
-	                return new REGION(area)
-	            }
-
-	            return false
-	        },
-
-	        getIntersectionWidth: function(first, second){
-	            var minRight  = MIN(first.right, second.right)
-	            var maxLeft   = MAX(first.left,  second.left)
-
-	            if (maxLeft < minRight){
-	                return minRight  - maxLeft
-	            }
-
-	            return 0
-	        },
-
-	        getIntersectionHeight: function(first, second){
-	            var maxTop    = MAX(first.top,   second.top)
-	            var minBottom = MIN(first.bottom,second.bottom)
-
-	            if (maxTop  < minBottom){
-	                return minBottom - maxTop
-	            }
-
-	            return 0
-	        },
-
-	        getIntersectionArea: function(first, second){
-	            var maxTop    = MAX(first.top,   second.top)
-	            var minRight  = MIN(first.right, second.right)
-	            var minBottom = MIN(first.bottom,second.bottom)
-	            var maxLeft   = MAX(first.left,  second.left)
-
-	            if (
-	                    maxTop  < minBottom &&
-	                    maxLeft < minRight
-	                ){
-	                return {
-	                    top    : maxTop,
-	                    right  : minRight,
-	                    bottom : minBottom,
-	                    left   : maxLeft,
-
-	                    width  : minRight  - maxLeft,
-	                    height : minBottom - maxTop
-	                }
-	            }
-
-	            return false
-	        },
-
-	        /**
-	         * @static
-	         * Returns a region that is the union of the given two regions
-	         * @param  {Region} first  The first region
-	         * @param  {Region} second The second region
-	         * @return {Region}        The union region. The smallest region that contains both given regions.
-	         */
-	        getUnion: function(first, second){
-	            var top    = MIN(first.top,   second.top)
-	            var right  = MAX(first.right, second.right)
-	            var bottom = MAX(first.bottom,second.bottom)
-	            var left   = MIN(first.left,  second.left)
-
-	            return new REGION(top, right, bottom, left)
-	        },
-
-	        /**
-	         * @static
-	         * Returns a region. If the reg argument is a region, returns it, otherwise return a new region built from the reg object.
-	         *
-	         * @param  {Region} reg A region or an object with either top, left, bottom, right or
-	         * with top, left, width, height
-	         * @return {Region} A region
-	         */
-	        getRegion: function(reg){
-	            return REGION.from(reg)
-	        },
-
-	        /**
-	         * Creates a region that corresponds to a point.
-	         *
-	         * @param  {Object} xy The point
-	         * @param  {Number} xy.x
-	         * @param  {Number} xy.y
-	         *
-	         * @return {Region}    The new region, with top==xy.y, bottom = xy.y and left==xy.x, right==xy.x
-	         */
-	        fromPoint: function(xy){
-	            return new REGION({
-	                        top    : xy.y,
-	                        bottom : xy.y,
-	                        left   : xy.x,
-	                        right  : xy.x
-	                    })
-	        }
-	    },
-
-	    /**
-	     * @cfg {Boolean} emitChangeEvents If this is set to true, the region
-	     * will emit 'changesize' and 'changeposition' whenever the size or the position changs
-	     */
-	    emitChangeEvents: false,
-
-	    /**
-	     * @cfg {Number} changeEventsBuffer If {@link #emitChangeEvents} is true, the change events will be emitted in a buffered manner,
-	     * if this value is greater than 0
-	     */
-	    changeEventsBuffer: 0,
-
-	    /**
-	     * Returns this region, or a clone of this region
-	     * @param  {Boolean} [clone] If true, this method will return a clone of this region
-	     * @return {Region}       This region, or a clone of this
-	     */
-	    getRegion: function(clone){
-	        return clone?
-	                    this.clone():
-	                    this
-	    },
-
-	    /**
-	     * Sets the properties of this region to those of the given region
-	     * @param {Region/Object} reg The region or object to use for setting properties of this region
-	     * @return {Region} this
-	     */
-	    setRegion: function(reg){
-
-	        if (reg instanceof REGION){
-	            this.set(reg.get())
-	        } else {
-	            this.set(reg)
-	        }
-
-	        return this
-	    },
-
-	    /**
-	     * Returns true if this region is valid, false otherwise
-	     *
-	     * @param  {Region} region The region to check
-	     * @return {Boolean}        True, if the region is valid, false otherwise.
-	     * A region is valid if
-	     *  * left <= right  &&
-	     *  * top  <= bottom
-	     */
-	    validate: function(){
-	        return REGION.validate(this)
-	    },
-
-	    _before: function(){
-	        if (this.emitChangeEvents){
-	            return copyList(this, {}, ['left','top','bottom','right'])
-	        }
-	    },
-
-	    _after: function(before){
-	        if (this.emitChangeEvents){
-
-	            if(this.top != before.top || this.left != before.left) {
-	                this.emitPositionChange()
-	            }
-
-	            if(this.right != before.right || this.bottom != before.bottom) {
-	                this.emitSizeChange()
-	            }
-	        }
-	    },
-
-	    notifyPositionChange: function(){
-	        this.emit('changeposition', this)
-	    },
-
-	    emitPositionChange: function(){
-	        if (this.changeEventsBuffer){
-	            if (!this.emitPositionChangeBuffered){
-	                this.emitPositionChangeBuffered = F.buffer(this.notifyPositionChange, changeEventsBuffer)
-	            }
-	            this.emitPositionChangeBuffered()
-	        }
-
-	        this.notifyPositionChange()
-	    },
-
-	    notifySizeChange: function(){
-	        this.emit('changesize', this)
-	    },
-
-	    emitSizeChange: function(){
-	        if (this.changeEventsBuffer){
-	            if (!this.emitSizeChangeBuffered){
-	                this.emitSizeChangeBuffered = F.buffer(this.notifySizeChange, changeEventsBuffer)
-	            }
-	            this.emitSizeChangeBuffered()
-	        }
-
-	        this.notifySizeChange()
-	    },
-
-	    /**
-	     * Add the given amounts to each specified side. Example
-	     *
-	     *      region.add({
-	     *          top: 50,    //add 50 px to the top side
-	     *          bottom: -100    //substract 100 px from the bottom side
-	     *      })
-	     *
-	     * @param {Object} directions
-	     * @param {Number} [directions.top]
-	     * @param {Number} [directions.left]
-	     * @param {Number} [directions.bottom]
-	     * @param {Number} [directions.right]
-	     *
-	     * @return {Region} this
-	     */
-	    add: function(directions){
-
-	        var before = this._before()
-	        var direction
-
-	        for (direction in directions) if ( hasOwn(directions, direction) ) {
-	            this[direction] += directions[direction]
-	        }
-
-	        this[0] = this.left
-	        this[1] = this.top
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * The same as {@link #add}, but substracts the given values
-	     * @param {Object} directions
-	     * @param {Number} [directions.top]
-	     * @param {Number} [directions.left]
-	     * @param {Number} [directions.bottom]
-	     * @param {Number} [directions.right]
-	     *
-	     * @return {Region} this
-	     */
-	    substract: function(directions){
-
-	        var before = this._before()
-	        var direction
-
-	        for (direction in directions) if (hasOwn(directions, direction) ) {
-	            this[direction] -= directions[direction]
-	        }
-
-	        this[0] = this.left
-	        this[1] = this.top
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Retrieves the size of the region.
-	     * @return {Object} An object with {width, height}, corresponding to the width and height of the region
-	     */
-	    getSize: function(){
-	        return {
-	            width  : this.getWidth(),
-	            height : this.getHeight()
-	        }
-	    },
-
-	    /**
-	     * Move the region to the given position and keeps the region width and height.
-	     *
-	     * @param {Object} position An object with {top, left} properties. The values in {top,left} are used to move the region by the given amounts.
-	     * @param {Number} [position.left]
-	     * @param {Number} [position.top]
-	     *
-	     * @return {Region} this
-	     */
-	    setPosition: function(position){
-	        var width  = this.getWidth(),
-	            height = this.getHeight()
-
-	        if (position.left){
-	            position.right  = position.left + width
-	        }
-
-	        if (position.top){
-	            position.bottom = position.top  + height
-	        }
-
-	        return this.set(position)
-	    },
-
-	    /**
-	     * Sets both the height and the width of this region to the given size.
-	     *
-	     * @param {Number} size The new size for the region
-	     * @return {Region} this
-	     */
-	    setSize: function(size){
-	        if (size.height && size.width){
-	            return this.set({
-	                right  : this.left + size.width,
-	                bottom : this.top + size.height
-	            })
-	        }
-
-	        if (size.width){
-	            this.setWidth(size.width)
-	        }
-
-	        if (size.height){
-	            this.setHeight(size.height)
-	        }
-
-	        return this
-	    },
-
-	    get width(){
-	        return this.getWidth()
-	    },
-
-	    set width(width){
-	        return this.setWidth(width)
-	    },
-
-	    /**
-	     * @chainable
-	     *
-	     * Sets the width of this region
-	     * @param {Number} width The new width for this region
-	     * @return {Region} this
-	     */
-	    setWidth: function(width){
-	        return this.set({
-	            right: this.left + width
-	        })
-	    },
-
-	    get height(){
-	        return this.getHeight()
-	    },
-
-	    set height(height){
-	        return this.setHeight(height)
-	    },
-
-	    /**
-	     * @chainable
-	     *
-	     * Sets the height of this region
-	     * @param {Number} height The new height for this region
-	     * @return {Region} this
-	     */
-	    setHeight: function(height){
-	        return this.set({
-	            bottom: this.top + height
-	        })
-	    },
-
-	    /**
-	     * Sets the given properties on this region
-	     *
-	     * @param {Object} directions an object containing top, left, and EITHER bottom, right OR width, height
-	     * @param {Number} [directions.top]
-	     * @param {Number} [directions.left]
-	     *
-	     * @param {Number} [directions.bottom]
-	     * @param {Number} [directions.right]
-	     *
-	     * @param {Number} [directions.width]
-	     * @param {Number} [directions.height]
-	     *
-	     *
-	     * @return {Region} this
-	     */
-	    set: function(directions){
-	        var before = this._before()
-
-	        copyList(directions, this, ['left','top','bottom','right'])
-
-	        if (directions.bottom == null && directions.height != null){
-	            this.bottom = this.top + directions.height
-	        }
-	        if (directions.right == null && directions.width != null){
-	            this.right = this.left + directions.width
-	        }
-
-	        this[0] = this.left
-	        this[1] = this.top
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Retrieves the given property from this region. If no property is given, return an object
-	     * with {left, top, right, bottom}
-	     *
-	     * @param {String} [dir] the property to retrieve from this region
-	     * @return {Number/Object}
-	     */
-	    get: function(dir){
-	        return dir? this[dir]:
-	                    copyList(this, {}, ['left','right','top','bottom'])
-	    },
-
-	    /**
-	     * Shifts this region to either top, or left or both.
-	     * Shift is similar to {@link #add} by the fact that it adds the given dimensions to top/left sides, but also adds the given dimensions
-	     * to bottom and right
-	     *
-	     * @param {Object} directions
-	     * @param {Number} [directions.top]
-	     * @param {Number} [directions.left]
-	     *
-	     * @return {Region} this
-	     */
-	    shift: function(directions){
-
-	        var before = this._before()
-
-	        if (directions.top){
-	            this.top    += directions.top
-	            this.bottom += directions.top
-	        }
-
-	        if (directions.left){
-	            this.left  += directions.left
-	            this.right += directions.left
-	        }
-
-	        this[0] = this.left
-	        this[1] = this.top
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Same as {@link #shift}, but substracts the given values
-	     * @chainable
-	     *
-	     * @param {Object} directions
-	     * @param {Number} [directions.top]
-	     * @param {Number} [directions.left]
-	     *
-	     * @return {Region} this
-	     */
-	    unshift: function(directions){
-
-	        if (directions.top){
-	            directions.top *= -1
-	        }
-
-	        if (directions.left){
-	            directions.left *= -1
-	        }
-
-	        return this.shift(directions)
-	    },
-
-	    /**
-	     * Compare this region and the given region. Return true if they have all the same size and position
-	     * @param  {Region} region The region to compare with
-	     * @return {Boolean}       True if this and region have same size and position
-	     */
-	    equals: function(region){
-	        return this.equalsPosition(region) && this.equalsSize(region)
-	    },
-
-	    /**
-	     * Returns true if this region has the same bottom,right properties as the given region
-	     * @param  {Region/Object} size The region to compare against
-	     * @return {Boolean}       true if this region is the same size as the given size
-	     */
-	    equalsSize: function(size){
-	        var isInstance = size instanceof REGION
-
-	        var s = {
-	            width: size.width == null && isInstance?
-	                    size.getWidth():
-	                    size.width,
-
-	            height: size.height == null && isInstance?
-	                    size.getHeight():
-	                    size.height
-	        }
-	        return this.getWidth() == s.width && this.getHeight() == s.height
-	    },
-
-	    /**
-	     * Returns true if this region has the same top,left properties as the given region
-	     * @param  {Region} region The region to compare against
-	     * @return {Boolean}       true if this.top == region.top and this.left == region.left
-	     */
-	    equalsPosition: function(region){
-	        return this.top == region.top && this.left == region.left
-	    },
-
-	    /**
-	     * Adds the given ammount to the left side of this region
-	     * @param {Number} left The ammount to add
-	     * @return {Region} this
-	     */
-	    addLeft: function(left){
-	        var before = this._before()
-
-	        this.left = this[0] = this.left + left
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Adds the given ammount to the top side of this region
-	     * @param {Number} top The ammount to add
-	     * @return {Region} this
-	     */
-	    addTop: function(top){
-	        var before = this._before()
-
-	        this.top = this[1] = this.top + top
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Adds the given ammount to the bottom side of this region
-	     * @param {Number} bottom The ammount to add
-	     * @return {Region} this
-	     */
-	    addBottom: function(bottom){
-	        var before = this._before()
-
-	        this.bottom += bottom
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Adds the given ammount to the right side of this region
-	     * @param {Number} right The ammount to add
-	     * @return {Region} this
-	     */
-	    addRight: function(right){
-	        var before = this._before()
-
-	        this.right += right
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Minimize the top side.
-	     * @return {Region} this
-	     */
-	    minTop: function(){
-	        return this.expand({top: 1})
-	    },
-	    /**
-	     * Minimize the bottom side.
-	     * @return {Region} this
-	     */
-	    maxBottom: function(){
-	        return this.expand({bottom: 1})
-	    },
-	    /**
-	     * Minimize the left side.
-	     * @return {Region} this
-	     */
-	    minLeft: function(){
-	        return this.expand({left: 1})
-	    },
-	    /**
-	     * Maximize the right side.
-	     * @return {Region} this
-	     */
-	    maxRight: function(){
-	        return this.expand({right: 1})
-	    },
-
-	    /**
-	     * Expands this region to the dimensions of the given region, or the document region, if no region is expanded.
-	     * But only expand the given sides (any of the four can be expanded).
-	     *
-	     * @param {Object} directions
-	     * @param {Boolean} [directions.top]
-	     * @param {Boolean} [directions.bottom]
-	     * @param {Boolean} [directions.left]
-	     * @param {Boolean} [directions.right]
-	     *
-	     * @param {Region} [region] the region to expand to, defaults to the document region
-	     * @return {Region} this region
-	     */
-	    expand: function(directions, region){
-	        var docRegion = region || REGION.getDocRegion(),
-	            list      = [],
-	            direction,
-	            before = this._before()
-
-	        for (direction in directions) if ( hasOwn(directions, direction) ) {
-	            list.push(direction)
-	        }
-
-	        copyList(docRegion, this, list)
-
-	        this[0] = this.left
-	        this[1] = this.top
-
-	        this._after(before)
-
-	        return this
-	    },
-
-	    /**
-	     * Returns a clone of this region
-	     * @return {Region} A new region, with the same position and dimension as this region
-	     */
-	    clone: function(){
-	        return new REGION({
-	                    top    : this.top,
-	                    left   : this.left,
-	                    right  : this.right,
-	                    bottom : this.bottom
-	                })
-	    },
-
-	    /**
-	     * Returns true if this region contains the given point
-	     * @param {Number/Object} x the x coordinate of the point
-	     * @param {Number} [y] the y coordinate of the point
-	     *
-	     * @return {Boolean} true if this region constains the given point, false otherwise
-	     */
-	    containsPoint: function(x, y){
-	        if (arguments.length == 1){
-	            y = x.y
-	            x = x.x
-	        }
-
-	        return this.left <= x  &&
-	               x <= this.right &&
-	               this.top <= y   &&
-	               y <= this.bottom
-	    },
-
-	    /**
-	     *
-	     * @param region
-	     *
-	     * @return {Boolean} true if this region contains the given region, false otherwise
-	     */
-	    containsRegion: function(region){
-	        return this.containsPoint(region.left, region.top)    &&
-	               this.containsPoint(region.right, region.bottom)
-	    },
-
-	    /**
-	     * Returns an object with the difference for {top, bottom} positions betwen this and the given region,
-	     *
-	     * See {@link #diff}
-	     * @param  {Region} region The region to use for diff
-	     * @return {Object}        {top,bottom}
-	     */
-	    diffHeight: function(region){
-	        return this.diff(region, {top: true, bottom: true})
-	    },
-
-	    /**
-	     * Returns an object with the difference for {left, right} positions betwen this and the given region,
-	     *
-	     * See {@link #diff}
-	     * @param  {Region} region The region to use for diff
-	     * @return {Object}        {left,right}
-	     */
-	    diffWidth: function(region){
-	        return this.diff(region, {left: true, right: true})
-	    },
-
-	    /**
-	     * Returns an object with the difference in sizes for the given directions, between this and region
-	     *
-	     * @param  {Region} region     The region to use for diff
-	     * @param  {Object} directions An object with the directions to diff. Can have any of the following keys:
-	     *  * left
-	     *  * right
-	     *  * top
-	     *  * bottom
-	     *
-	     * @return {Object} and object with the same keys as the directions object, but the values being the
-	     * differences between this region and the given region
-	     */
-	    diff: function(region, directions){
-	        var result = {}
-	        var dirName
-
-	        for (dirName in directions) if ( hasOwn(directions, dirName) ) {
-	            result[dirName] = this[dirName] - region[dirName]
-	        }
-
-	        return result
-	    },
-
-	    /**
-	     * Returns the position, in {left,top} properties, of this region
-	     *
-	     * @return {Object} {left,top}
-	     */
-	    getPosition: function(){
-	        return {
-	            left: this.left,
-	            top : this.top
-	        }
-	    },
-
-	    /**
-	     * Returns the point at the given position from this region.
-	     *
-	     * @param {String} position Any of:
-	     *
-	     *  * 'cx' - See {@link #getPointXCenter}
-	     *  * 'cy' - See {@link #getPointYCenter}
-	     *  * 'b'  - See {@link #getPointBottom}
-	     *  * 'bc' - See {@link #getPointBottomCenter}
-	     *  * 'l'  - See {@link #getPointLeft}
-	     *  * 'lc' - See {@link #getPointLeftCenter}
-	     *  * 't'  - See {@link #getPointTop}
-	     *  * 'tc' - See {@link #getPointTopCenter}
-	     *  * 'r'  - See {@link #getPointRight}
-	     *  * 'rc' - See {@link #getPointRightCenter}
-	     *  * 'c'  - See {@link #getPointCenter}
-	     *  * 'tl' - See {@link #getPointTopLeft}
-	     *  * 'bl' - See {@link #getPointBottomLeft}
-	     *  * 'br' - See {@link #getPointBottomRight}
-	     *  * 'tr' - See {@link #getPointTopRight}
-	     *
-	     * @param {Boolean} asLeftTop
-	     *
-	     * @return {Object} either an object with {x,y} or {left,top} if asLeftTop is true
-	     */
-	    getPoint: function(position, asLeftTop){
-
-	        //<debug>
-	        if (!POINT_POSITIONS[position]) {
-	            console.warn('The position ', position, ' could not be found! Available options are tl, bl, tr, br, l, r, t, b.');
-	        }
-	        //</debug>
-
-	        var method = 'getPoint' + POINT_POSITIONS[position],
-	            result = this[method]()
-
-	        if (asLeftTop){
-	            return {
-	                left : result.x,
-	                top  : result.y
-	            }
-	        }
-
-	        return result
-	    },
-
-	    /**
-	     * Returns a point with x = null and y being the middle of the left region segment
-	     * @return {Object} {x,y}
-	     */
-	    getPointYCenter: function(){
-	        return { x: null, y: this.top + this.getHeight() / 2 }
-	    },
-
-	    /**
-	     * Returns a point with y = null and x being the middle of the top region segment
-	     * @return {Object} {x,y}
-	     */
-	    getPointXCenter: function(){
-	        return { x: this.left + this.getWidth() / 2, y: null }
-	    },
-
-	    /**
-	     * Returns a point with x = null and y the region top position on the y axis
-	     * @return {Object} {x,y}
-	     */
-	    getPointTop: function(){
-	        return { x: null, y: this.top }
-	    },
-
-	    /**
-	     * Returns a point that is the middle point of the region top segment
-	     * @return {Object} {x,y}
-	     */
-	    getPointTopCenter: function(){
-	        return { x: this.left + this.getWidth() / 2, y: this.top }
-	    },
-
-	    /**
-	     * Returns a point that is the top-left point of the region
-	     * @return {Object} {x,y}
-	     */
-	    getPointTopLeft: function(){
-	        return { x: this.left, y: this.top}
-	    },
-
-	    /**
-	     * Returns a point that is the top-right point of the region
-	     * @return {Object} {x,y}
-	     */
-	    getPointTopRight: function(){
-	        return { x: this.right, y: this.top}
-	    },
-
-	    /**
-	     * Returns a point with x = null and y the region bottom position on the y axis
-	     * @return {Object} {x,y}
-	     */
-	    getPointBottom: function(){
-	        return { x: null, y: this.bottom }
-	    },
-
-	    /**
-	     * Returns a point that is the middle point of the region bottom segment
-	     * @return {Object} {x,y}
-	     */
-	    getPointBottomCenter: function(){
-	        return { x: this.left + this.getWidth() / 2, y: this.bottom }
-	    },
-
-	    /**
-	     * Returns a point that is the bottom-left point of the region
-	     * @return {Object} {x,y}
-	     */
-	    getPointBottomLeft: function(){
-	        return { x: this.left, y: this.bottom}
-	    },
-
-	    /**
-	     * Returns a point that is the bottom-right point of the region
-	     * @return {Object} {x,y}
-	     */
-	    getPointBottomRight: function(){
-	        return { x: this.right, y: this.bottom}
-	    },
-
-	    /**
-	     * Returns a point with y = null and x the region left position on the x axis
-	     * @return {Object} {x,y}
-	     */
-	    getPointLeft: function(){
-	        return { x: this.left, y: null }
-	    },
-
-	    /**
-	     * Returns a point that is the middle point of the region left segment
-	     * @return {Object} {x,y}
-	     */
-	    getPointLeftCenter: function(){
-	        return { x: this.left, y: this.top + this.getHeight() / 2 }
-	    },
-
-	    /**
-	     * Returns a point with y = null and x the region right position on the x axis
-	     * @return {Object} {x,y}
-	     */
-	    getPointRight: function(){
-	        return { x: this.right, y: null }
-	    },
-
-	    /**
-	     * Returns a point that is the middle point of the region right segment
-	     * @return {Object} {x,y}
-	     */
-	    getPointRightCenter: function(){
-	        return { x: this.right, y: this.top + this.getHeight() / 2 }
-	    },
-
-	    /**
-	     * Returns a point that is the center of the region
-	     * @return {Object} {x,y}
-	     */
-	    getPointCenter: function(){
-	        return { x: this.left + this.getWidth() / 2, y: this.top + this.getHeight() / 2 }
-	    },
-
-	    /**
-	     * @return {Number} returns the height of the region
-	     */
-	    getHeight: function(){
-	        return this.bottom - this.top
-	    },
-
-	    /**
-	     * @return {Number} returns the width of the region
-	     */
-	    getWidth: function(){
-	        return this.right - this.left
-	    },
-
-	    /**
-	     * @return {Number} returns the top property of the region
-	     */
-	    getTop: function(){
-	        return this.top
-	    },
-
-	    /**
-	     * @return {Number} returns the left property of the region
-	     */
-	    getLeft: function(){
-	        return this.left
-	    },
-
-	    /**
-	     * @return {Number} returns the bottom property of the region
-	     */
-	    getBottom: function(){
-	        return this.bottom
-	    },
-
-	    /**
-	     * @return {Number} returns the right property of the region
-	     */
-	    getRight: function(){
-	        return this.right
-	    },
-
-	    /**
-	     * Returns the area of the region
-	     * @return {Number} the computed area
-	     */
-	    getArea: function(){
-	        return this.getWidth() * this.getHeight()
-	    },
-
-	    constrainTo: function(contrain){
-	        var intersect = this.getIntersection(contrain),
-	            shift
-
-	        if (!intersect || !intersect.equals(this)){
-
-	            var contrainWidth  = contrain.getWidth(),
-	                contrainHeight = contrain.getHeight(),
-
-	                shift = {}
-
-	            if (this.getWidth() > contrainWidth){
-	                this.left = contrain.left
-	                this.setWidth(contrainWidth)
-	            }
-
-	            if (this.getHeight() > contrainHeight){
-	                this.top = contrain.top
-	                this.setHeight(contrainHeight)
-	            }
-
-	            shift = {}
-
-	            if (this.right > contrain.right){
-	                shift.left = contrain.right - this.right
-	            }
-
-	            if (this.bottom > contrain.bottom){
-	                shift.top = contrain.bottom - this.bottom
-	            }
-
-	            if (this.left < contrain.left){
-	                shift.left = contrain.left - this.left
-	            }
-
-	            if (this.top < contrain.top){
-	                shift.top = contrain.top - this.top
-	            }
-
-	            this.shift(shift)
-
-	            return true
-	        }
-
-	        return false
-	    },
-
-	    /**
-	     * @constructor
-	     *
-	     * Construct a new Region.
-	     *
-	     * Example:
-	     *
-	     *      var r = root.create('z.region', { top: 10, left: 20, bottom: 100, right: 200 })
-	     *
-	     *      //or, the same, but with numbers
-	     *
-	     *      r = root.create('z.region', 10, 200, 100, 20)
-	     *
-	     *      //or, with width and height
-	     *
-	     *      r = root.create('z.region', { top: 10, left: 20, width: 180, height: 90})
-	     *
-	     * @param {Number|Object} top The top pixel position, or an object with top, left, bottom, right properties. If an object is passed,
-	     * instead of having bottom and right, it can have width and height.
-	     *
-	     * @param {Number} right The right pixel position
-	     * @param {Number} bottom The bottom pixel position
-	     * @param {Number} left The left pixel position
-	     *
-	     * @return {Region} this
-	     */
-	    init: function(top, right, bottom, left){
-
-	        if (isObject(top)){
-	            copyList(top, this, ['top','right','bottom','left'])
-
-	            if (top.bottom == null && top.height != null){
-	                this.bottom = this.top + top.height
-	            }
-	            if (top.right == null && top.width != null){
-	                this.right = this.left + top.width
-	            }
-
-	            if (top.emitChangeEvents){
-	                this.emitChangeEvents = top.emitChangeEvents
-	            }
-	        } else {
-	            this.top    = top
-	            this.right  = right
-	            this.bottom = bottom
-	            this.left   = left
-	        }
-
-	        this[0] = this.left
-	        this[1] = this.top
-
-	        REGION.validate(this)
-	    },
-
-	    __IS_REGION: true
-
-	    /**
-	     * @property {Number} top
-	     */
-
-	    /**
-	     * @property {Number} right
-	     */
-
-	    /**
-	     * @property {Number} bottom
-	     */
-
-	    /**
-	     * @property {Number} left
-	     */
-
-	    /**
-	     * @property {Number} [0] the top property
-	     */
-
-	    /**
-	     * @property {Number} [1] the left property
-	     */
-
-	    /**
-	     * @method getIntersection
-	     * Returns a region that is the intersection of this region and the given region
-	     * @param  {Region} region The region to intersect with
-	     * @return {Region}        The intersection region
-	     */
-
-	    /**
-	     * @method getUnion
-	     * Returns a region that is the union of this region with the given region
-	     * @param  {Region} region  The region to make union with
-	     * @return {Region}        The union region. The smallest region that contains both this and the given region.
-	     */
-
-	})
-
-	// require('./align')(REGION)
-
-	module.exports = REGION
+	module.exports = __webpack_require__(19)
 
 /***/ },
 /* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var F      = __webpack_require__(19)
-	var copy   = __webpack_require__(7).copy
-	var Region = __webpack_require__(16)
-
-	var Helper = function(config){
-	    this.config = config
-	}
-
-	function buildRegion(target){
-
-	    return Region.from(target)
-	}
-
-	function emptyFn(){}
-
-	copy({
-
-	    /**
-	     * Should be called on a mousedown event
-	     *
-	     * @param  {Event} event
-	     * @return {[type]}       [description]
-	     */
-	    initDrag: function(event) {
-
-	        this.onDragInit(event)
-
-	        var onDragStart = F.once(this.onDragStart, this)
-
-	        var mouseMoveListener = (function(event){
-	            onDragStart(event)
-	            this.onDrag(event)
-	        }).bind(this)
-
-	        var mouseUpListener = (function(event){
-
-	            this.onDrop(event)
-
-	            window.removeEventListener('mousemove', mouseMoveListener)
-	            window.removeEventListener('mouseup', mouseUpListener)
-	        }).bind(this)
-
-	        window.addEventListener('mousemove', mouseMoveListener, false)
-	        window.addEventListener('mouseup', mouseUpListener)
-	    },
-
-	    onDragInit: function(event){
-
-	        var config = {}
-	        this.state = {
-	            config: config
-	        }
-
-	        var initPageCoords = this.state.initPageCoords = {
-	            pageX: event.pageX,
-	            pageY: event.pageY
-	        }
-
-	        if (this.config.region){
-	            this.state.initialRegion = buildRegion(this.config.region)
-	            this.state.dragRegion =
-	                config.dragRegion =
-	                    this.state.initialRegion.clone()
-	        }
-	        if (this.config.constrainTo){
-	            this.state.constrainTo = buildRegion(this.config.constrainTo)
-	        }
-
-	        this.callConfig('onDragInit', event)
-	    },
-
-	    /**
-	     * Called when the first mousemove event occurs after drag is initialized
-	     * @param  {Event} event
-	     */
-	    onDragStart: function(event){
-	        this.state.didDrag = this.state.config.didDrag = true
-	        this.callConfig('onDragStart', event)
-	    },
-
-	    /**
-	     * Called on all mousemove events after drag is initialized.
-	     *
-	     * @param  {Event} event
-	     */
-	    onDrag: function(event){
-
-	        var config = this.state.config
-	        var args   = [event, config]
-
-	        var initPageCoords = this.state.initPageCoords
-
-	        var diff = config.diff = {
-	            left: event.pageX - initPageCoords.pageX,
-	            top : event.pageY - initPageCoords.pageY
-	        }
-
-	        if (this.state.initialRegion){
-	            var dragRegion = config.dragRegion
-
-	            //set the dragRegion to initial coords
-	            dragRegion.set(this.state.initialRegion)
-
-	            //shift it to the new position
-	            dragRegion.shift(diff)
-
-	            if (this.state.constrainTo){
-	                //and finally constrain it if it's the case
-	                dragRegion.constrainTo(this.state.constrainTo)
-
-	                diff.left = dragRegion.left - this.state.initialRegion.left
-	                diff.top  = dragRegion.top - this.state.initialRegion.top
-	            }
-
-	            config.dragRegion = dragRegion
-	        }
-
-	        this.callConfig('onDrag', event)
-	    },
-
-	    /**
-	     * Called on the mouseup event on window
-	     *
-	     * @param  {Event} event
-	     */
-	    onDrop: function(event){
-	        this.callConfig('onDrop', event)
-
-	        this.state = null
-	    },
-
-	    callConfig: function(fnName, event){
-	        var config = this.state.config
-	        var args   = [event, config]
-
-	        var fn = this.config[fnName]
-
-	        if (fn){
-	            fn.apply(this, args)
-	        }
-	    }
-
-	}, Helper.prototype)
-
-	module.exports = function(event, config){
-
-	    if (config.scope){
-	        var skippedKeys = {
-	            scope      : 1,
-	            region     : 1,
-	            constrainTo: 1
-	        }
-
-	        Object.keys(config).forEach(function(key){
-	            var value = config[key]
-
-	            if (key in skippedKeys){
-	                return
-	            }
-
-	            if (typeof value == 'function'){
-	                config[key] = value.bind(config.scope)
-	            }
-	        })
-	    }
-	    var helper = new Helper(config)
-
-	    helper.initDrag(event)
-
-	    return helper
-
-	}
-
-/***/ },
-/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;// TinyColor v1.0.0
@@ -3817,7 +2342,1494 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var F      = __webpack_require__(23)
+	var copy   = __webpack_require__(7).copy
+	var Region = __webpack_require__(24)
+
+	var Helper = function(config){
+	    this.config = config
+	}
+
+	function emptyFn(){}
+
+	copy({
+
+	    /**
+	     * Should be called on a mousedown event
+	     *
+	     * @param  {Event} event
+	     * @return {[type]}       [description]
+	     */
+	    initDrag: function(event) {
+
+	        this.onDragInit(event)
+
+	        var onDragStart = F.once(this.onDragStart, this)
+
+	        var mouseMoveListener = (function(event){
+	            onDragStart(event)
+	            this.onDrag(event)
+	        }).bind(this)
+
+	        var mouseUpListener = (function(event){
+
+	            this.onDrop(event)
+
+	            window.removeEventListener('mousemove', mouseMoveListener)
+	            window.removeEventListener('mouseup', mouseUpListener)
+	        }).bind(this)
+
+	        window.addEventListener('mousemove', mouseMoveListener, false)
+	        window.addEventListener('mouseup', mouseUpListener)
+	    },
+
+	    onDragInit: function(event){
+
+	        var config = {
+	            diff: {
+	                left: 0,
+	                top : 0
+	            }
+	        }
+	        this.state = {
+	            config: config
+	        }
+
+	        var initPageCoords = this.state.initPageCoords = {
+	            pageX: event.pageX,
+	            pageY: event.pageY
+	        }
+
+	        if (this.config.region){
+	            this.state.initialRegion = Region.from(this.config.region)
+	            this.state.dragRegion =
+	                config.dragRegion =
+	                    this.state.initialRegion.clone()
+	        }
+	        if (this.config.constrainTo){
+	            this.state.constrainTo = Region.from(this.config.constrainTo)
+	        }
+
+	        this.callConfig('onDragInit', event)
+	    },
+
+	    /**
+	     * Called when the first mousemove event occurs after drag is initialized
+	     * @param  {Event} event
+	     */
+	    onDragStart: function(event){
+	        this.state.didDrag = this.state.config.didDrag = true
+	        this.callConfig('onDragStart', event)
+	    },
+
+	    /**
+	     * Called on all mousemove events after drag is initialized.
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrag: function(event){
+
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var initPageCoords = this.state.initPageCoords
+
+	        var diff = config.diff = {
+	            left: event.pageX - initPageCoords.pageX,
+	            top : event.pageY - initPageCoords.pageY
+	        }
+
+	        if (this.state.initialRegion){
+	            var dragRegion = config.dragRegion
+
+	            //set the dragRegion to initial coords
+	            dragRegion.set(this.state.initialRegion)
+
+	            //shift it to the new position
+	            dragRegion.shift(diff)
+
+	            if (this.state.constrainTo){
+	                //and finally constrain it if it's the case
+	                dragRegion.constrainTo(this.state.constrainTo)
+
+	                diff.left = dragRegion.left - this.state.initialRegion.left
+	                diff.top  = dragRegion.top - this.state.initialRegion.top
+	            }
+
+	            config.dragRegion = dragRegion
+	        }
+
+	        this.callConfig('onDrag', event)
+	    },
+
+	    /**
+	     * Called on the mouseup event on window
+	     *
+	     * @param  {Event} event
+	     */
+	    onDrop: function(event){
+	        this.callConfig('onDrop', event)
+
+	        this.state = null
+	    },
+
+	    callConfig: function(fnName, event){
+	        var config = this.state.config
+	        var args   = [event, config]
+
+	        var fn = this.config[fnName]
+
+	        if (fn){
+	            fn.apply(this, args)
+	        }
+	    }
+
+	}, Helper.prototype)
+
+	module.exports = function(event, config){
+
+	    if (config.scope){
+	        var skippedKeys = {
+	            scope      : 1,
+	            region     : 1,
+	            constrainTo: 1
+	        }
+
+	        Object.keys(config).forEach(function(key){
+	            var value = config[key]
+
+	            if (key in skippedKeys){
+	                return
+	            }
+
+	            if (typeof value == 'function'){
+	                config[key] = value.bind(config.scope)
+	            }
+	        })
+	    }
+	    var helper = new Helper(config)
+
+	    helper.initDrag(event)
+
+	    return helper
+
+	}
+
+/***/ },
 /* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var hasOwn    = __webpack_require__(25)
+	var newify    = __webpack_require__(26)
+	var copyUtils = __webpack_require__(7)
+	var copyList  = copyUtils.copyList
+	var copy      = copyUtils.copy
+	var isObject  = __webpack_require__(27).object
+	var EventEmitter = __webpack_require__(28).EventEmitter
+	var inherits = __webpack_require__(20)
+	var VALIDATE = __webpack_require__(21)
+
+	/**
+	 * @class Region
+	 *
+	 * The Region is an abstraction that allows the developer to refer to rectangles on the screen,
+	 * and move them around, make diffs and unions, detect intersections, compute areas, etc.
+	 *
+	 * ## Creating a region
+	 *      var region = require('region')({
+	 *          top  : 10,
+	 *          left : 10,
+	 *          bottom: 100,
+	 *          right : 100
+	 *      })
+	 *      //this region is a square, 90x90, starting from (10,10) to (100,100)
+	 *
+	 *      var second = require('region')({ top: 10, left: 100, right: 200, bottom: 60})
+	 *      var union  = region.getUnion(second)
+	 *
+	 *      //the "union" region is a union between "region" and "second"
+	 */
+
+	var POINT_POSITIONS = {
+	        cy: 'YCenter',
+	        cx: 'XCenter',
+	        t : 'Top',
+	        tc: 'TopCenter',
+	        tl: 'TopLeft',
+	        tr: 'TopRight',
+	        b : 'Bottom',
+	        bc: 'BottomCenter',
+	        bl: 'BottomLeft',
+	        br: 'BottomRight',
+	        l : 'Left',
+	        lc: 'LeftCenter',
+	        r : 'Right',
+	        rc: 'RightCenter',
+	        c : 'Center'
+	    }
+
+	/**
+	 * @constructor
+	 *
+	 * Construct a new Region.
+	 *
+	 * Example:
+	 *
+	 *      var r = new Region({ top: 10, left: 20, bottom: 100, right: 200 })
+	 *
+	 *      //or, the same, but with numbers (can be used with new or without)
+	 *
+	 *      r = Region(10, 200, 100, 20)
+	 *
+	 *      //or, with width and height
+	 *
+	 *      r = Region({ top: 10, left: 20, width: 180, height: 90})
+	 *
+	 * @param {Number|Object} top The top pixel position, or an object with top, left, bottom, right properties. If an object is passed,
+	 * instead of having bottom and right, it can have width and height.
+	 *
+	 * @param {Number} right The right pixel position
+	 * @param {Number} bottom The bottom pixel position
+	 * @param {Number} left The left pixel position
+	 *
+	 * @return {Region} this
+	 */
+	var REGION = function(top, right, bottom, left){
+
+	    if (!(this instanceof REGION)){
+	        return newify(REGION, arguments)
+	    }
+
+	    EventEmitter.call(this)
+
+	    if (isObject(top)){
+	        copyList(top, this, ['top','right','bottom','left'])
+
+	        if (top.bottom == null && top.height != null){
+	            this.bottom = this.top + top.height
+	        }
+	        if (top.right == null && top.width != null){
+	            this.right = this.left + top.width
+	        }
+
+	        if (top.emitChangeEvents){
+	            this.emitChangeEvents = top.emitChangeEvents
+	        }
+	    } else {
+	        this.top    = top
+	        this.right  = right
+	        this.bottom = bottom
+	        this.left   = left
+	    }
+
+	    this[0] = this.left
+	    this[1] = this.top
+
+	    VALIDATE(this)
+	}
+
+	inherits(REGION, EventEmitter)
+
+	copy({
+
+	    /**
+	     * @cfg {Boolean} emitChangeEvents If this is set to true, the region
+	     * will emit 'changesize' and 'changeposition' whenever the size or the position changs
+	     */
+	    emitChangeEvents: false,
+
+	    /**
+	     * Returns this region, or a clone of this region
+	     * @param  {Boolean} [clone] If true, this method will return a clone of this region
+	     * @return {Region}       This region, or a clone of this
+	     */
+	    getRegion: function(clone){
+	        return clone?
+	                    this.clone():
+	                    this
+	    },
+
+	    /**
+	     * Sets the properties of this region to those of the given region
+	     * @param {Region/Object} reg The region or object to use for setting properties of this region
+	     * @return {Region} this
+	     */
+	    setRegion: function(reg){
+
+	        if (reg instanceof REGION){
+	            this.set(reg.get())
+	        } else {
+	            this.set(reg)
+	        }
+
+	        return this
+	    },
+
+	    /**
+	     * Returns true if this region is valid, false otherwise
+	     *
+	     * @param  {Region} region The region to check
+	     * @return {Boolean}        True, if the region is valid, false otherwise.
+	     * A region is valid if
+	     *  * left <= right  &&
+	     *  * top  <= bottom
+	     */
+	    validate: function(){
+	        return REGION.validate(this)
+	    },
+
+	    _before: function(){
+	        if (this.emitChangeEvents){
+	            return copyList(this, {}, ['left','top','bottom','right'])
+	        }
+	    },
+
+	    _after: function(before){
+	        if (this.emitChangeEvents){
+
+	            if(this.top != before.top || this.left != before.left) {
+	                this.emitPositionChange()
+	            }
+
+	            if(this.right != before.right || this.bottom != before.bottom) {
+	                this.emitSizeChange()
+	            }
+	        }
+	    },
+
+	    notifyPositionChange: function(){
+	        this.emit('changeposition', this)
+	    },
+
+	    emitPositionChange: function(){
+	        this.notifyPositionChange()
+	    },
+
+	    notifySizeChange: function(){
+	        this.emit('changesize', this)
+	    },
+
+	    emitSizeChange: function(){
+	        this.notifySizeChange()
+	    },
+
+	    /**
+	     * Add the given amounts to each specified side. Example
+	     *
+	     *      region.add({
+	     *          top: 50,    //add 50 px to the top side
+	     *          bottom: -100    //substract 100 px from the bottom side
+	     *      })
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @return {Region} this
+	     */
+	    add: function(directions){
+
+	        var before = this._before()
+	        var direction
+
+	        for (direction in directions) if ( hasOwn(directions, direction) ) {
+	            this[direction] += directions[direction]
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * The same as {@link #add}, but substracts the given values
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @return {Region} this
+	     */
+	    substract: function(directions){
+
+	        var before = this._before()
+	        var direction
+
+	        for (direction in directions) if (hasOwn(directions, direction) ) {
+	            this[direction] -= directions[direction]
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Retrieves the size of the region.
+	     * @return {Object} An object with {width, height}, corresponding to the width and height of the region
+	     */
+	    getSize: function(){
+	        return {
+	            width  : this.getWidth(),
+	            height : this.getHeight()
+	        }
+	    },
+
+	    /**
+	     * Move the region to the given position and keeps the region width and height.
+	     *
+	     * @param {Object} position An object with {top, left} properties. The values in {top,left} are used to move the region by the given amounts.
+	     * @param {Number} [position.left]
+	     * @param {Number} [position.top]
+	     *
+	     * @return {Region} this
+	     */
+	    setPosition: function(position){
+	        var width  = this.getWidth(),
+	            height = this.getHeight()
+
+	        if (position.left){
+	            position.right  = position.left + width
+	        }
+
+	        if (position.top){
+	            position.bottom = position.top  + height
+	        }
+
+	        return this.set(position)
+	    },
+
+	    /**
+	     * Sets both the height and the width of this region to the given size.
+	     *
+	     * @param {Number} size The new size for the region
+	     * @return {Region} this
+	     */
+	    setSize: function(size){
+	        if (size.height && size.width){
+	            return this.set({
+	                right  : this.left + size.width,
+	                bottom : this.top + size.height
+	            })
+	        }
+
+	        if (size.width){
+	            this.setWidth(size.width)
+	        }
+
+	        if (size.height){
+	            this.setHeight(size.height)
+	        }
+
+	        return this
+	    },
+
+
+
+	    /**
+	     * @chainable
+	     *
+	     * Sets the width of this region
+	     * @param {Number} width The new width for this region
+	     * @return {Region} this
+	     */
+	    setWidth: function(width){
+	        return this.set({
+	            right: this.left + width
+	        })
+	    },
+
+	    /**
+	     * @chainable
+	     *
+	     * Sets the height of this region
+	     * @param {Number} height The new height for this region
+	     * @return {Region} this
+	     */
+	    setHeight: function(height){
+	        return this.set({
+	            bottom: this.top + height
+	        })
+	    },
+
+	    /**
+	     * Sets the given properties on this region
+	     *
+	     * @param {Object} directions an object containing top, left, and EITHER bottom, right OR width, height
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @param {Number} [directions.width]
+	     * @param {Number} [directions.height]
+	     *
+	     *
+	     * @return {Region} this
+	     */
+	    set: function(directions){
+	        var before = this._before()
+
+	        copyList(directions, this, ['left','top','bottom','right'])
+
+	        if (directions.bottom == null && directions.height != null){
+	            this.bottom = this.top + directions.height
+	        }
+	        if (directions.right == null && directions.width != null){
+	            this.right = this.left + directions.width
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Retrieves the given property from this region. If no property is given, return an object
+	     * with {left, top, right, bottom}
+	     *
+	     * @param {String} [dir] the property to retrieve from this region
+	     * @return {Number/Object}
+	     */
+	    get: function(dir){
+	        return dir? this[dir]:
+	                    copyList(this, {}, ['left','right','top','bottom'])
+	    },
+
+	    /**
+	     * Shifts this region to either top, or left or both.
+	     * Shift is similar to {@link #add} by the fact that it adds the given dimensions to top/left sides, but also adds the given dimensions
+	     * to bottom and right
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @return {Region} this
+	     */
+	    shift: function(directions){
+
+	        var before = this._before()
+
+	        if (directions.top){
+	            this.top    += directions.top
+	            this.bottom += directions.top
+	        }
+
+	        if (directions.left){
+	            this.left  += directions.left
+	            this.right += directions.left
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Same as {@link #shift}, but substracts the given values
+	     * @chainable
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @return {Region} this
+	     */
+	    unshift: function(directions){
+
+	        if (directions.top){
+	            directions.top *= -1
+	        }
+
+	        if (directions.left){
+	            directions.left *= -1
+	        }
+
+	        return this.shift(directions)
+	    },
+
+	    /**
+	     * Compare this region and the given region. Return true if they have all the same size and position
+	     * @param  {Region} region The region to compare with
+	     * @return {Boolean}       True if this and region have same size and position
+	     */
+	    equals: function(region){
+	        return this.equalsPosition(region) && this.equalsSize(region)
+	    },
+
+	    /**
+	     * Returns true if this region has the same bottom,right properties as the given region
+	     * @param  {Region/Object} size The region to compare against
+	     * @return {Boolean}       true if this region is the same size as the given size
+	     */
+	    equalsSize: function(size){
+	        var isInstance = size instanceof REGION
+
+	        var s = {
+	            width: size.width == null && isInstance?
+	                    size.getWidth():
+	                    size.width,
+
+	            height: size.height == null && isInstance?
+	                    size.getHeight():
+	                    size.height
+	        }
+	        return this.getWidth() == s.width && this.getHeight() == s.height
+	    },
+
+	    /**
+	     * Returns true if this region has the same top,left properties as the given region
+	     * @param  {Region} region The region to compare against
+	     * @return {Boolean}       true if this.top == region.top and this.left == region.left
+	     */
+	    equalsPosition: function(region){
+	        return this.top == region.top && this.left == region.left
+	    },
+
+	    /**
+	     * Adds the given ammount to the left side of this region
+	     * @param {Number} left The ammount to add
+	     * @return {Region} this
+	     */
+	    addLeft: function(left){
+	        var before = this._before()
+
+	        this.left = this[0] = this.left + left
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the top side of this region
+	     * @param {Number} top The ammount to add
+	     * @return {Region} this
+	     */
+	    addTop: function(top){
+	        var before = this._before()
+
+	        this.top = this[1] = this.top + top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the bottom side of this region
+	     * @param {Number} bottom The ammount to add
+	     * @return {Region} this
+	     */
+	    addBottom: function(bottom){
+	        var before = this._before()
+
+	        this.bottom += bottom
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the right side of this region
+	     * @param {Number} right The ammount to add
+	     * @return {Region} this
+	     */
+	    addRight: function(right){
+	        var before = this._before()
+
+	        this.right += right
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Minimize the top side.
+	     * @return {Region} this
+	     */
+	    minTop: function(){
+	        return this.expand({top: 1})
+	    },
+	    /**
+	     * Minimize the bottom side.
+	     * @return {Region} this
+	     */
+	    maxBottom: function(){
+	        return this.expand({bottom: 1})
+	    },
+	    /**
+	     * Minimize the left side.
+	     * @return {Region} this
+	     */
+	    minLeft: function(){
+	        return this.expand({left: 1})
+	    },
+	    /**
+	     * Maximize the right side.
+	     * @return {Region} this
+	     */
+	    maxRight: function(){
+	        return this.expand({right: 1})
+	    },
+
+	    /**
+	     * Expands this region to the dimensions of the given region, or the document region, if no region is expanded.
+	     * But only expand the given sides (any of the four can be expanded).
+	     *
+	     * @param {Object} directions
+	     * @param {Boolean} [directions.top]
+	     * @param {Boolean} [directions.bottom]
+	     * @param {Boolean} [directions.left]
+	     * @param {Boolean} [directions.right]
+	     *
+	     * @param {Region} [region] the region to expand to, defaults to the document region
+	     * @return {Region} this region
+	     */
+	    expand: function(directions, region){
+	        var docRegion = region || REGION.getDocRegion()
+	        var list      = []
+	        var direction
+	        var before = this._before()
+
+	        for (direction in directions) if ( hasOwn(directions, direction) ) {
+	            list.push(direction)
+	        }
+
+	        copyList(docRegion, this, list)
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Returns a clone of this region
+	     * @return {Region} A new region, with the same position and dimension as this region
+	     */
+	    clone: function(){
+	        return new REGION({
+	                    top    : this.top,
+	                    left   : this.left,
+	                    right  : this.right,
+	                    bottom : this.bottom
+	                })
+	    },
+
+	    /**
+	     * Returns true if this region contains the given point
+	     * @param {Number/Object} x the x coordinate of the point
+	     * @param {Number} [y] the y coordinate of the point
+	     *
+	     * @return {Boolean} true if this region constains the given point, false otherwise
+	     */
+	    containsPoint: function(x, y){
+	        if (arguments.length == 1){
+	            y = x.y
+	            x = x.x
+	        }
+
+	        return this.left <= x  &&
+	               x <= this.right &&
+	               this.top <= y   &&
+	               y <= this.bottom
+	    },
+
+	    /**
+	     *
+	     * @param region
+	     *
+	     * @return {Boolean} true if this region contains the given region, false otherwise
+	     */
+	    containsRegion: function(region){
+	        return this.containsPoint(region.left, region.top)    &&
+	               this.containsPoint(region.right, region.bottom)
+	    },
+
+	    /**
+	     * Returns an object with the difference for {top, bottom} positions betwen this and the given region,
+	     *
+	     * See {@link #diff}
+	     * @param  {Region} region The region to use for diff
+	     * @return {Object}        {top,bottom}
+	     */
+	    diffHeight: function(region){
+	        return this.diff(region, {top: true, bottom: true})
+	    },
+
+	    /**
+	     * Returns an object with the difference for {left, right} positions betwen this and the given region,
+	     *
+	     * See {@link #diff}
+	     * @param  {Region} region The region to use for diff
+	     * @return {Object}        {left,right}
+	     */
+	    diffWidth: function(region){
+	        return this.diff(region, {left: true, right: true})
+	    },
+
+	    /**
+	     * Returns an object with the difference in sizes for the given directions, between this and region
+	     *
+	     * @param  {Region} region     The region to use for diff
+	     * @param  {Object} directions An object with the directions to diff. Can have any of the following keys:
+	     *  * left
+	     *  * right
+	     *  * top
+	     *  * bottom
+	     *
+	     * @return {Object} and object with the same keys as the directions object, but the values being the
+	     * differences between this region and the given region
+	     */
+	    diff: function(region, directions){
+	        var result = {}
+	        var dirName
+
+	        for (dirName in directions) if ( hasOwn(directions, dirName) ) {
+	            result[dirName] = this[dirName] - region[dirName]
+	        }
+
+	        return result
+	    },
+
+	    /**
+	     * Returns the position, in {left,top} properties, of this region
+	     *
+	     * @return {Object} {left,top}
+	     */
+	    getPosition: function(){
+	        return {
+	            left: this.left,
+	            top : this.top
+	        }
+	    },
+
+	    /**
+	     * Returns the point at the given position from this region.
+	     *
+	     * @param {String} position Any of:
+	     *
+	     *  * 'cx' - See {@link #getPointXCenter}
+	     *  * 'cy' - See {@link #getPointYCenter}
+	     *  * 'b'  - See {@link #getPointBottom}
+	     *  * 'bc' - See {@link #getPointBottomCenter}
+	     *  * 'l'  - See {@link #getPointLeft}
+	     *  * 'lc' - See {@link #getPointLeftCenter}
+	     *  * 't'  - See {@link #getPointTop}
+	     *  * 'tc' - See {@link #getPointTopCenter}
+	     *  * 'r'  - See {@link #getPointRight}
+	     *  * 'rc' - See {@link #getPointRightCenter}
+	     *  * 'c'  - See {@link #getPointCenter}
+	     *  * 'tl' - See {@link #getPointTopLeft}
+	     *  * 'bl' - See {@link #getPointBottomLeft}
+	     *  * 'br' - See {@link #getPointBottomRight}
+	     *  * 'tr' - See {@link #getPointTopRight}
+	     *
+	     * @param {Boolean} asLeftTop
+	     *
+	     * @return {Object} either an object with {x,y} or {left,top} if asLeftTop is true
+	     */
+	    getPoint: function(position, asLeftTop){
+
+	        //<debug>
+	        if (!POINT_POSITIONS[position]) {
+	            console.warn('The position ', position, ' could not be found! Available options are tl, bl, tr, br, l, r, t, b.');
+	        }
+	        //</debug>
+
+	        var method = 'getPoint' + POINT_POSITIONS[position],
+	            result = this[method]()
+
+	        if (asLeftTop){
+	            return {
+	                left : result.x,
+	                top  : result.y
+	            }
+	        }
+
+	        return result
+	    },
+
+	    /**
+	     * Returns a point with x = null and y being the middle of the left region segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointYCenter: function(){
+	        return { x: null, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point with y = null and x being the middle of the top region segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointXCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: null }
+	    },
+
+	    /**
+	     * Returns a point with x = null and y the region top position on the y axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointTop: function(){
+	        return { x: null, y: this.top }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region top segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.top }
+	    },
+
+	    /**
+	     * Returns a point that is the top-left point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopLeft: function(){
+	        return { x: this.left, y: this.top}
+	    },
+
+	    /**
+	     * Returns a point that is the top-right point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopRight: function(){
+	        return { x: this.right, y: this.top}
+	    },
+
+	    /**
+	     * Returns a point with x = null and y the region bottom position on the y axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottom: function(){
+	        return { x: null, y: this.bottom }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region bottom segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.bottom }
+	    },
+
+	    /**
+	     * Returns a point that is the bottom-left point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomLeft: function(){
+	        return { x: this.left, y: this.bottom}
+	    },
+
+	    /**
+	     * Returns a point that is the bottom-right point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomRight: function(){
+	        return { x: this.right, y: this.bottom}
+	    },
+
+	    /**
+	     * Returns a point with y = null and x the region left position on the x axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointLeft: function(){
+	        return { x: this.left, y: null }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region left segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointLeftCenter: function(){
+	        return { x: this.left, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point with y = null and x the region right position on the x axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointRight: function(){
+	        return { x: this.right, y: null }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region right segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointRightCenter: function(){
+	        return { x: this.right, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point that is the center of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * @return {Number} returns the height of the region
+	     */
+	    getHeight: function(){
+	        return this.bottom - this.top
+	    },
+
+	    /**
+	     * @return {Number} returns the width of the region
+	     */
+	    getWidth: function(){
+	        return this.right - this.left
+	    },
+
+	    /**
+	     * @return {Number} returns the top property of the region
+	     */
+	    getTop: function(){
+	        return this.top
+	    },
+
+	    /**
+	     * @return {Number} returns the left property of the region
+	     */
+	    getLeft: function(){
+	        return this.left
+	    },
+
+	    /**
+	     * @return {Number} returns the bottom property of the region
+	     */
+	    getBottom: function(){
+	        return this.bottom
+	    },
+
+	    /**
+	     * @return {Number} returns the right property of the region
+	     */
+	    getRight: function(){
+	        return this.right
+	    },
+
+	    /**
+	     * Returns the area of the region
+	     * @return {Number} the computed area
+	     */
+	    getArea: function(){
+	        return this.getWidth() * this.getHeight()
+	    },
+
+	    constrainTo: function(contrain){
+	        var intersect = this.getIntersection(contrain)
+	        var shift
+
+	        if (!intersect || !intersect.equals(this)){
+
+	            var contrainWidth  = contrain.getWidth(),
+	                contrainHeight = contrain.getHeight()
+
+	            if (this.getWidth() > contrainWidth){
+	                this.left = contrain.left
+	                this.setWidth(contrainWidth)
+	            }
+
+	            if (this.getHeight() > contrainHeight){
+	                this.top = contrain.top
+	                this.setHeight(contrainHeight)
+	            }
+
+	            shift = {}
+
+	            if (this.right > contrain.right){
+	                shift.left = contrain.right - this.right
+	            }
+
+	            if (this.bottom > contrain.bottom){
+	                shift.top = contrain.bottom - this.bottom
+	            }
+
+	            if (this.left < contrain.left){
+	                shift.left = contrain.left - this.left
+	            }
+
+	            if (this.top < contrain.top){
+	                shift.top = contrain.top - this.top
+	            }
+
+	            this.shift(shift)
+
+	            return true
+	        }
+
+	        return false
+	    },
+
+	    __IS_REGION: true
+
+	    /**
+	     * @property {Number} top
+	     */
+
+	    /**
+	     * @property {Number} right
+	     */
+
+	    /**
+	     * @property {Number} bottom
+	     */
+
+	    /**
+	     * @property {Number} left
+	     */
+
+	    /**
+	     * @property {Number} [0] the top property
+	     */
+
+	    /**
+	     * @property {Number} [1] the left property
+	     */
+
+	    /**
+	     * @method getIntersection
+	     * Returns a region that is the intersection of this region and the given region
+	     * @param  {Region} region The region to intersect with
+	     * @return {Region}        The intersection region
+	     */
+
+	    /**
+	     * @method getUnion
+	     * Returns a region that is the union of this region with the given region
+	     * @param  {Region} region  The region to make union with
+	     * @return {Region}        The union region. The smallest region that contains both this and the given region.
+	     */
+
+	}, REGION.prototype)
+
+	Object.defineProperties(REGION.prototype, {
+	    width: {
+	        get: function(){
+	            return this.getWidth()
+	        },
+	        set: function(width){
+	            return this.setWidth(width)
+	        }
+	    },
+	    height: {
+	        get: function(){
+	            return this.getHeight()
+	        },
+	        set: function(height){
+	            return this.setHeight(height)
+	        }
+	    }
+	})
+
+	__webpack_require__(22)(REGION)
+
+	module.exports = REGION
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = function(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	        constructor: {
+	            value       : ctor,
+	            enumerable  : false,
+	            writable    : true,
+	            configurable: true
+	        }
+	    })
+	}
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * @static
+	 * Returns true if the given region is valid, false otherwise.
+	 * @param  {Region} region The region to check
+	 * @return {Boolean}        True, if the region is valid, false otherwise.
+	 * A region is valid if
+	 *  * left <= right  &&
+	 *  * top  <= bottom
+	 */
+	module.exports = function validate(region){
+
+	    var isValid = true
+
+	    if (region.right < region.left){
+	        isValid = false
+	        region.right = region.left
+	    }
+
+	    if (region.bottom < region.top){
+	        isValid = false
+	        region.bottom = region.top
+	    }
+
+	    return isValid
+	}
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var hasOwn   = __webpack_require__(25)
+	var VALIDATE = __webpack_require__(21)
+
+	module.exports = function(REGION){
+
+	    var MAX = Math.max
+	    var MIN = Math.min
+
+	    var statics = {
+	        init: function(){
+	            var exportAsNonStatic = {
+	                getIntersection      : true,
+	                getIntersectionArea  : true,
+	                getIntersectionHeight: true,
+	                getIntersectionWidth : true,
+	                getUnion             : true
+	            }
+	            var thisProto = REGION.prototype
+	            var newName
+
+	            var exportHasOwn = hasOwn(exportAsNonStatic)
+	            var methodName
+
+	            for (methodName in exportAsNonStatic) if (exportHasOwn(methodName)) {
+	                newName = exportAsNonStatic[methodName]
+	                if (typeof newName != 'string'){
+	                    newName = methodName
+	                }
+
+	                ;(function(proto, methodName, protoMethodName){
+
+	                    proto[methodName] = function(region){
+	                        //<debug>
+	                        if (!REGION[protoMethodName]){
+	                            console.warn('cannot find method ', protoMethodName,' on ', REGION)
+	                        }
+	                        //</debug>
+	                        return REGION[protoMethodName](this, region)
+	                    }
+
+	                })(thisProto, newName, methodName);
+	            }
+	        },
+
+	        validate: VALIDATE,
+
+	        /**
+	         * Returns the region corresponding to the documentElement
+	         * @return {Region} The region corresponding to the documentElement. This region is the maximum region visible on the screen.
+	         */
+	        getDocRegion: function(){
+	            return REGION.fromDOM(document.documentElement)
+	        },
+
+	        from: function(reg){
+	            if (reg.__IS_REGION){
+	                return reg
+	            }
+
+	            if (typeof document){
+	                if (typeof HTMLElement != 'undefined' && reg instanceof HTMLElement){
+	                    return REGION.fromDOM(reg)
+	                }
+
+	                if (reg.type && typeof reg.pageX !== 'undefined' && typeof reg.pageY !== 'undefined'){
+	                    return REGION.fromEvent(reg)
+	                }
+	            }
+
+	            return REGION(reg)
+	        },
+
+	        fromEvent: function(event){
+	            return REGION.fromPoint({
+	                x: event.pageX,
+	                y: event.pageY
+	            })
+	        },
+
+	        fromDOM: function(dom){
+	            var rect = dom.getBoundingClientRect()
+	            // var docElem = document.documentElement
+	            // var win     = window
+
+	            // var top  = rect.top + win.pageYOffset - docElem.clientTop
+	            // var left = rect.left + win.pageXOffset - docElem.clientLeft
+
+	            return new REGION({
+	                top   : rect.top,
+	                left  : rect.left,
+	                bottom: rect.bottom,
+	                right : rect.right
+	            })
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region that is the intersection of the given two regions
+	         * @param  {Region} first  The first region
+	         * @param  {Region} second The second region
+	         * @return {Region/Boolean}        The intersection region or false if no intersection found
+	         */
+	        getIntersection: function(first, second){
+
+	            var area = this.getIntersectionArea(first, second)
+
+	            if (area){
+	                return new REGION(area)
+	            }
+
+	            return false
+	        },
+
+	        getIntersectionWidth: function(first, second){
+	            var minRight  = MIN(first.right, second.right)
+	            var maxLeft   = MAX(first.left,  second.left)
+
+	            if (maxLeft < minRight){
+	                return minRight  - maxLeft
+	            }
+
+	            return 0
+	        },
+
+	        getIntersectionHeight: function(first, second){
+	            var maxTop    = MAX(first.top,   second.top)
+	            var minBottom = MIN(first.bottom,second.bottom)
+
+	            if (maxTop  < minBottom){
+	                return minBottom - maxTop
+	            }
+
+	            return 0
+	        },
+
+	        getIntersectionArea: function(first, second){
+	            var maxTop    = MAX(first.top,   second.top)
+	            var minRight  = MIN(first.right, second.right)
+	            var minBottom = MIN(first.bottom,second.bottom)
+	            var maxLeft   = MAX(first.left,  second.left)
+
+	            if (
+	                    maxTop  < minBottom &&
+	                    maxLeft < minRight
+	                ){
+	                return {
+	                    top    : maxTop,
+	                    right  : minRight,
+	                    bottom : minBottom,
+	                    left   : maxLeft,
+
+	                    width  : minRight  - maxLeft,
+	                    height : minBottom - maxTop
+	                }
+	            }
+
+	            return false
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region that is the union of the given two regions
+	         * @param  {Region} first  The first region
+	         * @param  {Region} second The second region
+	         * @return {Region}        The union region. The smallest region that contains both given regions.
+	         */
+	        getUnion: function(first, second){
+	            var top    = MIN(first.top,   second.top)
+	            var right  = MAX(first.right, second.right)
+	            var bottom = MAX(first.bottom,second.bottom)
+	            var left   = MIN(first.left,  second.left)
+
+	            return new REGION(top, right, bottom, left)
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region. If the reg argument is a region, returns it, otherwise return a new region built from the reg object.
+	         *
+	         * @param  {Region} reg A region or an object with either top, left, bottom, right or
+	         * with top, left, width, height
+	         * @return {Region} A region
+	         */
+	        getRegion: function(reg){
+	            return REGION.from(reg)
+	        },
+
+	        /**
+	         * Creates a region that corresponds to a point.
+	         *
+	         * @param  {Object} xy The point
+	         * @param  {Number} xy.x
+	         * @param  {Number} xy.y
+	         *
+	         * @return {Region}    The new region, with top==xy.y, bottom = xy.y and left==xy.x, right==xy.x
+	         */
+	        fromPoint: function(xy){
+	            return new REGION({
+	                        top    : xy.y,
+	                        bottom : xy.y,
+	                        left   : xy.x,
+	                        right  : xy.x
+	                    })
+	        }
+	    }
+
+	    Object.keys(statics).forEach(function(key){
+	        REGION[key] = statics[key]
+	    })
+
+	    REGION.init()
+	}
+
+/***/ },
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	    var setImmediate = function(fn){
@@ -3897,7 +3909,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var SLICE = Array.prototype.slice
 
-	    var curry = __webpack_require__(26),
+	    var curry = __webpack_require__(32),
 
 	        findFn = function(fn, target, onFound){
 	            // if (typeof target.find == 'function'){
@@ -3968,19 +3980,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return the result of the first function in the enumeration
 	         */
-	        compose = __webpack_require__(27),
+	        compose = __webpack_require__(33),
 
-	        chain = __webpack_require__(28),
+	        chain = __webpack_require__(34),
 
-	        once = __webpack_require__(29),
+	        once = __webpack_require__(35),
 
-	        bindArgsArray = __webpack_require__(30),
+	        bindArgsArray = __webpack_require__(36),
 
-	        bindArgs = __webpack_require__(31),
+	        bindArgs = __webpack_require__(37),
 
-	        lockArgsArray = __webpack_require__(32),
+	        lockArgsArray = __webpack_require__(38),
 
-	        lockArgs = __webpack_require__(33),
+	        lockArgs = __webpack_require__(39),
 
 	        skipArgs = function(fn, count){
 	            return function(){
@@ -4338,11 +4350,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 
-	    map: __webpack_require__(34),
+	    map: __webpack_require__(40),
 
-	    dot: __webpack_require__(35),
+	    dot: __webpack_require__(41),
 
-	    maxArgs: __webpack_require__(36),
+	    maxArgs: __webpack_require__(42),
 
 	    /**
 	     * @method compose
@@ -4461,11 +4473,197 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    findIndex: findIndex,
 
-	    newify: __webpack_require__(37)
+	    newify: __webpack_require__(43)
 	}
 
 /***/ },
-/* 20 */
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Region = __webpack_require__(16)
+
+	__webpack_require__(29)
+	__webpack_require__(30)
+
+	var COMPUTE_ALIGN_REGION = __webpack_require__(31)
+
+	/**
+	 * region-align module exposes methods for aligning {@link Element} and {@link Region} instances
+	 *
+	 * The #alignTo method aligns this to the target element/region using the specified positions. See #alignTo for a graphical example.
+	 *
+	 *
+	 *      var div = Element.select('div.first')
+	 *
+	 *      div.alignTo(Element.select('body') , 'br-br')
+	 *
+	 *      //aligns the div to be in the bottom-right corner of the body
+	 *
+	 * Other useful methods
+	 *
+	 *  * {@link #alignRegions} - aligns a given source region to a target region
+	 *  * {@link #COMPUTE_ALIGN_REGION} - given a source region and a target region, and alignment positions, returns a clone of the source region, but aligned to satisfy the given alignments
+	 */
+
+
+	/**
+	 * Aligns sourceRegion to targetRegion. It modifies the sourceRegion in order to perform the correct alignment.
+	 * See #COMPUTE_ALIGN_REGION for details and examples.
+	 *
+	 * This method calls #COMPUTE_ALIGN_REGION passing to it all its arguments. The #COMPUTE_ALIGN_REGION method returns a region that is properly aligned.
+	 * If this returned region position/size differs from sourceRegion, then the sourceRegion is modified to be an exact copy of the aligned region.
+	 *
+	 * @inheritdoc #COMPUTE_ALIGN_REGION
+	 * @return {String} the position used for alignment
+	 */
+	Region.alignRegions = function(sourceRegion, targetRegion, positions, config){
+
+	    var result        = COMPUTE_ALIGN_REGION(sourceRegion, targetRegion, positions, config)
+	    var alignedRegion = result.region
+
+	    if ( !alignedRegion.equals(sourceRegion) ) {
+	        sourceRegion.setRegion(alignedRegion)
+	    }
+
+	    return result.position
+
+	}
+
+	    /**
+	     *
+	     * The #alignTo method aligns this to the given target region, using the specified alignment position(s).
+	     * You can also specify a constrain for the alignment.
+	     *
+	     * Example
+	     *
+	     *      BIG
+	     *      ________________________
+	     *      |  _______              |
+	     *      | |       |             |
+	     *      | |   A   |             |
+	     *      | |       |      _____  |
+	     *      | |_______|     |     | |
+	     *      |               |  B  | |
+	     *      |               |     | |
+	     *      |_______________|_____|_|
+	     *
+	     * Assume the *BIG* outside rectangle is our constrain region, and you want to align the *A* rectangle
+	     * to the *B* rectangle. Ideally, you'll want their tops to be aligned, and *A* to be placed at the right side of *B*
+	     *
+	     *
+	     *      //so we would align them using
+	     *
+	     *      A.alignTo(B, 'tl-tr', { constrain: BIG })
+	     *
+	     * But this would result in
+	     *
+	     *       BIG
+	     *      ________________________
+	     *      |                       |
+	     *      |                       |
+	     *      |                       |
+	     *      |                _____ _|_____
+	     *      |               |     | .     |
+	     *      |               |  B  | . A   |
+	     *      |               |     | .     |
+	     *      |_______________|_____|_._____|
+	     *
+	     *
+	     * Which is not what we want. So we specify an array of options to try
+	     *
+	     *      A.alignTo(B, ['tl-tr', 'tr-tl'], { constrain: BIG })
+	     *
+	     * So by this we mean: try to align A(top,left) with B(top,right) and stick to the BIG constrain. If this is not possible,
+	     * try the next option: align A(top,right) with B(top,left)
+	     *
+	     * So this is what we end up with
+	     *
+	     *      BIG
+	     *      ________________________
+	     *      |                       |
+	     *      |                       |
+	     *      |                       |
+	     *      |        _______ _____  |
+	     *      |       |       |     | |
+	     *      |       |   A   |  B  | |
+	     *      |       |       |     | |
+	     *      |_______|_______|_____|_|
+	     *
+	     *
+	     * Which is a lot better!
+	     *
+	     * @param {Element/Region} target The target to which to align this alignable.
+	     *
+	     * @param {String[]/String} positions The positions for the alignment.
+	     *
+	     * Example:
+	     *
+	     *      'br-tl'
+	     *      ['br-tl','br-tr','cx-tc']
+	     *
+	     * This method will try to align using the first position. But if there is a constrain region, that position might not satisfy the constrain.
+	     * If this is the case, the next positions will be tried. If one of them satifies the constrain, it will be used for aligning and it will be returned from this method.
+	     *
+	     * If no position matches the contrain, the one with the largest intersection of the source region with the constrain will be used, and this alignable will be resized to fit the constrain region.
+	     *
+	     * @param {Object} config A config object with other configuration for this method
+	     *
+	     * @param {Array[]/Object[]/Object} config.offset The offset to use for aligning. If more that one offset is specified, then offset at a given index is used with the position at the same index.
+	     *
+	     * An offset can have the following form:
+	     *
+	     *      [left_offset, top_offset]
+	     *      {left: left_offset, top: top_offset}
+	     *      {x: left_offset, y: top_offset}
+	     *
+	     * You can pass one offset or an array of offsets. In case you pass just one offset,
+	     * it cannot have the array form, so you cannot call
+	     *
+	     *      this.alignTo(target, positions, [10, 20])
+	     *
+	     * If you do, it will not be considered. Instead, please use
+	     *
+	     *      this.alignTo(target, positions, {x: 10, y: 20})
+	     *
+	     * Or
+	     *
+	     *      this.alignTo(target, positions, [[10, 20]] )
+	     *
+	     * @param {Boolean/Element/Region} config.constrain If boolean, target will be constrained to the document region, otherwise,
+	     * getRegion will be called on this argument to determine the region we need to constrain to.
+	     *
+	     * @param {Boolean/Object} config.sync Either boolean or an object with {width, height}. If it is boolean,
+	     * both width and height will be synced. If directions are specified, will only sync the direction which is specified as true
+	     *
+	     * @return {String}
+	     *
+	     */
+	Region.prototype.alignTo = function(target, positions, config){
+
+	    config = config || {}
+
+	    var sourceRegion = this
+	    var targetRegion = Region.from(target)
+
+	    var result = COMPUTE_ALIGN_REGION(sourceRegion, targetRegion, positions, config)
+	    var resultRegion = result.region
+
+	    if (!resultRegion.equalsSize(sourceRegion)){
+	        this.setSize(resultRegion.getSize())
+	    }
+	    if (!resultRegion.equalsPosition(sourceRegion)){
+	        this.setPosition(resultRegion.getPosition(), { absolute: !!config.absolute })
+	    }
+
+	    return result.position
+	}
+
+	module.exports = Region
+
+/***/ },
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -4508,1200 +4706,574 @@ return /******/ (function(modules) { // webpackBootstrap
 	})
 
 /***/ },
-/* 21 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(25)
+	var getInstantiatorFunction = __webpack_require__(44)
+
+	module.exports = function(fn, args){
+		return getInstantiatorFunction(args.length)(fn, args)
+	}
 
 /***/ },
-/* 22 */
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(45)
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Copyright Joyent, Inc. and other Node contributors.
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a
+	// copy of this software and associated documentation files (the
+	// "Software"), to deal in the Software without restriction, including
+	// without limitation the rights to use, copy, modify, merge, publish,
+	// distribute, sublicense, and/or sell copies of the Software, and to permit
+	// persons to whom the Software is furnished to do so, subject to the
+	// following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included
+	// in all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+	function EventEmitter() {
+	  this._events = this._events || {};
+	  this._maxListeners = this._maxListeners || undefined;
+	}
+	module.exports = EventEmitter;
+
+	// Backwards-compat with node 0.10.x
+	EventEmitter.EventEmitter = EventEmitter;
+
+	EventEmitter.prototype._events = undefined;
+	EventEmitter.prototype._maxListeners = undefined;
+
+	// By default EventEmitters will print a warning if more than 10 listeners are
+	// added to it. This is a useful default which helps finding memory leaks.
+	EventEmitter.defaultMaxListeners = 10;
+
+	// Obviously not all Emitters should be limited to 10. This function allows
+	// that to be increased. Set to zero for unlimited.
+	EventEmitter.prototype.setMaxListeners = function(n) {
+	  if (!isNumber(n) || n < 0 || isNaN(n))
+	    throw TypeError('n must be a positive number');
+	  this._maxListeners = n;
+	  return this;
+	};
+
+	EventEmitter.prototype.emit = function(type) {
+	  var er, handler, len, args, i, listeners;
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // If there is no 'error' event listener then throw.
+	  if (type === 'error') {
+	    if (!this._events.error ||
+	        (isObject(this._events.error) && !this._events.error.length)) {
+	      er = arguments[1];
+	      if (er instanceof Error) {
+	        throw er; // Unhandled 'error' event
+	      }
+	      throw TypeError('Uncaught, unspecified "error" event.');
+	    }
+	  }
+
+	  handler = this._events[type];
+
+	  if (isUndefined(handler))
+	    return false;
+
+	  if (isFunction(handler)) {
+	    switch (arguments.length) {
+	      // fast cases
+	      case 1:
+	        handler.call(this);
+	        break;
+	      case 2:
+	        handler.call(this, arguments[1]);
+	        break;
+	      case 3:
+	        handler.call(this, arguments[1], arguments[2]);
+	        break;
+	      // slower
+	      default:
+	        len = arguments.length;
+	        args = new Array(len - 1);
+	        for (i = 1; i < len; i++)
+	          args[i - 1] = arguments[i];
+	        handler.apply(this, args);
+	    }
+	  } else if (isObject(handler)) {
+	    len = arguments.length;
+	    args = new Array(len - 1);
+	    for (i = 1; i < len; i++)
+	      args[i - 1] = arguments[i];
+
+	    listeners = handler.slice();
+	    len = listeners.length;
+	    for (i = 0; i < len; i++)
+	      listeners[i].apply(this, args);
+	  }
+
+	  return true;
+	};
+
+	EventEmitter.prototype.addListener = function(type, listener) {
+	  var m;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // To avoid recursion in the case that type === "newListener"! Before
+	  // adding it to the listeners, first emit "newListener".
+	  if (this._events.newListener)
+	    this.emit('newListener', type,
+	              isFunction(listener.listener) ?
+	              listener.listener : listener);
+
+	  if (!this._events[type])
+	    // Optimize the case of one listener. Don't need the extra array object.
+	    this._events[type] = listener;
+	  else if (isObject(this._events[type]))
+	    // If we've already got an array, just append.
+	    this._events[type].push(listener);
+	  else
+	    // Adding the second element, need to change to array.
+	    this._events[type] = [this._events[type], listener];
+
+	  // Check for listener leak
+	  if (isObject(this._events[type]) && !this._events[type].warned) {
+	    var m;
+	    if (!isUndefined(this._maxListeners)) {
+	      m = this._maxListeners;
+	    } else {
+	      m = EventEmitter.defaultMaxListeners;
+	    }
+
+	    if (m && m > 0 && this._events[type].length > m) {
+	      this._events[type].warned = true;
+	      console.error('(node) warning: possible EventEmitter memory ' +
+	                    'leak detected. %d listeners added. ' +
+	                    'Use emitter.setMaxListeners() to increase limit.',
+	                    this._events[type].length);
+	      if (typeof console.trace === 'function') {
+	        // not supported in IE 10
+	        console.trace();
+	      }
+	    }
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+	EventEmitter.prototype.once = function(type, listener) {
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  var fired = false;
+
+	  function g() {
+	    this.removeListener(type, g);
+
+	    if (!fired) {
+	      fired = true;
+	      listener.apply(this, arguments);
+	    }
+	  }
+
+	  g.listener = listener;
+	  this.on(type, g);
+
+	  return this;
+	};
+
+	// emits a 'removeListener' event iff the listener was removed
+	EventEmitter.prototype.removeListener = function(type, listener) {
+	  var list, position, length, i;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events || !this._events[type])
+	    return this;
+
+	  list = this._events[type];
+	  length = list.length;
+	  position = -1;
+
+	  if (list === listener ||
+	      (isFunction(list.listener) && list.listener === listener)) {
+	    delete this._events[type];
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+
+	  } else if (isObject(list)) {
+	    for (i = length; i-- > 0;) {
+	      if (list[i] === listener ||
+	          (list[i].listener && list[i].listener === listener)) {
+	        position = i;
+	        break;
+	      }
+	    }
+
+	    if (position < 0)
+	      return this;
+
+	    if (list.length === 1) {
+	      list.length = 0;
+	      delete this._events[type];
+	    } else {
+	      list.splice(position, 1);
+	    }
+
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.removeAllListeners = function(type) {
+	  var key, listeners;
+
+	  if (!this._events)
+	    return this;
+
+	  // not listening for removeListener, no need to emit
+	  if (!this._events.removeListener) {
+	    if (arguments.length === 0)
+	      this._events = {};
+	    else if (this._events[type])
+	      delete this._events[type];
+	    return this;
+	  }
+
+	  // emit removeListener for all listeners on all events
+	  if (arguments.length === 0) {
+	    for (key in this._events) {
+	      if (key === 'removeListener') continue;
+	      this.removeAllListeners(key);
+	    }
+	    this.removeAllListeners('removeListener');
+	    this._events = {};
+	    return this;
+	  }
+
+	  listeners = this._events[type];
+
+	  if (isFunction(listeners)) {
+	    this.removeListener(type, listeners);
+	  } else {
+	    // LIFO order
+	    while (listeners.length)
+	      this.removeListener(type, listeners[listeners.length - 1]);
+	  }
+	  delete this._events[type];
+
+	  return this;
+	};
+
+	EventEmitter.prototype.listeners = function(type) {
+	  var ret;
+	  if (!this._events || !this._events[type])
+	    ret = [];
+	  else if (isFunction(this._events[type]))
+	    ret = [this._events[type]];
+	  else
+	    ret = this._events[type].slice();
+	  return ret;
+	};
+
+	EventEmitter.listenerCount = function(emitter, type) {
+	  var ret;
+	  if (!emitter._events || !emitter._events[type])
+	    ret = 0;
+	  else if (isFunction(emitter._events[type]))
+	    ret = 1;
+	  else
+	    ret = emitter._events[type].length;
+	  return ret;
+	};
+
+	function isFunction(arg) {
+	  return typeof arg === 'function';
+	}
+
+	function isNumber(arg) {
+	  return typeof arg === 'number';
+	}
+
+	function isObject(arg) {
+	  return typeof arg === 'object' && arg !== null;
+	}
+
+	function isUndefined(arg) {
+	  return arg === void 0;
+	}
+
+
+/***/ },
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var HAS_OWN = Object.prototype.hasOwnProperty
-
-	var classy = __webpack_require__(23)
-	var FunctionQueue = __webpack_require__(52)
-	var withQueue     = __webpack_require__(24)
-
-	var copyUtils = __webpack_require__(7)
-	var returnFalse = function(){
-	    return false
-	}
-	var hasOwn = function(object, propertyName){
-	    return HAS_OWN.call(object, propertyName)
-	}
-	var isClass = function(v){
-	     return !!(v && v.$superClass && v.prototype && v.extend && v.override)
-	}
-
+	var Region = __webpack_require__(16)
 
 	/**
-	 * @class EventEmitter @extends Mixin
+	 * @static
+	 * Aligns the source region to the target region, so as to correspond to the given alignment.
 	 *
-	 * # z.eventemitter
+	 * NOTE that this method makes changes on the sourceRegion in order for it to be aligned as specified.
 	 *
-	 * This mixin class provides an interface for registering and publishing events.
+	 * @param {Region} sourceRegion
+	 * @param {Region} targetRegion
 	 *
-	 * It is very important to grasp a good understanding of the EventEmitter, since most framework classes have this mixin applied.
-	 * Two of the EventEmitter methods make the most important part of the public API:
+	 * @param {String} align A string with 2 valid align positions, eg: 'tr-bl'.
+	 * For valid positions, see {@link Region#getPoint}
 	 *
-	 *  * on / addListener
-	 *  * emit
+	 * Having 2 regions, we need to be able to align them as we wish:
 	 *
-	 * For registering events, use:
+	 * for example, if we have
 	 *
-	 *      emitter.on('click', function(){ ... })
+	 *       source    target
+	 *       ________________
+	 *       ____
+	 *      |    |     ________
+	 *      |____|    |        |
+	 *                |        |
+	 *                |________|
 	 *
-	 * For publishing events, use:
+	 * and we align 't-t', we get:
 	 *
-	 *      emitter.emit('click', firstParam, secondParam)
+	 *       source    target
+	 *       _________________
 	 *
-	 * ## Registering events
+	 *       ____      ________
+	 *      |    |    |        |
+	 *      |____|    |        |
+	 *                |________|
 	 *
-	 * You can use the {@link addListener} method to register to events, or it's shorter alias, {@link #on}.
+	 *  In this case, the source was moved down to be aligned to the top of the target
 	 *
-	 * The {@link #on} method accepts a variation of signatures, so let's explain them:
 	 *
-	 *      //1. event name as a string, then the function to register;
-	 *      //optionally a scope and an options object
-	 *      emitter.on('click', function(){ }[ , scope [, options]])
+	 * and if we align 'tc-tc' we get
 	 *
-	 *      //2. event names specified as string with whitespace;
-	 *      //the function will be called both on 'start' and 'stop'
-	 *      emitter.on('start stop', function(){})
+	 *       source     target
+	 *       __________________
 	 *
-	 * In the variation above, we basically have
+	 *                 ________
+	 *                | |    | |
+	 *                | |____| |
+	 *                |________|
 	 *
-	 *  * the event name (a string - with spaces in case you want to listen to multiple events)
-	 *  * the listening function
-	 *  * an optional scope for the function
-	 *  * an optional options argument for the function
+	 *  Since the source was moved to have the top-center point to be the same with target top-center
 	 *
-	 * Now, in this variation, for both the event name and the function, you can specify arrays.
 	 *
-	 *      emitter.on([ event_name_1, event_name_2], function(){})
 	 *
-	 * or
-	 *     emitter.on([ event_name_1, event_name_2], [ function a(){}, function b(){}, function c(){}])
-	 *
-	 * This means that whenever event_name_1 is emitted, all functions (both a, b and c will be called).
-	 * The same applies to event_name_2. Even more, the event names can be strings with whitespaces, so they can refer to event more events.
-	 *
-	 * To summarize, we have
-	 *
-	 *      emitter.on( stringOrArray, functionOrArray, optionalScope, options )
-	 *
-	 * {@link EventEmitter#on EventEmitter.on} also has a second form
-	 *
-	 *      var scope = { ... }
-	 *      emitter.on({
-	 *          scope : scope
-	 *          start : function(){
-	 *              //this == scope
-	 *          },
-	 *          click: function(){
-	 *          }
-	 *      })
-	 *
-	 * So you can register listeners using an object notation. The keys are the event names,
-	 * and the values are the functions you are registering.
-	 *
-	 * In this object notation, some keys can be the options for the registering functions:
-	 *
-	 *      emitter.on({
-	 *          scope: this, // the scope in which to bind the functions
-	 *          start: function(){ //function to be called when the 'start' event is emitted
-	 *          },
-	 *          stop: function(){ //function to be called when the 'stop' event is emitted
-	 *          },
-	 *          buffer: 10 //an option. This will buffer the calls to the start and stop functions by 10 ms.
-	 *      })
-	 *
-	 * Just like in the previous form, where you can have functions, you can have arrays of functions
-	 *
-	 *      function onClick(){}
-	 *
-	 *      var a  = function(){},
-	 *          b  = function(){}
-	 *
-	 *      emitter.on({
-	 *          scope: this,
-	 *          click: onClick,
-	 *
-	 *          //a space separated key is also accepted, and refers to all the events inside the string
-	 *          'start stop': [ a, b] // whenever start or stop is emitted, call all the functions in the array
-	 *      })
-	 *
-	 * There is another form you can use for specifying functions.
-	 *
-	 *      emitter.on({
-	 *          stop: function(){
-	 *          },
-	 *          start: function(){
-	 *          },
-	 *          idle: {
-	 *              fn: function(){
-	 *              },
-	 *              throttle: 10,
-	 *              scope: 'x'
-	 *          }
-	 *      })
-	 *
-	 * Whenever you can pass-in functions, you can also specify an object that has a *fn* property set to a function. This is especially useful
-	 * when you are using the {@link EventEmitter#on} with an object,
-	 * and you want for a specific function to specify a scope or options different than those of the other functions.
-	 *
-	 * ## Functions as strings
-	 *
-	 * Another way of attaching functions, supported in all forms described above, is specifying functions as strings.
-	 *
-	 * When the EventEmitter emits an event, and loops over the registered listeners, if it finds one that is a string, it looks for a property
-	 * with that name on the scope of the listener. If that property is a function, it stores it instead of the string, and executes the function just as it normally does.
-	 *
-	 * NOTE: once the "string" listener is resolved to a function, the resolved function is stored, and the next time the event is triggered, the same function is used,
-	 * even if the value of that property on the scope object for the listener has changed.
-	 *
-	 * #### Example:
-	 *
-	 *      var scope = {
-	 *          log: function(msg){
-	 *              console.log(msg)
-	 *              return msg
-	 *          }
-	 *      }
-	 *
-	 *      emitter.on({
-	 *          scope: scope,
-	 *          sendmessage: 'log'
-	 *      })
-	 *
-	 *      emitter.emit('sendmessage', 'hello world')
-	 *      //this event will look for the "log" property, on the scope object.
-	 *      //since that is a function, the function will be called, so it logs
-	 *      //"hello world"
-	 *
-	 * Now, if we change the "log" property on the scope
-	 *
-	 *      scope.log = function(msg){
-	 *          alert(msg)
-	 *      }
-	 *
-	 * And emit again
-	 *
-	 *      emitter.emit('send message', 'this will be a log')
-	 *
-	 *      //since the "log" function has already been resolved
-	 *      //the message is still logged to the console, and no alert wil be called.
-	 *
-	 *
-	 * ## Emitting events
-	 *
-	 * Emitting events is as simple as calling the {@link #emit EventEmitter.emit} method.
-	 *
-	 *      emitter.emit('start', 'firstParam', 5, 'thirdParam')
-	 *      //all the parameters that follow the event name are going to be passed to the registered functions
-	 *
-	 *      emitter.on('stop', function(a,b,c){
-	 *
-	 *      })
-	 *
-	 *      emitter.emit('stop', 5, 'test', 'me')
-	 *      //the function registered as a 'stop' listener will have its arguments mapped to
-	 *      // a => 5
-	 *      // b => 'test'
-	 *      // c => 'me'
-	 *
-	 * #### Example:
-	 *
-	 *      //Define a Computer class, which has EventEmitter mixed-in
-	 *
-	 *      root.define({
-	 *          alias: 'computer',
-	 *
-	 *          mixins: [ 'z.eventemitter' ],
-	 *
-	 *          state: false,
-	 *
-	 *          init: function(name){
-	 *              this.name = name
-	 *          },
-	 *
-	 *          //the start method emits the "poweron" event
-	 *          start: function(){
-	 *              if (this.state){
-	 *                  //the computer is already started
-	 *                  return this
-	 *              }
-	 *
-	 *              this.state = true
-	 *
-	 *              //emit the "poweron" event, sending the computer state as first param
-	 *              //and the computer instance as second param
-	 *              this.emit('poweron', this.state, this)
-	 *
-	 *              return this
-	 *          },
-	 *
-	 *          //the start method emits the "poweroff" event
-	 *          stop: function(){
-	 *              if (!this.state){
-	 *                  //the computer is already stopped
-	 *                  return this
-	 *              }
-	 *
-	 *              this.state = false
-	 *
-	 *              //emit the "poweroff" event, sending the computer state as first param
-	 *              //and the computer instance as second param
-	 *              this.emit('poweron', this.state, this)
-	 *
-	 *              return this
-	 *          }
-	 *      })
-	 *
-	 *
-	 *      //we create an instance of the Computer class (it's alias is "computer")
-	 *      var macAir = root.create('computer', 'MacBook Air')
-	 *
-	 *      //attach poweron and poweroff listeners
-	 *      macAir.on({
-	 *          poweron: function(state, comp){
-	 *              console.log(comp.name + ' has been turned on')
-	 *          }
-	 *          poweroff: function(state, comp){
-	 *              console.log(comp.name + ' has been turned off')
-	 *          },
-	 *          'poweron poweroff': function(state){
-	 *              console.log(comp.name + ' state has changed. It is now ' + (state?'on':'off') + '.')
-	 *          }
-	 *      })
-	 *
-	 *      macAir.start()
-	 *      //logs "MacBook Air has been turned on"
-	 *      //and "MacBook Air state has changed. It is now on."
-	 *
-	 *      macAir.stop()
-	 *      //logs "MacBook Air has been turned off"
-	 *      //and "MacBook Air state has changed. It is now off."
-	 *
-	 * ## Removing listeners
-	 *
-	 * Removing listeners is as simple as calling {@link #removeListener EventEmitter.removeListener}, or, its shorter alias, {@link #off EventEmitter.off}
-	 *
-	 *      //removes all listeners to the start event, that where bound to a scope that equals to context
-	 *      emitter.off('start', context)
-	 *
-	 *      //removes all listeners to the start event, no matter the scope
-	 *      emitter.off('start')
-	 *
-	 *      //removes all listeners to the start and stop events found on this emitter
-	 *      emitter.off('start stop') //or emitter.off(['start','stop'])
-	 *
-	 *      //removes all listeners from this emitter
-	 *      emitter.off() //or emitter.removeListener()
-	 *
-	 * ## Event options
-	 *
-	 * There are a number of options available for binding events:
-	 *
-	 *  * once (Boolean)      - Binds the function only once, that is, removes it after the event is emitted.
-	 *  * buffer (Number)     - Binds the function via {@link Function#buffer}
-	 *  * delay (Number)      - Binds the function via {@link Function#delay}
-	 *  * defer (Boolean)     - Binds the function via {@link Function#defer}
-	 *  * throttle (Number)   - Binds the function via {@link Function#throttle}
-	 *  * quickStop (Boolean) - Binds the function and enables this function to cancel any subsequent listeners for this event.
-	 *  * selector (String)   - Selector used by the Element class.
-	 *
-	 * #### Example:
-	 *
-	 *      var animal = {
-	 *          sound: 'ooo'
-	 *          makeSound: function(sound){
-	 *              this.emit('makesound', sound || this.sound)
-	 *          }
-	 *      }
-	 *
-	 *      //make the animal object be an EventEmitter
-	 *      root.mixin(animal, 'z.eventemitter')
-	 *
-	 *      animal.on('makesound', function(sound){ console.log(sound)}, scope, { once: true })
-	 *
-	 *      animal.makeSound('meow')
-	 *      //the listener is called, and "meow" is logged
-	 *      //then the listener is removed, since it was attached "once"
-	 *
-	 *      animal.makeSound('meow')
-	 *      //nothing gets logged
-	 *
-	 *      animal.on({
-	 *          scope: 'cat',
-	 *          makesound: function(sound){
-	 *              console.log(this, 'sound: ', sound)
-	 *          },
-	 *
-	 *          delay: 100
-	 *      })
-	 *
-	 *      animal.makeSound('meow')
-	 *      animal.makeSound('meow')
-	 *      //since the function is delayed,
-	 *      //the listener will only be called after 100ms from the last call,
-	 *      //so it only logs "cat sound: meow" once, after 100ms
-	 *
-	 *
-	 *      //you can also specify options using config.options
-	 *      animal.on({
-	 *          makesound: function(){
-	 *          },
-	 *
-	 *          throttle: 50,
-	 *          options: {
-	 *              throttle: 100
-	 *          }
-	 *      })
-	 *      //config.options has higher priority than any option specified directly on the config
-	 *      //so the function will be throttled 100ms, not 50
-	 *
-	 * ## Function scope
-	 *
-	 * If you don't specify a scope for your attached functions, the scope will be the EventEmitter.
-	 *
-	 *      animal.on('makesound', function(){
-	 *          //the scope is the EventEmitter
-	 *          this == animal
-	 *      })
-	 *
-	 *      //or you can pass it explicitly
-	 *
-	 *      animal.on('makesound', function(){
-	 *          console.log(this) //logs 'test'
-	 *      }, 'test')
-	 *
-	 *      //or using a config object
-	 *      animal.on({
-	 *          scope: { name: 'zippy' },
-	 *          makesound: function(){},
-	 *          wakeup: function(){},
-	 *          die: {
-	 *              fn: function(){},
-	 *              once: true,
-	 *              scope: "He's dead, Jim"
-	 *          }
-	 *      })
-	 *      //the makesound and wakeup listeners will be called in the scope specifed by
-	 *      //scope: {name: 'zippy'}
-	 *      //but the "die" listener will have the scope equal to the given string and will only be called once
-	 *
-	 * ## Creating EventEmitter objects
-	 *
-	 * Creating event emitters is just a matter of mixing the EventEmitter into a target class or object
-	 *
-	 * #### Example:
-	 *
-	 *      root.define({
-	 *          alias: 'person',
-	 *
-	 *          mixins: [
-	 *              'z.eventemitter'
-	 *          ],
-	 *
-	 *          init: function(config){
-	 *              config = config || {}
-	 *              this.name = config.name
-	 *          },
-	 *
-	 *          setName: function(name){
-	 *              var oldName = this.name
-	 *
-	 *              this.name = name
-	 *
-	 *              this.emit('namechange', this, name, oldName)
-	 *
-	 *              return this
-	 *          }
-	 *      })
-	 *
-	 *      var p = root.getInstance({
-	 *              alias: 'person',
-	 *              name : 'John'
-	 *          }),
-	 *          onChangeName = function(person, newName, oldName){
-	 *              console.log(person,' has just changed its name, from ' + oldName + ' to ' + newName + '.')
-	 *          }
-	 *
-	 *      p.on('changename', onChangeName)
-	 *      p.setName('Michael')
-	 *
-	 * If you simply want to make an object become an EventEmitter, simply do
-	 *
-	 *      var person = {
-	 *          name: 'Pat',
-	 *          setName: function(name){
-	 *              var oldName = this.name
-	 *              this.name = name
-	 *              this.emit('changename', this, name, oldName)
-	 *          }
-	 *      }
-	 *
-	 *      root.mixin(person, 'eventemitter')
-	 *
-	 *      person.on('changename', function(person, newName, oldName){
-	 *          console.log(persona, ' has just renamed to ', newName)
-	 *      });
-	 *      person.setName('Richard')
-	 *
+	 * @return {RegionClass} The Region class
 	 */
+	Region.align = function(sourceRegion, targetRegion, align){
 
-	var SLICE = Array.prototype.slice
-	var IS_FN = function(fn){return typeof fn == 'function'}
-	var IS_FN_LIKE = function (obj) {
-	        return obj ? IS_FN(obj) || IS_FN(obj.fn) || typeof obj.fn === 'string' : false
+	    targetRegion = Region.from(targetRegion)
+
+	    align = (align || 'c-c').split('-')
+
+	    //<debug>
+	    if (align.length != 2){
+	        console.warn('Incorrect region alignment! The align parameter need to be in the form \'br-c\', that is, a - separated string!', align)
 	    }
+	    //</debug>
 
-	var CLEAR_QUEUE = function (queue) {
-	        queue.clear()
-	    }
-	var EVENT_QUEUE = new FunctionQueue({ allowFunctionsAsString: true, keepFunctionReferences: true })
-
-	var EventEmitter = classy.defineMixin({
-
-	    $copyIf: {
-
-	        hasListenersFor: function(name){
-	            return !!this.getListenerCountFor.apply(this, arguments)
-	        },
-
-	        getListenerCountFor: function (name) {
-	            var result = 0
-
-	            this.withQueue(name, function (queue) {
-	                result = queue.getLength()
-	            }, { skipEmpty: true })
-
-	            return result
-	        }
-	    },
-
-	    $override: {
-	        /**
-	         * @private
-	         *
-	         * Adds a listener in the normalized form
-	         *
-	         * @param {Object}   config The listener config
-	         *
-	         * @param {String}   config.name The event name.
-	         *
-	         * NOTE: this should have already been parsed, and be a non-whitespace string, the name of a single event.
-	         *
-	         * @param {Function} config.fn The function to bind to the event
-	         * @param {Object}   [config.scope] The optional scope
-	         * @param {Object}   [config.options] The optional options for the bound function.
-	         *
-	         * @return {EventEmitter} this
-	         */
-	        addNormalizedListener: function (config) {
-
-	            this.callTarget()
-
-	            var eventName = config.name,
-	                fn        = config.fn,
-	                scope     = config.scope,
-	                options   = config.options
-
-	            this.withQueue(eventName, function (queue) {
-	                queue.add(fn, scope, options)
-	            })
-
-	            return this
-	        }
-	    },
-
-	    $before: {
-
-	        eventEmitter: true,
-
-	        availableEmitterOptions: {
-	            once      : 1,
-	            buffer    : 1,
-	            delay     : 1,
-	            defer     : 1,
-	            throttle  : 1,
-	            quickStop : 1,
-	            selector  : 1,
-	            capture   : 1
-	        },
-
-	        destroy: function () {
-	            this.off()
-	        },
-
-	        init: function (config) {
-	            this.eventQueueState = this.eventQueueState || {}
-
-	            if (isClass(this) || !this.initEventEmitter) {
-
-	                if (this.listeners) {
-	                    this.on(this.listeners)
-	                }
-
-	                if (config && config.listeners && config.listeners != this.listeners) {
-	                    this.on(config.listeners)
-	                }
-
-	                this.initEventEmitter = true
-	            }
-
-	            return this
-	        },
-
-	        withQueue: function (eventName, fn, config) {
-
-	            var queueStateName = 'eventQueueState',
-	                checkEmpty     = config && config.checkEmpty
-
-	            if (checkEmpty){
-	                config.skipEmpty = true
-	            }
-
-	            var called = withQueue.call(this, eventName, function(queue){
-	                fn.call(this, queue)
-
-	                if (config && config.checkEmpty && !queue.getLength() ){
-	                     delete this[queueStateName][eventName]
-	                }
-
-	            }, queueStateName, EVENT_QUEUE, config)
-
-	            if (checkEmpty && !called){
-	                delete this[queueStateName][eventName]
-	            }
-
-
-	            return this
-
-	        },
-
-	        //private
-	        removeOneEventListener: function (eventName, fn, scope, config, queue) {
-	            queue.remove(fn, scope)
-	        },
-
-	        /**
-	         * @private
-	         * Removes a listener in the normalized form
-	         *
-	         * @param {Object}   config The listener config
-	         *
-	         * @param {String}   config.name The event name.
-	         *
-	         * @param {Function} config.fn The function to look for
-	         * @param {Object}   [config.scope] The optional scope
-	         *
-	         * @return {EventEmitter} this
-	         */
-	        removeNormalizedListener: function (config) {
-	            var eventName = config.name,
-	                fn        = config.fn,
-	                scope     = config.scope
-
-	            if (config.defaultScope) {
-	                scope = null
-	            }
-
-	            if (!fn){
-	                this.removeAllListenersFor(eventName)
-	            } else {
-
-	                this.withQueue(eventName, function (queue) {
-
-	                    this.removeOneEventListener(eventName, fn, scope, config, queue)
-
-	                }, { checkEmpty: true })
-	            }
-
-	            return this
-	        },
-
-	        /**
-	         * @chainable
-	         * @private
-	         * Removes all listeners from the specified event.
-	         *
-	         * @param  {String} eventName The event for which to remove all listeners
-	         * @return {EventEmitter} this EventEmitter
-	         */
-	        removeAllListenersFor: function (eventName) {
-	            return this.withQueue(eventName, CLEAR_QUEUE, { checkEmpty: true }), this
-	        },
-
-	        /**
-	         * @private
-	         * Removes all attached listeners from this EventEmitter
-	         *
-	         * @return {EventEmitter} this
-	         */
-	        removeAllListeners: function () {
-	            var state = this.eventQueueState,
-	                event
-
-	            //we could simply clear the queue, but some classes that have
-	            //this mixed in may need to be interested for the removing of all
-	            //functions for each event in particular
-	            for (event in state) if (hasOwn(state, event)) {
-	                this.removeAllListenersFor(event)
-	            }
-
-	            this.eventQueueState = {}
-
-	            return this
-	        },
-
-	        getNormalizedArray: function (eventName, fnLike, scope, options) {
-	            var availableOptions = this.availableEmitterOptions,
-	                args = arguments,
-	                result = [],
-	                opts
-
-	            if (args.length > 1 || (args.length == 1 && (typeof eventName == 'string') || Array.isArray(eventName))) {
-	                //we also make the args.length == 1 check and eventName is string or array,
-	                //because in the case of a getNormalizedArray call, for removing listeners,
-	                //very often you will want to do: node.removeListener('click') or node.removeListener(['click','mouseup'])
-
-	                if (Array.isArray(eventName)) {
-
-	                    //this method has been called with an array of event names,
-	                    //so simply append the result of calling this method for every item in the array
-	                    eventName.forEach(function (name) {
-
-	                        result.push.apply(result, this.getNormalizedArray(name, fnLike, scope, options))
-
-	                    }, this)
-
-	                    //and return that result
-	                    return result
-	                }
-
-	                if (Array.isArray(fnLike)) {
-
-	                    //this method has been called with an array of functions,
-	                    //so again, simply append all results of calling this method for each function in the array
-	                    fnLike.forEach(function (fn) {
-
-	                        result.push.apply(result, this.getNormalizedArray(eventName, fn, scope, options))
-
-	                    }, this)
-
-	                    //and return the result
-	                    return result
-	                }
-
-	                var fn
-
-	                opts = options
-
-	                if (IS_FN(fnLike)) {
-
-	                    fn = fnLike
-
-	                } else if (typeof fnLike == 'string') {
-
-	                    fn = fnLike
-
-	                } else if (IS_FN_LIKE(fnLike)) {
-
-	                    fn = fnLike.fn
-	                    opts = copyUtils.copy(options)
-
-	                    copyUtils.copyKeys(fnLike, opts, availableOptions)
-
-	                    if (fnLike.options) {
-	                        copyUtils.copy(fnLike.options, opts)
-	                    }
-
-	                    if (fnLike.scope) {
-	                        scope = fnLike.scope
-	                    }
-	                }
-
-	                if (~eventName.indexOf(' ')) {
-
-	                    eventName.split(' ').forEach(function (eventName) {
-	                        if (eventName) {
-	                            result.push({
-	                                defaultScope: scope == null,
-	                                name: eventName,
-	                                fn: fn,
-	                                options: opts,
-	                                scope: scope || this
-	                            })
-	                        }
-	                    }, this)
-
-	                } else {
-
-	                    result.push({
-	                        defaultScope: scope == null,
-	                        name: eventName,
-	                        fn: fn,
-	                        options: opts,
-	                        scope: scope || this
-	                    })
-
-	                }
-
-
-	                return result
-	            }
-
-	            var propName,
-	                propValue,
-	                config = eventName
-
-	            opts = copyUtils.copyKeys(config, {}, availableOptions)
-
-	            if (config.options) {
-	                copyUtils.copy(config.options, opts)
-	            }
-
-	            for (propName in config) if (hasOwn(config, propName)) {
-
-	                propValue = config [ propName ]
-
-	                if (
-	                    IS_FN_LIKE(propValue) ||
-	                        Array.isArray(propValue) ||
-	                        (typeof propValue == 'string' && !(propName in availableOptions) && propName != 'scope')
-	                    ) {
-
-	                    // if (config.options){
-	                    //     opts = root.copy(opts)
-
-	                    //     root.copy(config.options, opts)
-	                    // }
-
-	                    result.push.apply(result, this.getNormalizedArray(propName, propValue, config.scope, opts))
-	                }
-	            }
-
-	            return result
-	        },
-
-	        /**
-	         * Adds a listener to this EventEmitter
-	         *
-	         * There are a number of ways to call the addListener method, which are described above, in the documentation of the class.
-	         *
-	         * Here's a brief overview:
-	         *
-	         *      //event name and function
-	         *      emitter.addListener('start', function(){})
-	         *
-	         *      //name, function, optional scope, and options
-	         *      emitter.addListener('start', function(){}, scope, options)
-	         *
-	         * Whenever you can provide an event name or a function, you can also provide an array of event names or functions
-	         *
-	         *      //both a and b functions will be called when start is emitted, as well as when stop is emitted
-	         *      emitter.on(['start', 'stop'], [function a(){}, function b(){}])
-	         *
-	         * You can also have an object config
-	         *
-	         *      var context = ...
-	         *
-	         *      emitter.on({
-	         *          scope: context,
-	         *          start: function(){
-	         *          },
-	         *          stop: function(){
-	         *          }
-	         *      })
-	         *
-	         * @param {String/Array/Object} name The event name to which to bind the listener, an array of event names, or an object config
-	         * @param {Function/Function[]} [fn] The function or the function array that will be attached to the event.
-	         * @param {Object}   scope   An optional scope for the attached function/functions
-	         * @param {Object}   options An object config for the attached function/functions
-	         * @return {EventEmitter} this EventEmitter
-	         *
-	         * @chainable
-	         */
-	        addListener: function (name, fn, scope, options) {
-
-	            var args = arguments,
-	                result = this
-
-	            if (args.length == 1 && (typeof name == 'string')) {
-	                throw new Error('Promise not supported yet for events.')
-	                var deferred = root.create('z.deferred')
-
-	                result = deferred.getPromise()
-
-	                args.push(fn = function () {
-	                    deferred.resolve.apply(deferred, arguments)
-	                })
-	            }
-
-	            this.getNormalizedArray.apply(this, args)
-	                .forEach(function(config){
-
-	                    this.ensureEventOptions(config)
-	                    this.addNormalizedListener(config)
-
-	                }, this)
-
-	            return result
-	        },
-
-	        /**
-	         * Alias to {@link #addListener}
-	         */
-	        on: function () {
-	            return this.addListener.apply(this, arguments)
-	        },
-
-	        /**
-	         * Removes listeners from this event emitter.
-	         *
-	         * @param {String/String[]} [eventName] The event for which to remove the listeners. If this method is called
-	         * without any parameter (so no event name given), it will remove all listeners.
-	         *
-	         * If it is called with an eventName, it will remove all the listeners attached for the given event.
-	         *
-	         * If the optional scope is given, only remove those listeners from the specified event that were attached in the given scope.
-	         *
-	         * @param {Object} [scope] If an eventName is provided, you can optionally specify the scope to only remove the listeners attached
-	         * for this event in the given scope.
-	         *
-	         * @return {EventEmitter} this event emitter
-	         */
-	        removeListener: function () {
-
-	            var args = arguments
-
-	            if (!args.length) {
-	                this.removeAllListeners()
-	            } else {
-
-	                this.getNormalizedArray.apply(this, args)
-	                    .forEach(function(config){
-
-	                        this.ensureEventOptions(config)
-	                        this.removeNormalizedListener(config)
-
-	                    }, this)
-	            }
-
-	            return this
-	        },
-
-	        /**
-	         * Alias to {@link #removeListener}
-	         */
-	        off: function () {
-	            return this.removeListener.apply(this, arguments)
-	        },
-
-	        /**
-	         * Attaches the functions just once. After the first time the event is triggered, these functions are removed.
-	         *
-	         * This has the same signature with {@link #on} .
-	         *
-	         * @return {EventEmitter} this
-	         */
-	        once: function () {
-
-	            this.getNormalizedArray.apply(this, arguments)
-	                .forEach(function (config) {
-
-	                    this.ensureEventOptions(config)
-
-	                    config.options.once = true
-
-	                    this.addNormalizedListener(config)
-	                }, this)
-
-	            return this
-
-	        },
-
-	        ensureEventOptions: function(config){
-	            config.options = config.options || {}
-	        },
-
-	        /**
-	         * Alias to {@link #once}
-	         */
-	        one: function () {
-	            return this.once.apply(this, arguments)
-	        },
-
-	        /**
-	        * @param {String} name
-	        * @param {...Object} args The enumeration of parameters to send to the listening functions of this event.
-	        * @return {Boolean} false if any of the event listeners returns the Boolean false, true otherwise
-	        */
-	        emit: function (name /*, args ... */) {
-
-	            return this.emitEvent(name, SLICE.call(arguments, 1))
-
-	        },
-
-	        emitAppEvent: function(name /*, args ... */) {
-	            var args = SLICE.call(arguments, 1)
-	            var e    = this.createAppEventObject(name, args)
-
-	            if (this.emitEvent(name, args.concat(e)) === false){
-	                e.stop = true
-	            }
-
-	            return e
-	        },
-
-	        createAppEventObject: function(name, args) {
-	            var e = { stop: false }
-
-	            e.appEvent = true
-	            e.type     = name
-	            e.source   = this
-	            e.current  = this
-	            e.targets  = [this]
-
-	            e.args = args
-
-	            return e
-	        },
-
-	        emitEvent: function(name, args, config){
-	            if (name == '*'){
-	                //<debug>
-	                console.log('You cannot emit the generic event')
-	                //</debug>
-	                return false
-	            }
-
-	            var result
-
-	            this.lastEventName = name
-
-	            this.withQueue(name, function (queue) {
-	                if (this.mutedEvents && this.mutedEvents[name]){
-	                    config = config || {}
-	                    config.filter = returnFalse
-	                }
-	                result = queue.applyWith(this /*default scope, if none given*/, args, config)
-	            })
-
-	            this.withQueue('*', function(queue){
-	                if (this.mutedEvents && this.mutedEvents[name]){
-	                    config = config || {}
-	                    config.filter = returnFalse
-	                }
-
-	                //if there is no listener for '*', this function will not be called
-	                queue.applyWith(this, [name].concat(args), config)
-	            }, { skipEmpty: true })
-
-	            return result
-	        },
-
-	        /**
-	         * Alias to {@link #emit}
-	         */
-	        trigger: function () {
-	            return this.emit.apply(this, arguments)
-	        },
-
-	        /**
-	         * Returns the name of the last event that has been emitted.
-	         *
-	         * @return {String} The name of the last event that has been emitted.
-	         */
-	        getLastEventName: function () {
-	            return this.lastEventName
-	        },
-
-	        quickEmit: function (name /*, args... */) {
-	            var args = SLICE.call(arguments, 1),
-	                result
-
-	            this.lastEventName = name
-
-	            this.withQueue(name, function (queue) {
-	                result = queue.applyWith(this, args, { quickStop: true })
-	            })
-
-	            return result
-	        },
-
-	        muteEvents: function(events){
-
-	            this.mutedEvents = this.mutedEvents || {}
-
-	            ;(events || []).forEach(function(name){
-	                this.mutedEvents[name] = 1
-	            }, this)
-
-	            return this
-	        },
-
-	        unmuteEvents: function(events){
-	            if (this.mutedEvents)  {
-
-	                if (events){
-	                    events.forEach(function(name){
-	                        delete this.mutedEvents[name]
-	                    }, this)
-	                } else {
-	                    delete this.mutedEvents
-	                }
-	            }
-
-	            return this
-	        }
-	    }
-
-	})
-
-	var FN = function(obj){
-	    return obj?
-	            classy.mixin(obj, EventEmitter):
-	            new EventEmitter()
+	    return Region.alignToPoint(sourceRegion, targetRegion.getPoint(align[1]), align[0])
 	}
 
-	FN.mixin = EventEmitter
-
-	module.exports = FN
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-
-	 This file is part of the ZippyUI Framework
-
-	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
-
-	 The source code is distributed under the terms of the MIT license.
-	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
-
+	/**
+	 * Modifies the given region to be aligned to the point, as specified by anchor
+	 *
+	 * @param {Region} region The region to align to the point
+	 * @param {Object} point The point to be used as a reference
+	 * @param {Number} point.x
+	 * @param {Number} point.y
+	 * @param {String} anchor The position where to anchor the region to the point. See {@link #getPoint} for available options/
+	 *
+	 * @return {Region} the given region
 	 */
-	module.exports = function(){
+	Region.alignToPoint = function(region, point, anchor){
 
-	    'use strict'
+	    region = Region.from(region)
 
-	    var core = __webpack_require__(49)
+	    var sourcePoint = region.getPoint(anchor)
+	    var count       = 0
+	    var shiftObj    = {}
 
-	    var isSubclassOf = __webpack_require__(38)
+	    if (
+	            sourcePoint.x != null &&
+	            point.x != null
+	        ){
 
-	    function isSameOrSubclassOf(subClass, superClass){
-	        return isSubclassOf(subClass, superClass, { allowSame: true })
+	            count++
+	            shiftObj.left = point.x - sourcePoint.x
 	    }
 
-	    __webpack_require__(39)
+	    if (
+	            sourcePoint.y != null &&
+	            point.y != null
+	        ){
+	            count++
+	            shiftObj.top = point.y - sourcePoint.y
+	    }
 
-	    var copyUtils = __webpack_require__(50)
+	    if (count){
+
+	        region.shift(shiftObj)
+
+	    }
+
+	    return region
+	}
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Region = __webpack_require__(16)
+
+	/**
+	 *
+	 * Aligns this region to the given region
+	 * @param {Region} region
+	 * @param {String} alignPositions For available positions, see {@link #getPoint}
+	 *
+	 *     eg: 'tr-bl'
+	 *
+	 * @return this
+	 */
+	Region.prototype.alignToRegion = function(region, alignPositions){
+	    Region.align(this, region, alignPositions)
+
+	    return this
+	}
+
+	/**
+	 * Aligns this region to the given point, in the anchor position
+	 * @param {Object} point eg: {x: 20, y: 600}
+	 * @param {Number} point.x
+	 * @param {Number} point.y
+	 *
+	 * @param {String} anchor For available positions, see {@link #getPoint}
+	 *
+	 *     eg: 'bl'
+	 *
+	 * @return this
+	 */
+	 Region.prototype.alignToPoint = function(point, anchor){
+	    Region.alignToPoint(this, point, anchor)
+
+	    return this
+	}
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var ALIGN_TO_NORMALIZED = __webpack_require__(46)
+
+	var Region = __webpack_require__(16)
+
+	/**
+	 * @localdoc Given source and target regions, and the given alignments required, returns a region that is the resulting allignment.
+	 * Does not modify the sourceRegion.
+	 *
+	 * Example
+	 *
+	 *      var sourceRegion = zippy.getInstance({
+	 *          alias  : 'z.region',
+	 *          top    : 10,
+	 *          left   : 10,
+	 *          bottom : 40,
+	 *          right  : 100
+	 *      })
+	 *
+	 *      var targetRegion = zippy.getInstance({
+	 *          alias  : 'z.region',
+	 *          top    : 10,
+	 *          left   : 10,
+	 *          bottom : 40,
+	 *          right  : 100
+	 *      })
+	 *      //has top-left at (10,10)
+	 *      //and bottom-right at (40, 100)
+	 *
+	 *      var alignRegion = alignable.COMPUTE_ALIGN_REGION(sourceRegion, targetRegion, 'tl-br')
+	 *
+	 *      //alignRegion will be a clone of sourceRegion, but will have the
+	 *      //top-left corner aligned with bottom-right of targetRegion
+	 *
+	 *      alignRegion.get() // => { top: 40, left: 100, bottom: 70, right: 190 }
+	 *
+	 * @param  {Region} sourceRegion The source region to align to targetRegion
+	 * @param  {Region} targetRegion The target region to which to align the sourceRegion
+	 * @param  {String/String[]} positions    A string ( delimited by "-" characters ) or an array of strings with the position to try, in the order of their priority.
+	 * See Region#getPoint for a list of available positions. They can be combined in any way.
+	 * @param  {Object} config      A config object with other configuration for the alignment
+	 * @param  {Object/Object[]} config.offset      Optional offsets. Either an object or an array with a different offset for each position
+	 * @param  {Element/Region/Boolean} config.constrain  The constrain to region or element. If the boolean true, Region.getDocRegion() will be used
+	 * @param  {Object/Boolean} config.sync   A boolean object that indicates whether to sync sourceRegion and targetRegion sizes (width/height or both). Can be
+	 *
+	 *  * true - in order to sync both width and height
+	 *  * { width: true }  - to only sync width
+	 *  * { height: true } - to only sync height
+	 *  * { size: true }   - to sync both width and height
+	 *
+	 * @return {Object} an object with the following keys:
+	 *
+	 *  * position - the position where the alignment was made. One of the given positions
+	 *  * region   - the region where the alignment is in place
+	 *  * positionChanged - boolean value indicating if the position of the returned region is different from the position of sourceRegion
+	 *  * widthChanged    - boolean value indicating if the width of the returned region is different from the width of sourceRegion
+	 *  * heightChanged   - boolean value indicating if the height of the returned region is different from the height of sourceRegion
+	 */
+	function COMPUTE_ALIGN_REGION(sourceRegion, targetRegion, positions, config){
+	    sourceRegion = Region.from(sourceRegion)
+
+	    var sourceClone = sourceRegion.clone()
+	    var position    = ALIGN_TO_NORMALIZED(sourceClone, targetRegion, positions, config)
 
 	    return {
-
-	        _: copyUtils.copy(copyUtils),
-
-	        //primitives
-	        BaseClass      : core.BaseClass,
-	        extend         : core.extend,
-	        createClass    : core.createClass,
-	        overrideClass  : core.overrideClass,
-	        core: core,
-
-	        //enhanced
-	        define   : __webpack_require__(40),
-	        override : __webpack_require__(41),
-	        getClass : __webpack_require__(42),
-
-	        classRegistry: __webpack_require__(43),
-
-	        defineMixin: __webpack_require__(44),
-	        mixin      : __webpack_require__(51).mixin,
-
-	        create      : __webpack_require__(45),
-	        getInstance : __webpack_require__(46),
-
-	        destroyClass   : __webpack_require__(47),
-	        getParentClass : __webpack_require__(48),
-
-	        isSubclassOf       : isSubclassOf,
-	        isSameOrSubclassOf : isSameOrSubclassOf,
-	        isClassLike        : isSameOrSubclassOf
+	        position        : position,
+	        region          : sourceClone,
+	        widthChanged    : sourceClone.getWidth() != sourceRegion.getWidth(),
+	        heightChanged   : sourceClone.getHeight() != sourceRegion.getHeight(),
+	        positionChanged : sourceClone.equalsPosition(sourceRegion)
 	    }
-	}()
-
-/***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var withQueueStates = __webpack_require__(53)
-
-	module.exports = function(name, fn, stateName, QUEUE, config){
-
-	    var skipEmpty = !!(config && config.skipEmpty)
-	    var result = false
-
-	    withQueueStates.call(this, function(allStates, Q){
-	        if (skipEmpty && !allStates[name]){
-	            return
-	        }
-
-	        result = this
-
-	        var state = allStates[name] || {}
-
-	        // restore the queue with the state for the given name
-	        Q.from(state)
-
-	        fn.call(this, Q)
-
-	        //save the queue state
-
-	        state = Q.toStateObject()
-
-	        if (state !== undefined){
-	            allStates[name] = state
-	        } else {
-	            delete allStates[name]
-	        }
-
-	    }, stateName, QUEUE)
-
-	    return result
 	}
 
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	module.exports = {
-	    'numeric'  : __webpack_require__(54),
-	    'number'   : __webpack_require__(55),
-	    'int'      : __webpack_require__(56),
-	    'float'    : __webpack_require__(57),
-	    'string'   : __webpack_require__(58),
-	    'function' : __webpack_require__(59),
-	    'object'   : __webpack_require__(60),
-	    'arguments': __webpack_require__(61),
-	    'boolean'  : __webpack_require__(62),
-	    'date'     : __webpack_require__(63),
-	    'regexp'   : __webpack_require__(64),
-	    'array'    : __webpack_require__(65)
-	}
+	module.exports = COMPUTE_ALIGN_REGION
 
 /***/ },
-/* 26 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5739,7 +5311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = curry
 
 /***/ },
-/* 27 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5772,7 +5344,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 28 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5797,7 +5369,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = chain
 
 /***/ },
-/* 29 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use once'
@@ -5821,7 +5393,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = once
 
 /***/ },
-/* 30 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5841,20 +5413,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 31 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var bindArgsArray = __webpack_require__(30)
+	var bindArgsArray = __webpack_require__(36)
 
 	module.exports = function(fn){
 	    return bindArgsArray(fn, SLICE.call(arguments,1))
 	}
 
 /***/ },
-/* 32 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5873,25 +5445,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 33 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var lockArgsArray = __webpack_require__(32)
+	var lockArgsArray = __webpack_require__(38)
 
 	module.exports = function(fn){
 	    return lockArgsArray(fn, SLICE.call(arguments, 1))
 	}
 
 /***/ },
-/* 34 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var curry = __webpack_require__(26)
+	var curry = __webpack_require__(32)
 
 	module.exports = curry(function(fn, value){
 	    return value != undefined && typeof value.map?
@@ -5900,25 +5472,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	})
 
 /***/ },
-/* 35 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var curry = __webpack_require__(26)
+	var curry = __webpack_require__(32)
 
 	module.exports = curry(function(prop, value){
 	    return value != undefined? value[prop]: undefined
 	})
 
 /***/ },
-/* 36 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var SLICE = Array.prototype.slice
-	var curry = __webpack_require__(26)
+	var curry = __webpack_require__(32)
 
 	module.exports = function(fn, count){
 	    return function(){
@@ -5927,1781 +5499,254 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var newify = __webpack_require__(74)
-	var curry  = __webpack_require__(26)
-
-	module.exports = curry(newify)
-
-/***/ },
-/* 38 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getClass = __webpack_require__(42)
-
-	module.exports = function(subClass, superClass, config){
-
-	    'use strict'
-
-	    subClass   = getClass(subClass)
-	    superClass = getClass(superClass)
-
-	    if (!subClass || !superClass){
-	        return false
-	    }
-
-	    if (config && config.allowSame && subClass === superClass){
-	        return true
-	    }
-
-	    while (subClass && subClass.$superClass != superClass){
-	        subClass = subClass.$superClass
-	    }
-
-	    return !!subClass
-	}
-
-/***/ },
-/* 39 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-
-	 This file is part of the ZippyUI Framework
-
-	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
-
-	 The source code is distributed under the terms of the MIT license.
-	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
-
-	 */
-
-	'use strict'
-
-	var core = __webpack_require__(49)
-	var copy = __webpack_require__(50).copy
-	var when = [ '$before', '$after', '$override', '$copyIf' ]
-
-	module.exports = __webpack_require__(40)({
-
-	    alias: 'z.mixin',
-
-	    callTarget: function(){},
-
-	    statics: {
-	        init: function(){
-	            var source = this.$initialConfig || {}
-
-	            when.forEach(function(it){
-	                //copy all methods from prototype[when] to prototype
-	                if (source[it]){
-	                    core.copyClassConfig(this, source[it], {proto: true })
-	                }
-
-	                //copy all methods from Class[when] to Class
-	                if (this[it]){
-	                    core.copyClassConfig(this, this[it], { proto: false })
-	                }
-	            }, this)
-
-	        },
-
-	        /**
-	         * @private
-	         * @static
-	         *
-	         * @param  {Object} overrideConfig The config passed to the override call.
-	         *
-	         * Example:
-	         *         root.override(alias, config) //this config will be passed to beforeOverride
-	         *
-	         * @return {Object} the new config to be used for overriding.
-	         *
-	         * beforeOverride should either return the same config, or a new config based on the one it was given.
-	         *
-	         * This is useful for mixins since we don't want to override the $override, $before or $after properties,
-	         * but rather the properties inside those objects.
-	         */
-	        beforeOverride: function(overrideConfig){
-	            var result = {},
-	                proto  = this.prototype
-
-	            when.forEach(function(it){
-	                var config = overrideConfig[it]
-
-	                if (config != null){
-	                    copy(config, result)
-
-	                    //also copy to the proto[it],
-	                    //so new methods are found when iterating over proto[it]
-	                    copy(config, proto[it])
-	                }
-	            })
-
-	            return result
-	        }
-	    }
-	})
-
-/***/ },
-/* 40 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getClass     = __webpack_require__(42)
-	var processClass = __webpack_require__(66)
-
-	var Registry = __webpack_require__(43)
-	var core     = __webpack_require__(49)
-
-	var ClassProcessor = __webpack_require__(67)
-
-	function preprocessClass(classConfig, parent){
-	    ClassProcessor.preprocess(classConfig)
-	}
-
-	var IDS    = 0
-	var PREFIX = 'ZClass-'
-
-	function generateAlias(){
-	    return PREFIX + (IDS++)
-	}
-
-
-	module.exports = function(parentClass, classConfig){
-
-	    'use strict'
-
-	    if (arguments.length == 1){
-	        classConfig = parentClass
-	        parentClass = null
-	    }
-
-	    var parent = parentClass || classConfig.extend
-	    var alias  = classConfig.alias    || (classConfig.alias = generateAlias())
-
-	    parent = getClass(parent) || parent
-
-	    //<debug>
-	    if (!parent){
-	        console.warn('Could not find class to extend (' + classConfig.extend + '). Extending base class.')
-	    }
-	    //</debug>
-
-	    preprocessClass(classConfig, parent)
-
-	    return core.createClass(parent, classConfig, function(Class){
-
-	        //<debug>
-	        if (Registry[alias]){
-	            console.warn('A class with alias ' + alias + ' is already registered. It will be overwritten!')
-	        }
-	        //</debug>
-
-	        Registry[alias] = Class
-
-	        processClass(Class)
-	    })
-	}
-
-/***/ },
-/* 41 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getClass = __webpack_require__(42)
-
-	/**
-	 * @method override
-	 *
-	 * Zpy.override allows you to override a class. This can be often used to override default values
-	 *
-	 * Example:
-	 *      Zpy.override('z.visualcmp', {
-	 *          titleHeight: 40,
-	 *
-	 *          getTitle: function(){
-	 *              return this.callOverriden() + '!'
-	 *          }
-	 *      })
-	 *
-	 * @param  {Class/String} Class The class you want to override, or an alias of an existing class
-	 * @param  {Object} classConfig The object with the overrides
-	 * @return {Class} returns the class that has just beedn overriden
-	 */
-	module.exports = function(Class, classConfig){
-
-	    'use strict'
-
-	    var TheClass = getClass(Class)
-
-	    TheClass && TheClass.override(classConfig)
-
-	    return TheClass
-	}
-
-/***/ },
-/* 42 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @method getClass
-	 *
-	 * This method can be used to get a reference to an existing class. Pass in either a class alias (a string),
-	 * an instance of a class, or the class itself. It will return the class.
-	 *
-	 * @param  {String/Object/Class} alias The alias for the class you are looking for, an instance of a class or the class itself
-	 *
-	 * @return {Class}       The class or undefined if no class is found
-	 */
-
-	var REGISTRY   = __webpack_require__(43)
-	var BASE_CLASS = __webpack_require__(49).BaseClass
-
-	module.exports = function getClass(alias){
-	    if (!alias){
-	        return BASE_CLASS
-	    }
-
-	    if (typeof alias != 'string'){
-	        //alias is probably an instance or a Class
-	        alias = alias.alias || (alias.prototype? alias.prototype.alias: alias)
-	    }
-
-	    return REGISTRY[alias]
-
-	}
-
-/***/ },
 /* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = {}
+	'use strict'
+
+	var newify = __webpack_require__(26)
+	var curry  = __webpack_require__(32)
+
+	module.exports = curry(newify)
 
 /***/ },
 /* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var define = __webpack_require__(40)
-	var copyIf = __webpack_require__(50).copyIf
+	module.exports = function(){
 
-	module.exports = function(members){
+	    'use strict';
 
-	    'use strict'
+	    var fns = {}
 
-	    return define(copyIf({ extend: 'z.mixin'}, members))
-	}
+	    return function(len){
+
+	        if ( ! fns [len ] ) {
+
+	            var args = []
+	            var i    = 0
+
+	            for (; i < len; i++ ) {
+	                args.push( 'a[' + i + ']')
+	            }
+
+	            fns[len] = new Function(
+	                            'c',
+	                            'a',
+	                            'return new c(' + args.join(',') + ')'
+	                        )
+	        }
+
+	        return fns[len]
+	    }
+
+	}()
 
 /***/ },
 /* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SLICE = Array.prototype.slice
+	'use strict'
 
-	var getClass = __webpack_require__(42)
-	var newify   = __webpack_require__(75)
-
-	/**
-	 * @method create
-	 *
-	 * Use Zpy.create to create instances.
-	 * The first parameter you should pass in is an alias (or anything accepted by {@link #getClass}), and the rest
-	 * of the parameters are passed on to the class constructor
-	 * example:
-	 *
-	 *     Zpy.create('animal', 'dog', 'puffy')
-	 *     //will look for a class with the alias == 'animal'
-	 *     //and call it's constructor with the 'dog' and 'puffy' paramaters
-	 *
-	 *     //equivalent to
-	 *     new Animal('dog','puffy')
-	 *
-	 * @param  {Class/String/Object} alias The class alias, or anything accepted by {@link #getClass}
-	 * @return {Object} an instance of the specified class.
-	 */
-	module.exports = function(alias /* args... */){
-
-	    'use strict'
-
-	    var Class = getClass(alias)
-	    var args  = SLICE.call(arguments, 1)
-
-	    return newify(Class, args)
+	module.exports = {
+	    'numeric'  : __webpack_require__(47),
+	    'number'   : __webpack_require__(48),
+	    'int'      : __webpack_require__(49),
+	    'float'    : __webpack_require__(50),
+	    'string'   : __webpack_require__(51),
+	    'function' : __webpack_require__(52),
+	    'object'   : __webpack_require__(53),
+	    'arguments': __webpack_require__(54),
+	    'boolean'  : __webpack_require__(55),
+	    'date'     : __webpack_require__(56),
+	    'regexp'   : __webpack_require__(57),
+	    'array'    : __webpack_require__(58)
 	}
 
 /***/ },
 /* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseClass = __webpack_require__(49).BaseClass
-	var getClass  = __webpack_require__(42)
+	'use strict'
+
+	var Region = __webpack_require__(16)
 
 	/**
-	 * @method getInstance
 	 *
-	 * Use this method to create instances. If a class is given, or an alias or an object with the alias set,
-	 * that class is resolved, and if it found, an instance of that class is created, with the config being
-	 * passed to the Class constructor (the init method)
+	 * This method is trying to align the sourceRegion to the targetRegion, given the alignment positions
+	 * and the offsets. It only modifies the sourceRegion
 	 *
-	 * If config is an instance, that instance is simply returned
+	 * This is all well and easy, but if there is a constrainTo region, the algorithm has to take it into account.
+	 * In this case, it works as follows.
 	 *
-	 * @param {Object} config A string (a class alias), a config object with the alias property set
-	 * or a class.
+	 *  * start with the first alignment position. Aligns the region, adds the offset and then check for the constraint.
+	 *  * if the constraint condition is ok, return the position.
+	 *  * otherwise, remember the intersection area, if the regions are intersecting.
+	 *  * then go to the next specified align position, and so on, computing the maximum intersection area.
 	 *
-	 * @return {Zpy.BaseClass} a new instance corresponding to the class denoted by config.
+	 * If no alignment fits the constrainRegion, the sourceRegion will be resized to match it,
+	 * using the position with the maximum intersection area.
+	 *
+	 * Since we have computed the index of the position with the max intersection area, take that position,
+	 * and align the sourceRegion accordingly. Then resize the sourceRegion to the intersection, and reposition
+	 * it again, since resizing it might have destroyed the alignment.
+	 *
+	 * Return the position.
+	 *
+	 * @param {Region} sourceRegion
+	 * @param {Region} targetRegion
+	 * @param {String[]} positions
+	 * @param {Object} config
+	 * @param {Array} config.offset
+	 * @param {Region} config.constrain
+	 * @param {Boolean/Object} config.sync
+	 *
+	 * @return {String/Undefined} the chosen position for the alignment, or undefined if no position found
 	 */
-	module.exports = function(config){
+	function ALIGN_TO_NORMALIZED(sourceRegion, targetRegion, positions, config){
 
-	    'use strict'
+	    targetRegion = Region.from(targetRegion)
 
-	    if (config instanceof BaseClass){
-	        return config
+	    config = config  || {}
+
+	    var constrainTo = config.constrain,
+	        syncOption  = config.sync,
+	        offsets     = config.offset || [],
+	        syncWidth   = false,
+	        syncHeight  = false,
+	        sourceClone = sourceRegion.clone()
+
+	    /*
+	     * Prepare the method arguments: positions, offsets, constrain and sync options
+	     */
+	    if (!Array.isArray(positions)){
+	        positions = positions? [positions]: []
 	    }
 
-	    config = typeof config == 'string'?
-	                { alias: config }:
-	                config || {}
-
-	    var klass = getClass(config)
-
-	    //<debug>
-	    if (!klass){
-	        console.warn('Cannot find class for ', config)
-	    }
-	    //</debug>
-
-	    if (klass && klass.prototype.singleton){
-	        return klass.getInstance()
+	    if (!Array.isArray(offsets)){
+	        offsets = offsets? [offsets]: []
 	    }
 
-	    return new klass(config)
+	    if (constrainTo){
+	        constrainTo = constrainTo === true?
+	                                Region.getDocRegion():
+	                                constrainTo.getRegion()
+	    }
+
+	    if (syncOption){
+
+	        if (syncOption.size){
+	            syncWidth  = true
+	            syncHeight = true
+	        } else {
+	            syncWidth  = syncOption === true?
+	                            true:
+	                            syncOption.width || false
+
+	            syncHeight = syncOption === true?
+	                            true:
+	                            syncOption.height || false
+	        }
+	    }
+
+	    if (syncWidth){
+	        sourceClone.setWidth(targetRegion.getWidth())
+	    }
+	    if (syncHeight){
+	        sourceClone.setHeight(targetRegion.getHeight())
+
+	    }
+
+	    var offset,
+	        i = 0,
+	        len = positions.length,
+	        pos,
+	        intersection,
+	        itArea,
+	        maxArea = -1,
+	        maxAreaIndex = -1
+
+	    for (; i < len; i++){
+	        pos     = positions[i]
+	        offset  = offsets[i]
+
+	        sourceClone.alignToRegion(targetRegion, pos)
+
+	        if (offset){
+	            if (!Array.isArray(offset)){
+	                offset = offsets[i] = [offset.x || offset.left, offset.y || offset.top]
+	            }
+
+	            sourceClone.shift({
+	                left: offset[0],
+	                top : offset[1]
+	            })
+	        }
+
+	        //the source region is already aligned in the correct position
+
+	        if (constrainTo){
+	            //if we have a constrain region, test for the constrain
+	            intersection = sourceClone.getIntersection(constrainTo)
+
+	            if ( intersection && intersection.equals(sourceClone) ) {
+	                //constrain respected, so return (the aligned position)
+
+	                sourceRegion.set(sourceClone)
+	                return pos
+	            } else {
+
+	                //the constrain was not respected, so continue trying
+	                if (intersection && ((itArea = intersection.getArea()) > maxArea)){
+	                    maxArea      = itArea
+	                    maxAreaIndex = i
+	                }
+	            }
+
+	        } else {
+	            sourceRegion.set(sourceClone)
+	            return pos
+	        }
+	    }
+
+	    //no alignment respected the constraints
+	    if (~maxAreaIndex){
+	        pos     = positions[maxAreaIndex]
+	        offset  = offsets[maxAreaIndex]
+
+	        sourceClone.alignToRegion(targetRegion, pos)
+
+	        if (offset){
+	            sourceClone.shift({
+	                left: offset[0],
+	                top : offset[1]
+	            })
+	        }
+
+	        //we are sure an intersection exists, because of the way the maxAreaIndex was computed
+	        intersection = sourceClone.getIntersection(constrainTo)
+
+	        sourceClone.setRegion(intersection)
+	        sourceClone.alignToRegion(targetRegion, pos)
+
+	        if (offset){
+	            sourceClone.shift({
+	                left: offset[0],
+	                top : offset[1]
+	            })
+	        }
+
+	        sourceRegion.set(sourceClone)
+
+	        return pos
+	    }
+
 	}
+
+	module.exports = ALIGN_TO_NORMALIZED
 
 /***/ },
 /* 47 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @method destroyClass
-	 *
-	 * Calls the static destroy method on the given class, and unregisters the class from the framework registry.
-	 *
-	 * @param  {String/Object/Class} Class a class - as expected by {@link #getClass}
-	 *
-	 */
-
-	var getClass   = __webpack_require__(42)
-	var core       = __webpack_require__(49)
-	var BaseClass  = core.BaseClass
-
-	module.exports = function(Class){
-
-	    'use strict'
-
-	    Class = getClass(Class)
-
-	    if (Class && (Class != BaseClass)){
-	        Class.destroy()
-	    }
-	}
-
-/***/ },
-/* 48 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseClass = __webpack_require__(49).BaseClass
-	var getClass  = __webpack_require__(42)
-
-	/**
-	 * @method getParentClass
-	 *
-	 * @param  {String/Object/Class} alias an argument specifying the class (as expected by {@link #getClass})
-	 * @return {Class} the top parent class (all the way up in the class hierarchy), if there is one.
-	 *
-	 * NOTE: All framework classes inherit from BaseClass, but is not returned from this call.
-	 */
-	module.exports = function(alias){
-
-	    'use strict'
-
-	    var Class = getClass(alias)
-
-	    if (Class && Class != BaseClass && Class.$superClass != BaseClass){
-	        while (Class.$superClass && Class.$superClass != BaseClass){
-	            Class = Class.$superClass
-	        }
-
-	        return Class
-	    }
-	}
-
-/***/ },
-/* 49 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict'
-
-	    var newify = __webpack_require__(75)
-
-	    var extend = __webpack_require__(68)
-	    var copy   = __webpack_require__(50).copy
-
-	    var hasOwnProperty = Object.prototype.hasOwnProperty
-	    var canDefineProperty = __webpack_require__(69)
-	    var canGetOwnPropertyDescriptor = __webpack_require__(70)
-
-	    var getOwnPropertyDescriptor = canGetOwnPropertyDescriptor? Object.getOwnPropertyDescriptor: null
-
-	    var copyDescriptors = __webpack_require__(71)
-
-	    var Base = function(){}
-
-	    Base.prototype.init = function(){
-	        return this
-	    }
-
-	    Base.prototype.self = function(){
-	        return this
-	    }
-
-	    function prepareSingletonStatics(statics){
-	        statics = statics || {}
-
-	        statics.getInstance = function(){
-
-	            if (!this.INSTANCE){
-	                this.INSTANCE = newify(this, arguments)
-	            }
-
-	            return this.INSTANCE
-	        }
-
-	        statics.getInstanceIf = function(){
-	            if (this.INSTANCE){
-	                return this.INSTANCE
-	            }
-	        }
-
-	        return statics
-	    }
-
-	    function createClass(Parent, config, callback){
-
-	        if (arguments.length == 1){
-	            config = Parent
-	            Parent = Base
-	        } else {
-	            Parent = Parent || Base
-	        }
-
-	        function Class(){
-	            if (!(this instanceof Class) && Class.prototype.forceInstance){
-	                return newify(Class, arguments)
-	            }
-
-	            if (!this){
-	                throw 'Cannot call class constructor with undefined context.'
-	            }
-
-	            if (this.singleton){
-	                if (this.$ownClass.INSTANCE){
-	                    throw 'Cannot re-instantiate singleton for class ' + Class
-	                }
-
-	                this.$ownClass.INSTANCE = this
-	            }
-
-	            return this.init.apply(this, arguments)
-	        }
-
-	        extend(Parent, Class)
-
-	        copyDescriptors(Parent.prototype, Class.prototype)
-	        copyDescriptors(Parent, Class)
-
-	        //remove statics from config
-	        var statics = config.statics || {}
-	        var $own    = statics.$own
-
-	        statics.$own   = null
-	        config.statics = null
-
-	        Class.$initialConfig = copyClassConfig(Class, config)
-
-	        if (config.singleton){
-	            prepareSingletonStatics(statics)
-	        }
-
-	        //copy static properties from Parent to Class
-	        copyClassConfig( Class,  Parent, {
-	            proto     : false,
-	            skipOwn   : true,
-	            skipProps : copy(Parent.$own, {
-	                $own           : 1,
-	                $ownClass      : 1,
-	                $superClass    : 1,
-	                $initialConfig : 1
-	            })
-	        })
-
-	        //copy static properties from config statics to class
-	        copyClassConfig( Class, statics, { proto: false })
-
-	        //copy static own properties
-	        if ($own){
-	            copyClassConfig( Class, $own, { proto: false, own: true })
-	        }
-
-	        if (typeof callback != 'function') {
-	            //no callback was provided, so it's safe to call the Class.init method, if one exists
-	            if (Class.init){
-	                Class.init()
-	            }
-	        } else {
-	            //a callback was given, so don't call Class.init,
-	            //but call the callback instead, which will take care to call Class.init
-	            callback(Class)
-	        }
-
-	        return Class
-	    }
-
-	    var assignClassProperty = __webpack_require__(72)
-
-	    function copyClassConfig(Class, config, targetConfig, resultConfig){
-	        targetConfig = targetConfig || { proto: true }
-
-	        var result       = resultConfig || {},
-
-	            own          = !canDefineProperty && targetConfig.own,
-	            configOwn    = config.$own,
-	            skipOwn      = !canDefineProperty && targetConfig.skipOwn && configOwn,
-	            skipProps    = targetConfig.skipProps
-
-	        var key
-	        var valueDescriptor
-	        var keyResult
-
-	        for (key in config) if (hasOwnProperty.call(config, key)) {
-
-	            if (skipOwn && configOwn[key]){
-	                //this property should not be copied -> skip to next property
-	                continue
-	            }
-
-	            if (skipProps && skipProps[key]){
-	                continue
-	            }
-
-	            valueDescriptor = canGetOwnPropertyDescriptor?
-	                                    getOwnPropertyDescriptor(config, key):
-	                                    config[key]
-
-	            keyResult = assignClassProperty(Class, key, valueDescriptor, targetConfig)
-
-	            if (own){
-	                result[key] = 1
-	            } else {
-	                if (canGetOwnPropertyDescriptor){
-	                    Object.defineProperty(result, key, valueDescriptor)
-	                } else {
-	                    result[key] = keyResult
-	                }
-	            }
-
-	        }
-
-	        if (own){
-	            Class.$own = result
-	        }
-
-	        return result
-	    }
-
-	    function overrideClass(Class, config){
-	        if (typeof Class.beforeOverride == 'function'){
-	            config = Class.beforeOverride(config)
-	        }
-
-	        var statics = config.statics || {}
-	        var $own    = statics.$own
-
-	        statics.$own   = null
-	        config.statics = null
-
-	        if (config.singleton){
-	            prepareSingletonStatics(statics)
-	        }
-
-	        copyClassConfig( Class, config, null, Class.$initialConfig)
-
-	        copyClassConfig( Class, statics, { proto: false })
-
-	        if ($own){
-	            copyClassConfig( Class, $own, { proto: false, own: true })
-	        }
-	    }
-
-	    function overrideObject(targetObject, config){
-	        copyClassConfig( targetObject, config, { proto: false })
-	    }
-
-	    return {
-	        canDefineProperty: canDefineProperty,
-	        extend           : extend,
-	        createClass      : createClass,
-	        overrideClass    : overrideClass,
-	        overrideObject   : overrideObject,
-
-	        copyClassConfig  : copyClassConfig,
-	        BaseClass        : Base
-	    }
-	}()
-
-/***/ },
-/* 50 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-
-	 This file is part of the ZippyUI Framework
-
-	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
-
-	 The source code is distributed under the terms of the MIT license.
-	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
-
-	 */
-	module.exports = __webpack_require__(7)
-
-/***/ },
-/* 51 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-
-	 This file is part of the ZippyUI Framework
-
-	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
-
-	 The source code is distributed under the terms of the MIT license.
-	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
-
-	 */
-	module.exports = function(){
-
-	    'use strict'
-
-	    var core = __webpack_require__(49)
-
-	    var FN = __webpack_require__(73)
-	    var bindArgs = FN.bindArgs
-	    var copyIf   = __webpack_require__(50).copyIf
-	    var getClass = __webpack_require__(42)
-
-	    var HAS_OWN   = Object.prototype.hasOwnProperty
-	    var hasOwn    = function(obj, name){ return HAS_OWN.call(obj, name) }
-	    var emptyFn   = function(){}
-	    var mixinMeta = [ '$copyIf', '$override', '$after', '$before' ]
-
-	    function processMixins(target){
-	        var mixins = target.mixins || []
-
-	        mixins.forEach(function(m){
-	            mixinFn(target, m)
-	        })
-	    }
-
-	    function prepareTarget(target){
-	        if (!target.addMixin){
-
-	            var fn = function(m){
-	                mixinFn(this, m)
-	            }
-
-	            if (core.canDefineProperty){
-	                Object.defineProperties(target, {
-	                    addMixin: {
-	                        value: fn
-	                    }
-	                })
-	            } else {
-	                target.addMixin = fn
-	            }
-	        }
-	    }
-
-	    function targetHasMixin(target, mixinIdentifier){
-	        if (target.$mixins && ~target.$mixins.indexOf(mixinIdentifier)){
-	            //mixin already applied
-	            return true
-	        }
-
-	        prepareTarget(target)
-
-	        target.$mixins = target.$mixins?
-	                            [].concat(target.$mixins):
-	                            []
-
-	        target.$mixins.push(mixinIdentifier)
-
-	        return false
-	    }
-
-	    /*
-	     * For each $copyIf, $override, $before, $after, as WHEN, do the following:
-	     *
-	     * Iterate over source[WHEN], and for each property KEY in source[WHEN], copy source[KEY]
-	     * to either target[WHEN][KEY] (if the target is given)
-	     * or to source[WHEN][KEY]
-	     *
-	     * This function is called during the mixin process in 2 cases:
-	     *
-	     * 1. when the source is the mixin prototype. Since all mixin methods have been copied on the prototype, where they have been
-	     * enhanced so that they can use callSuper and callOverriden; now we need to copy all needed methods to mixin.$override, to mixin.$copyIf, etc
-	     *
-	     * 2. when the source is the mixin class. Since all mixin methods have been copied as static methods on the class (where they have
-	     * been enhanced so that they can use callSuper and callOverriden) now we need to build a statics mixin target, with the keys $override, $copyIf, etc...
-	     * that are objects with key/value pairs, where the values are the functions copied from the Mixin Class.
-	     *
-	     */
-	    function copyMetaFrom(source, target){
-
-	        mixinMeta.forEach(function(when){
-	            var mixinWhen  = source[when],
-	                targetWhen = mixinWhen
-
-	            if (mixinWhen != null){
-
-	                if (target){
-	                    targetWhen = target[when] = target[when] || {}
-	                }
-
-	                for (var key in mixinWhen) if (hasOwn(mixinWhen, key)){
-	                    targetWhen[key] = source[key]
-	                }
-	            }
-	        })
-
-	        return target
-
-	    }
-
-	    /**
-	     * @method mixin
-	     *
-	     * A mixin should be an object with $override, $before and/or $after properties:
-	     *
-	     * Example:
-	     *     var logger = {
-	     *         $override: {
-	     *             log: function(message){
-	     *                 console.log(message)
-	     *             }
-	     *         }
-	     *     }
-	     *
-	     *      function Person(name){
-	     *          this.name = name
-	     *      }
-	     *
-	     *      Person.prototype.getName = function(){ return this.name }
-	     *
-	     *      var p = new Person()
-	     *
-	     *
-	     *
-	     * @param  {Object} target The mixin target
-	     * @param  {Object} mixin  The object to mix into target
-	     * @param  {Object} [config] Optional config for mixin.
-	     * @param  {Object} [config.skipProperties] An object with properties that are not going to be mixed in.
-	     * @param  {Object} [config.skipStatics] An object with properties that are not going to be mixed in.
-	     */
-	    function mixinFn(target, mixin, config){
-
-	        if (arguments.length == 1){
-	            mixin = target
-	            target = {}
-	        }
-
-	        if (!mixin){
-	            return target
-	        }
-
-	        config = config || {}
-
-	        var MixinClass      = getClass(mixin)
-	        var mixinIdentifier = config.mixinIdentifier || mixin
-
-	        if (MixinClass){
-
-	            if (typeof mixin == 'string'){
-	                mixin = { alias: mixin }
-	            }
-
-	            if (mixin == MixinClass){
-	                //the mixin is the Class, so take its prototype
-	                mixin = MixinClass.prototype
-	            } else {
-	                copyIf(MixinClass.prototype, mixin)
-	            }
-
-	            //go over all keys from mixin.$override, $after, ... and override them with
-	            //values from the mixin proto
-	            copyMetaFrom(mixin)
-
-	            mixinIdentifier = mixin.alias
-
-	        }
-
-	        if ( target.$ownClass && !config.skipStatics) {
-
-	            var mixinStatics = MixinClass?
-	                                    //go over all keys from MixinClass.$override, $after, ... and build a new object with $override, $after ...
-	                                    //that contain the corresponding static values copied from the MixinClass
-	                                    copyMetaFrom(MixinClass, {}):
-	                                    mixin.statics
-
-	            if ( mixinStatics && mixinMeta.some(function(when){ return !! mixinStatics[when] }) ) {
-	                config.skipWarning = true
-
-	                var staticsMixinIdentifier = 'statics.' + mixinIdentifier
-
-	                //The mixin class also targets the target's Class
-	                mixinFn(target.$ownClass, mixinStatics, { skipStatics: true, mixinIdentifier: staticsMixinIdentifier})
-	            }
-	        }
-
-	        doMixin(target, mixin, mixinIdentifier, config)
-
-	        return target
-	    }
-
-	    function doMixin(target, mixin, mixinIdentifier, config){
-	        mixinIdentifier = mixinIdentifier || mixin.alias
-
-	        if (! targetHasMixin(target, mixinIdentifier) ) {
-	            applyMixin(target, mixin, config)
-	        }
-	    }
-
-	    function prepareTargetFn(target, propName, newFn){
-
-	        var oldTarget = target[propName],
-	            targetFn  = typeof oldTarget == 'function'?
-	                            oldTarget:
-	                            emptyFn
-
-	        return function(){
-	            var args = arguments,
-	                oldCallTarget     = this.callTarget,
-	                oldCallTargetWith = this.callTargetWith
-
-	            this.callTarget = function(){
-	                return targetFn.apply(this, args)
-	            }
-	            this.callTargetWith = function(){
-	                return targetFn.apply(this, arguments)
-	            }
-
-	            var result = newFn.apply(this, args)
-
-	            this.callTarget = oldCallTarget
-	            this.callTargetWith = oldCallTargetWith
-
-	            return result
-	        }
-	    }
-
-	    function assignFunction(when, target, propName, newFn){
-
-	        target[propName] = when?
-	                                FN[when](newFn, target[propName]):
-	                                prepareTargetFn(target, propName, newFn)
-	    }
-
-	    function applyWhen(when, originalWhen, target, props, config){
-	        var prop,
-	            value,
-	            skipProps = config? config.skipProperties: null,
-	            result
-
-	        for (prop in props) if ( hasOwn(props, prop) ){
-
-	            if (prop == 'init'){
-	                result = {
-	                    when  : when,
-	                    props : props
-	                }
-
-	                continue
-	            }
-
-	            if (skipProps && skipProps[prop]){
-	                continue
-	            }
-
-	            value = props[prop]
-
-	            if (originalWhen == '$copyIf'){
-	                if (typeof target[prop] == 'undefined'){
-	                    target[prop] = value
-	                }
-
-	                continue
-	            }
-
-	            if (typeof value == 'function'){
-
-	                if (typeof target[prop] == 'function'){
-
-	                    assignFunction(when, target, prop, value)
-
-	                } else {
-	                    target[prop] = value
-	                }
-
-	            } else {
-	                if (!when || typeof target[prop] == 'undefined'){
-	                    target[prop] = value
-	                }
-	            }
-	        }
-
-	        return result
-	    }
-
-	    /*
-	     * Applies the mixin init method on target.
-	     * The initOn property on the mixin dictates when to init the mixin.
-	     *
-	     * Example:
-	     *
-	     *      root.defineMixin({
-	     *          alias: 'observable',
-	     *
-	     *          initOn: 'configure',
-	     *
-	     *          $before: {
-	     *              init: function(){
-	     *                  ...
-	     *              }
-	     *          }
-	     *      })
-	     *
-	     *      root.define({
-	     *          alias : 'computer',
-	     *
-	     *          mixins: [{ alias: 'observable', initOn: 'showDisplay' }],
-	     *
-	     *          init: function(){
-	     *              // init computer properties
-	     *
-	     *              //then configure computer
-	     *              this.configure()
-	     *
-	     *              //then show display
-	     *              this.showDisplay()
-	     *          },
-	     *
-	     *          //before this method is actually called, call the obserable.init method
-	     *          showDisplay: function(){
-	     *          }
-	     *      })
-	     * @param  {Object} target The target object
-	     * @param  {Object} mixin The mixin object
-	     * @param  {Object} [initConfig] Optional mixin application config
-	     */
-	    function applyInit(target, mixin, initConfig){
-	        if (initConfig){
-	            var init         = initConfig.props.init,
-	                initWhen     = initConfig.when,
-	                initOnMethod = mixin.initOn || 'init'
-
-	            assignFunction(initWhen, target, initOnMethod, init)
-	        }
-	    }
-
-	    var applyBefore   = bindArgs(applyWhen, 'before', '$before')
-	    var applyAfter    = bindArgs(applyWhen, 'after' , '$after')
-	    var applyCopyIf   = bindArgs(applyWhen, 'copyIf', '$copyIf')
-	    var applyOverride = bindArgs(applyWhen, ''      , '$override')
-
-	    function applyMixin(target, mixin, config){
-
-	        target.callTarget = target.callTarget || emptyFn
-
-	        config = config || {}
-
-	        //<debug>
-	        if (!config.skipWarning && !mixin.$before && !mixin.$after && !mixin.$override && !mixin.$copyIf){
-	            console.warn('No $before, $after or $override properties on the mixin ', mixin,'. This will result in nothing being mixed in.')
-	        }
-	        //</debug>
-
-	        var beforeWithInit = applyBefore  (target, mixin.$before  , config)
-	        var afterWithInit  = applyAfter   (target, mixin.$after   , config)
-
-	        applyCopyIf  (target, mixin.$copyIf  , config)
-
-	        var overrideWithInit = applyOverride(target, mixin.$override, config)
-
-	        applyInit(target, mixin, beforeWithInit || afterWithInit || overrideWithInit)
-
-	    }
-
-	    return {
-
-	        mixin : mixinFn,
-
-	        preprocess: function(classConfig, parent){
-	        },
-
-	        process : function(Class){
-	            processMixins(Class.prototype)
-	            processMixins(Class)
-	        }
-
-	    }
-	}()
-
-/***/ },
-/* 52 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var classy = __webpack_require__(23)
-	var copyUtils = __webpack_require__(7)
-	var functionally = __webpack_require__(19)
-	var sortDescFn = function( a, b){ return b - a }
-	var SLICE  = Array.prototype.slice
-
-	/**
-	 * This is a wrapper around an array of functions and offers the possibility to call them all with the same params.
-	 *
-	 * Example 1:
-	 *
-	 *      var Q = require('fn-queue')
-	 *      var queue = Q()
-	 *
-	 *      queue.add(function logger(msg){
-	 *          console.log(msg)
-	 *      })
-	 *      queue.add(function serverLogger(msg){
-	 *          //send msg to server
-	 *      })
-	 *
-	 *      queue.execute('application has crashed')
-	 *      //this call will call both logger and serverLogger, with the string param
-	 *
-	 * Example 2:
-	 *
-	 *      var fnQueue = new Q()
-	 *
-	 *      fnQueue.add(function(a,b){ return a + b })
-	 *             .add(function(a,b){ return a * b })
-	 *
-	 *
-	 * Functions can also be added to the queue with different modifier options:
-	 *
-	 * Supported options:
-	 *      * {Boolean} once  - executes the function once, then removes it from the queue. Uses Function.once
-	 *      * {Boolean} defer - execute the function using Function.defer
-	 *      * {Number}  delay - execute the function using Function.delay
-	 *      * {Number}  buffer   - execute the function using Function.buffer
-	 *      * {Number}  throttle - execute the function using Function.throttle
-	 *
-	 * If a function is added to the queue with one of those options, it is replaced with the modified version
-	 * of the function (after applying the corresponding method from Function.prototype)
-	 *
-	 * There are different ways of calling the function queue (executing all the functions in the queue). Here's the complete list:
-	 *
-	 *      queue.execute(firstArg, secondArg, ...)
-	 *
-	 *      queue.call(scope, firstArg, secondArg, ...)
-	 *
-	 *      queue.apply(scope, [ firstArg, secondArg, ...] )
-	 *
-	 *      queue.applyWith(scope, [firstArg, secondArg, ... ], config)
-	 *      //for the available config options see FunctionQueue.applyWith
-	 *
-	 *
-	 */
-
-
-	var FnQueue = classy.define({
-
-	    /**
-	     * @cfg {Boolean} allowFunctionsAsString By default, only functions are allowed in the FunctionQueue. Nevertheless, if you configure the queue
-	     * with allowFunctionsAsStrings: true, you will be able to add strings into the queue. These are resolved to functions when the FunctionQueue is called.
-	     *
-	     * When the FunctionQueue gets executed, it iterates over its functions. When a string is met, it takes the context object, and looks for a
-	     * property with that name, and if a function is found, it gets called.
-	     *
-	     * Example:
-	     *     var context1 = {
-	     *             sum: function(a,b){
-	     *                 return a + b
-	     *             }
-	     *         },
-	     *         context2 = {
-	     *             diff: function(a,b){
-	     *                 return a - b
-	     *             }
-	     *         }
-	     *
-	     *
-	     *      queue.add('sum', context1)
-	     *      queue.add('diff')
-	     *
-	     *      var results = queue.applyWith(context2, [5, 2], { allResults: true })
-	     *
-	     *      //results is [7, 3]
-	     *      //the queue looks for 'sum' first, on the scope. 'sum' had its scope bound
-	     *      //to context1, so the queue checks if a function is found at context1['sum'].
-	     *      //since there is a function there, it calls it
-	     *
-	     *      //next comes 'diff'. the queue looks for a scope, but 'diff' was not bound to a scope.
-	     *      //so we use the given scope, that is, context2. Since we find a function
-	     *      //at context2['diff'], it gets called.
-	     *
-	     */
-	    allowFunctionsAsString: false,
-
-	    /**
-	     * @cfg {Boolean} keepFunctionReferences This property dictates the behavior of the queue when functions are specified as strings.
-	     * When a queue is called, the "string" functions are resolved, from the context.
-	     *
-	     * If keepFunctionReferences is true, the resolved functions are kept in memory and are going to be called on
-	     * subsequent calls to the function queue.
-	     *
-	     * If keepFunctionReferences is false, "string" functions are resolved each time the queue is called.
-	     */
-	    keepFunctionReferences: false,
-
-	    forceInstance: true,
-
-	    statics: {
-
-	        fly: (function(){
-	            var fly
-
-	            return function(config){
-	                fly = fly || new FnQueue(config)
-
-	                if (config && config.state){
-	                    fly.from(config.state)
-	                }
-
-	                return fly
-	            }
-
-	        })()
-	    },
-
-	    maxLength: null,
-
-	    init: function(config){
-	        copyUtils.copy(config, this)
-	        this.clear()
-	    },
-
-	    /**
-	     * Modifies the queue to reflect the state as provided by the stateObject
-	     *
-	     * @param  {Object} stateObject An object with a queue state. This object is returned by {@link #toStateObject}
-	     * @return {FunctionQueue} this
-	     */
-	    from: function(stateObject){
-	        stateObject = stateObject || {}
-
-	        //unmodified fns
-	        this._fns    = stateObject._fns    = stateObject._fns    || []
-
-	        this.fns     = stateObject.fns     = stateObject.fns     || []
-	        this.scopes  = stateObject.scopes  = stateObject.scopes  || []
-	        this.options = stateObject.options = stateObject.options || []
-
-	        this.length  = this.fns.length
-
-	        return this
-	    },
-
-	    /**
-	     * Saves the state of the queue in an object, and returns that object
-	     * @param  {Object} [stateObject] Optional. The object to use for state persistence. If none given, a new object will be passed used.
-	     * @return {Object} the object with the state of the queue. If obj is given, this is the object that will be returned
-	     */
-	    toStateObject: function(obj){
-
-	        if (!this.getLength()){
-	            return
-	        }
-
-	        obj = obj || {}
-
-	        obj._fns    = this._fns
-	        obj.fns     = this.fns
-	        obj.scopes  = this.scopes
-	        obj.options = this.options
-
-	        return obj
-	    },
-
-	    /**
-	     * Clears this queue by removing all functions.
-	     *
-	     * After the queue is cleared, its length is 0 ( getLength() == 0 ), and it {@link #isEmpty is empty}
-	     *
-	     * @chainable
-	     * @return {FunctionQueue} this queue
-	     */
-	    clear: function(){
-	        return this.from()
-	    },
-
-	    /**
-	     * An alias to {@link #clear}
-	     * @chainable
-	     *
-	     * @return {FunctionQueue} this queue
-	     */
-	    destroy: function(){
-	        this.clear()
-
-	        delete this.fns
-	        delete this._fns
-	        delete this.scopes
-	        delete this.options
-
-	        return this
-	    },
-
-	    /**
-	     * @return {FunctionQueue} a FunctionQueue that is a clone of this queue
-	     */
-	    clone: function(){
-	        var queue = new FnQueue()
-
-	        queue._fns    = this._fns.slice()
-	        queue.fns     = this.fns.slice()
-	        queue.scopes  = this.scopes.slice()
-	        queue.options = this.options.slice()
-
-	        queue.length = queue.fns.length
-	        queue.maxLength = this.maxLength
-
-	        return queue
-	    },
-
-	    /**
-	     * Returns the count of the functions that this queue stores.
-	     *
-	     * @return {Number}
-	     */
-	    getLength: function(){
-	        return this.length
-	    },
-
-	    /**
-	     * Returns true if getLength() is 0
-	     * @return {Boolean} True if the queue is empty, false otherwise
-	     */
-	    isEmpty: function(){
-	        return !this.getLength()
-	    },
-
-	    /**
-	     * Add a function to the queue, optionally with a scope and some options.
-	     *
-	     * @chainable
-	     *
-	     * @param {Function} fn The function to add to the queue
-	     * @param {Object} [scope] Optional scope in which the function will be called when this queue is called.
-	     * @param {Object} [options] Options for calling the function
-	     *
-	     * Available options are:
-	     *      * {Boolean} once  - executes the function once, then removes it from the queue.Uses Function.once
-	     *      * {Boolean} defer - execute the function using Function.defer.
-	     *      * {Number}  delay - execute the function using Function.delay.
-	     *      * {Number}  buffer   - execute the function using Function.buffer.
-	     *      * {Number}  throttle - execute the function using Function.throttle.
-	     *
-	     * @return {FunctionQueue} this
-	     */
-	    add: function(fn, scope, options){
-
-	        return this.insert(this.length, fn, scope, options)
-
-	    },
-
-	    /**
-	     * Insert a function in the queue at the given index.
-	     *
-	     * See {@link #add} for an explanation of the parameters
-	     * @param {Number} index The index at which to make the insert
-	     * @param {Function} fn
-	     * @param {Object} [scope]
-	     * @param {Object} [options]
-	     *
-	     * @return {FunctionQueue} this
-	     */
-	    insert: function(index, fn, scope, options){
-
-	        var usePush
-	        if (index >= this.length){
-	            index   = this.length
-	            usePush = true
-	        }
-
-	        var isFn   = typeof fn == 'function',
-	            theFn  = fn,
-	            _theFn = fn,
-	            result
-
-	        if (!isFn){
-
-	            if (!this.allowFunctionsAsString || typeof fn != 'string'){
-	                return this
-	            }
-
-	        } else {
-	            result = this.getModifiedFunction( fn, options ),
-
-	            theFn  = result.fn
-
-	            if (!result.modified){
-	                _theFn = undefined
-	            }
-	        }
-
-	        this._dirty = true
-
-	        if (usePush){
-	            this._fns
-	                .push(_theFn)
-
-	            this.fns
-	                .push(theFn)
-
-	            this.scopes
-	                .push(scope || undefined)
-
-	            this.options
-	                .push(options)
-	        } else {
-	            this._fns
-	                .splice(index, 0, _theFn)
-
-	            this.fns
-	                .splice(index, 0, theFn)
-
-	            this.scopes
-	                .splice(index, 0, scope || undefined)
-
-	            this.options
-	                .splice(index, 0, options)
-	        }
-
-	        this.length = this.fns.length
-
-	        if (this.maxLength != null){
-	            this.adjustLength()
-	        }
-
-	        return this
-	    },
-
-	    /**
-	     * @private
-	     */
-	    adjustLength: function(){
-	        if (this.maxLength < this.length){
-	            this._fns.shift()
-	            this.fns.shift()
-	            this.scopes.shift()
-	            this.options.shift()
-
-	            this.length = this.fns.length
-	        }
-	    },
-
-	    getModifiedFunction: function(fn, options){
-	        var initialFn = fn,
-	            modified  = false
-
-	        if ( options ) {
-
-	            if ( options.buffer != null) {
-	                fn = functionally.buffer( fn, options.buffer )
-
-	                modified = true
-	            }
-
-	            if ( options.delay != null) {
-	                fn = functionally.delay( fn, options.delay )
-
-	                modified = true
-	            }
-
-	            if ( options.defer != null) {
-	                fn = functionally.defer( fn )
-
-	                modified = true
-	            }
-
-	            if ( options.throttle != null) {
-	                fn = functionally.throttle( fn, options.throttle )
-
-	                modified = true
-	            }
-
-	        }
-
-	        return {
-	            modified: modified,
-	            fn: fn
-	        }
-	    },
-
-	    /**
-	     * @chainable
-	     * Adds a given function at the beginning of the queue.
-	     * See {@link #add}
-	     *
-	     * @param {Function} fn
-	     * @param {Object}   [scope]
-	     * @param {Object}   [options]
-	     * @return {FunctionQueue}
-	     */
-	    addStart: function(fn, scope, options){
-	        return this.insert(0, fn, scope, options)
-	    },
-
-	    /**
-	     * Calls this queue, that is, calls all functions stored in this queue.
-	     *
-	     * The signature of this method is the same as that of *Function.call*
-	     *
-	     * Example:
-	     *
-	     *      var q = new require('fn-queue')()
-	     *      q.add(function add(a,b){ return a + b})
-	     *      q.add(function multiply(a,b){ return a * b})
-	     *
-	     *      q.call(null, 4, 5)
-	     *      //will call add(4,5) and multiply(4,5)
-	     *
-	     * @param  {Object} scope The scope in which to call the functions
-	     *
-	     * NOTE that if the functions already had their scope bound, when were added to the queue,
-	     * that scope is used.
-	     *
-	     * @param {...Object} args The enumerated arguments for the functions.
-	     * @return {Boolean} The result of the call. If any of the functions return the boolean false, the result will be false, otherwise, true.
-	     */
-	    call: function(scope /*, args... */ ){
-	        return this.apply( scope, SLICE.call(arguments, 1) )
-	    },
-
-	    /**
-	     * Calls this queue with the enumerated given params. Similar to {@link #call}, but without the scope param.
-	     *
-	     * @param {...Object} args
-	     * @return {Boolean}
-	     */
-	    execute: function(/* args ... */ ){
-	        return this.apply(undefined, arguments)
-	    },
-
-	    collect: function(/* args ... */){
-	        return this.applyWith(undefined, arguments, { allResults: true })
-	    },
-
-	    /**
-	     * Calls apply for each function in the queue.
-	     *
-	     * The signature of this method is the same as that of *Function.apply*
-	     *
-	     * @param {Object} scope the scope in which to call the functions.
-	     *
-	     * NOTE that if the functions already had their scope bound, when were added to the queue,
-	     * that scope is used.
-	     *
-	     * If you want to override the scope, use applyWith(scope, args, { forceScope: true})
-	     *
-	     * @param {Array} [args] the arguments to pass to the functions when they are called
-	     *
-	     * @return {Boolean}
-	     */
-	    apply: function(scope, args){
-	        return this.applyWith(scope, args)
-	    },
-
-	    /**
-	     *
-	     * @param {Object}   scope
-	     *                    The scope in which to call the functions in the queue.
-	     *
-	     * NOTE that if the functions already had their scope bound, when were added to the queue,
-	     * that scope is used.
-	     *
-	     * If you want to force using this scope, use config.forceScope
-	     *
-	     * @param {Array}    [args] an array with the arguments to be used when calling each function in the queue
-	     * @param {Object}   [config]
-	     *
-	     * @param {Booolean} [config.forceScope]  If this is true, the scope in which the functions will be called
-	     * will be scope - the first argument of this function, if it's not null or undefined
-	     *
-	     * @param {Boolean}  [config.quickStop] If this is true, and a function from the queue returns false, all the other following functions will
-	     * not be executed.
-	     *
-	     * @param {Boolean}  [config.allResults] If this is true, return an array of all the results of the functions in the queue,
-	     * instead of just a boolean value
-	     *
-	     * @return {Boolean/Array} If any of the functions in the queue returns the boolean false, the result of this call will be false. Otherwise, true.
-	     * If config.allResults is true, return an array instead, with the results of all the functions in the queue that have been executed.
-	     */
-	    applyWith: function(scope, args, config){
-
-	        this._dirty = false
-
-	        var fns     = this.fns.slice(),
-	            _fns    = this._fns.slice(),
-	            scopes  = this.scopes.slice(),
-	            options = this.options.slice(),
-
-	            allowStrings = this.allowFunctionsAsString,
-	            keepRefs     = this.keepFunctionReferences,
-
-	            forceScope = config && config.forceScope,
-	            quickStop  = config && config.quickStop,
-	            allResults = config && config.allResults,
-
-	            filterFn   = config && config.filter,
-
-	            itFn,
-	            itOption,
-	            itScope,
-	            itResult,
-	            itIsFn,
-	            itModifiedFnResult,
-
-	            i   = 0,
-	            len = fns.length,
-
-	            toRemoveIndexes = [],
-	            result          = true,
-	            results         = allResults? []: null
-
-	        for (; i < len; i++ ) {
-
-	            itIsFn   = true
-	            itFn     = fns    [i]
-	            itScope  = scopes [i]
-	            itOption = options[i]
-
-	            if ((itScope == null || forceScope) && scope != null){
-	                itScope = scope
-	            }
-
-	            if (allowStrings && typeof itFn == 'string') {
-
-	                if ( typeof itScope[itFn] == 'function' ){
-
-	                    itModifiedFnResult = this.getModifiedFunction(itScope[itFn], itOption)
-
-	                    if (keepRefs && !this._dirty){
-	                        _fns[i] = this._fns[i] = fns[i]
-	                        fns [i] = this.fns[i]  = itModifiedFnResult.fn
-	                    }
-
-	                    itFn = itModifiedFnResult.fn
-	                } else {
-	                    itIsFn = false
-	                }
-	            }
-
-	            if (itIsFn && filterFn && !filterFn(itFn, itScope, itOption)){
-	                continue
-	            }
-
-	            if (itOption && (itOption.once === true)){
-	                toRemoveIndexes.push(i)
-	            }
-
-	            if (!itIsFn){
-	                continue
-	            }
-
-	            itResult = itFn.apply(itScope, args)
-
-	            if (allResults){
-	                results.push(itResult)
-	            }
-
-	            if ( itResult === false ){
-	                result = false
-
-	                if ( quickStop || (itOption && itOption.quickStop) ){
-	                    break
-	                }
-	            }
-
-	        }
-
-	        if (toRemoveIndexes.length){
-	            this.removeAt(toRemoveIndexes)
-	        }
-
-	        return allResults?
-	                    results:
-	                    result
-	    },
-
-	    forEach: function(fn, scope){
-
-	        scope = scope || this
-
-	        var fns     = this.fns,
-	            scopes  = this.scopes,
-	            options = this.options,
-
-	            itFn,
-	            itScope,
-	            itOption,
-
-	            i   = 0,
-	            len = fns.length
-
-	        for (; i < len; i++ ) {
-
-	            itFn     = fns    [i]
-	            itScope  = scopes [i]
-	            itOption = options[i]
-
-	            if (fn.call(scope, itFn, itScope, itOption, i) === false){
-	                break
-	            }
-	        }
-	    },
-
-	    /**
-	     * Remove the given function from the queue, optionally taking the scope into account.
-	     *
-	     * @param  {Function} fn The function to remove
-	     * @param  {Object} [scope] The scope in which the function was bound. If you specify the scope, and
-	     * a function is found to be equal to the given fn, but the scope is not the same, it will not be removed.
-	     * Otherwise, it you skip the scope, all functions in the queue that equal the given fn are removed, no matter the scope.
-	     *
-	     * @return {z.fnqueue} this
-	     */
-	    remove: function(fn, scope){
-	        var fns             = this.fns,
-	            _fns            = this._fns,
-	            scopes          = this.scopes,
-	            scopeDefined    = scope != null,
-	            toRemoveIndexes = []
-
-	        fns.forEach(function(itFn, index, allFns){
-	            var _itFn       = _fns[index],
-	                fnsAreEqual = (fn == itFn || fn == _itFn)
-
-	            if ( fnsAreEqual && (!scopeDefined || scopes[index] === scope) ){
-	                toRemoveIndexes.push(index)
-	            }
-
-	        })
-
-	        if (toRemoveIndexes.length){
-	            this.removeAt(toRemoveIndexes)
-	        }
-
-	        return this
-	    },
-
-	    removeAt: function(indexOrArray){
-
-	        this._dirty = true
-
-	        var indexes = Array.isArray(indexOrArray)?
-	                      indexOrArray :
-	                      [ indexOrArray ],
-	            i = 0,
-	            it,
-	            len = indexes.length
-
-	        indexes.sort(sortDescFn)
-
-	        for (; i<len ; i++ ){
-	            it = indexes[i]
-
-	            this._fns
-	                .splice(it, 1)
-
-	            this.fns
-	                .splice(it, 1)
-
-	            this.options
-	                .splice(it, 1)
-
-	            this.scopes
-	                .splice(it, 1)
-	        }
-
-	        this.length = this.fns.length
-
-	        return this
-	    }
-	})
-
-	//<debug>
-	FnQueue.displayName = 'FunctionQueue'
-	FnQueue.constructor.displayName = 'FunctionQueue'
-	//</debug>
-
-	module.exports = FnQueue
-
-
-/***/ },
-/* 53 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var FunctionQueue = __webpack_require__(52)
-
-	var Q = new FunctionQueue({
-	    allowFunctionsAsString: true,
-	    keepFunctionReferences: true
-	})
-
-	module.exports = function(fn, stateName, QUEUE){
-
-	    QUEUE = QUEUE || Q
-
-	    this[stateName] = this[stateName] || {}
-
-	    var prevQueueState = QUEUE.toStateObject()
-
-	    if (fn){
-	        fn.call(this, this[stateName], QUEUE)
-	    }
-
-	    //restore the queue back to its original state
-	    QUEUE.from(prevQueueState)
-
-	    return this
-	}
-
-/***/ },
-/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7711,7 +5756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 55 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7721,31 +5766,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 56 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var number = __webpack_require__(55)
+	var number = __webpack_require__(48)
 
 	module.exports = function(value){
 	    return number(value) && (value === parseInt(value, 10))
 	}
 
 /***/ },
-/* 57 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var number = __webpack_require__(55)
+	var number = __webpack_require__(48)
 
 	module.exports = function(value){
 	    return number(value) && (value === parseFloat(value, 10)) && !(value === parseInt(value, 10))
 	}
 
 /***/ },
-/* 58 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7755,7 +5800,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 59 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7767,7 +5812,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 60 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7779,7 +5824,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 61 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7791,7 +5836,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 62 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7801,7 +5846,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 63 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7813,7 +5858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 64 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7825,7 +5870,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 65 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -7833,646 +5878,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function(value){
 	    return Array.isArray(value)
 	}
-
-/***/ },
-/* 66 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var copyKeys = __webpack_require__(50).copyKeys
-
-	function aliasMethods(config){
-	    //this refers to a class
-	    copyKeys(this.prototype, this.prototype, config)
-	    
-	    return this
-	}
-
-	var extendClass     = __webpack_require__(76)
-	var overrideClass   = __webpack_require__(77)
-	var unregisterClass = __webpack_require__(78)
-
-	var ClassProcessor = __webpack_require__(67)
-
-	module.exports = function(Class){
-
-	    'use strict'
-
-	    Class.extend       = extendClass
-	    Class.override     = overrideClass
-	    Class.aliasMethods = aliasMethods
-
-	    if (typeof Class.destroy == 'function'){
-	        var classDestroy = Class.destroy
-
-	        Class.destroy = function(){
-	            classDestroy.call(this)
-	            unregisterClass.call(this)
-	        }
-	    } else {
-	        Class.destroy = unregisterClass
-	    }
-
-	    ClassProcessor.process(Class)
-
-	    if (Class.init){
-	        Class.init()
-	    }
-	}
-
-/***/ },
-/* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-
-	 This file is part of the ZippyUI Framework
-
-	 Copyright (c) 2014 Radu Brehar <contact@zippyui.com>
-
-	 The source code is distributed under the terms of the MIT license.
-	 See https://github.com/zippyui/ZippyUI/blob/master/LICENCE
-
-	 */
-	module.exports = function(){
-
-	    'use strict'
-
-	    var attached = []
-
-	    var result = {
-
-	        attach: function(fn){
-	            attached.push(fn)
-	        },
-
-	        preprocess: function(classConfig, parent){
-	            attached.forEach(function(processor){
-	                processor.preprocess && processor.preprocess(classConfig, parent)
-	            })
-	        },
-
-	        process: function(Class){
-	            attached.forEach(function(processor){
-	                processor.process(Class)
-	            })
-	            return Class
-	        }
-	    }
-
-	    result.attach(__webpack_require__(51))
-
-	    return result
-	}()
-
-/***/ },
-/* 68 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict'
-
-	    var Class = function(){}
-
-	    return function(parent, child){
-
-	        Class.prototype = parent.prototype
-
-	        //set the prototype
-	        child.prototype = new Class()
-
-	        //restore the constructor
-	        child.prototype.constructor = child
-
-	        //set-up $ownClass and $superClass both on proto and on the returned fn
-	        child.prototype.$ownClass   = child
-	        child.prototype.$superClass = parent
-	        child.$ownClass   = child
-	        child.$superClass = parent
-
-	        return child
-	    }
-	}()
-
-/***/ },
-/* 69 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	module.exports = (function(){
-	    var o = {}
-
-	    try {
-	        Object.defineProperty(o, 'name', {
-	            value: 'x'
-	        })
-
-	        return true
-	    } catch (ex) { }
-
-	    return false
-
-	})()
-
-/***/ },
-/* 70 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	module.exports = (function(){
-	    return 'getOwnPropertyDescriptor' in Object && typeof Object.getOwnPropertyDescriptor == 'function'
-	})()
-
-/***/ },
-/* 71 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var canGetOwnPropertyDescriptor = __webpack_require__(70)
-
-	function copy(source, target){
-	    Object.getOwnPropertyNames(source).forEach(function(name){
-	        var sourceDescriptor = Object.getOwnPropertyDescriptor(source, name)
-
-	        if (!sourceDescriptor.get && !sourceDescriptor.set){
-	            //dont copy non getters/setters, since this is handled by prototype inheritance
-	            return
-	        }
-
-	        Object.defineProperty(target, name, sourceDescriptor)
-	    })
-	}
-
-	module.exports = canGetOwnPropertyDescriptor? copy: function(){}
-
-/***/ },
-/* 72 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var copy = __webpack_require__(50).copy
-	var modifyFn = __webpack_require__(79)
-
-	var canDefineProperty           = __webpack_require__(69)
-	var canGetOwnPropertyDescriptor = __webpack_require__(70)
-
-	var assignClassProperty = function(Class, propName, propDescriptor, config){
-
-	    var target      = config.proto?
-	                        Class.prototype:
-	                        Class
-
-	    var superClass  = Class.$superClass
-	    var superTarget = superClass?
-	                        config.proto?
-	                            superClass.prototype:
-	                            superClass
-	                        :
-	                        undefined
-
-	    var own = config.own
-	    var targetPropDescriptor
-
-	    if (canGetOwnPropertyDescriptor && (propDescriptor.get === undefined || propDescriptor.set == undefined)){
-	        targetPropDescriptor = Object.getOwnPropertyDescriptor(target, propName)
-
-	        if (targetPropDescriptor && propDescriptor.get === undefined && targetPropDescriptor.get !== undefined){
-	            propDescriptor.get = targetPropDescriptor.get
-	        }
-	        if (targetPropDescriptor && propDescriptor.set === undefined && targetPropDescriptor.set !== undefined){
-	            propDescriptor.set = targetPropDescriptor.set
-	        }
-	    }
-
-	    var getterOrSetter = propDescriptor.get || propDescriptor.set
-	    var newPropDescriptor
-	    var propValue
-
-	    if (getterOrSetter){
-	        newPropDescriptor = copy(propDescriptor)
-
-	        if (propDescriptor.get !== undefined){
-	            newPropDescriptor.get = modifyFn(propName, propDescriptor.get, superTarget, superClass, target, { getter: true })
-	        }
-	        if (propDescriptor.set !== undefined){
-	            newPropDescriptor.set = modifyFn(propName, propDescriptor.set, superTarget, superClass, target, { setter: true })
-	        }
-	        propDescriptor = newPropDescriptor
-	    } else {
-	        propValue = propDescriptor.value
-
-	        if (typeof propValue == 'function'){
-
-	            propValue = modifyFn(propName, propValue, superTarget, superClass, target)
-	        }
-	    }
-
-	    if (own){
-	        if (canDefineProperty){
-	            Object.defineProperty(target, propName, {
-	                value      : propValue,
-	                enumerable : false
-	            })
-	        } else {
-	            target[propName] = propValue
-	        }
-	    } else {
-
-	        if (getterOrSetter){
-	            Object.defineProperty(target, propName, propDescriptor)
-	        } else {
-	            target[propName] = propValue
-	        }
-	    }
-
-	    return propValue
-	}
-
-	module.exports = assignClassProperty
-
-/***/ },
-/* 73 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    var SLICE = Array.prototype.slice
-
-	    function bindArgsArray(fn, args){
-	        return function(){
-	            var thisArgs = SLICE.call(args || [])
-
-	            if (arguments.length){
-	                thisArgs.push.apply(thisArgs, arguments)
-	            }
-
-	            return fn.apply(this, thisArgs)
-	        }
-	    }
-
-	    function bindArgs(fn){
-	        return bindArgsArray(fn, SLICE.call(arguments,1))
-	    }
-
-	    function chain(where, fn, secondFn){
-	        var fns = [
-	            where === 'before'? secondFn: fn,
-	            where !== 'before'? secondFn: fn
-	        ]
-
-	        return function(){
-	            if (where === 'before'){
-	                secondFn.apply(this, arguments)
-	            }
-
-	            var result = fn.apply(this, arguments)
-
-	            if (where !== 'before'){
-	                secondFn.apply(this, arguments)
-	            }
-
-	            return result
-	        }
-	    }
-
-	    function before(fn, otherFn){
-	        return chain('before', otherFn, fn)
-	    }
-
-	    function after(fn, otherFn){
-	        return chain('after', otherFn, fn)
-	    }
-
-	    return {
-	        before: before,
-	        after: after,
-	        bindArgs: bindArgs,
-	        bindArgsArray: bindArgsArray
-	    }
-	}()
-
-/***/ },
-/* 74 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getInstantiatorFunction = __webpack_require__(80)
-
-	module.exports = function(fn, args){
-		return getInstantiatorFunction(args.length)(fn, args)
-	}
-
-/***/ },
-/* 75 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getInstantiatorFunction = __webpack_require__(81)
-
-	module.exports = function(fn, args){
-		return getInstantiatorFunction(args.length)(fn, args)
-	}
-
-/***/ },
-/* 76 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	module.exports = function(config){
-
-	    'use strict'
-
-	    var define = __webpack_require__(40)
-
-	    //this refers to a Class
-
-	    config = config || {}
-	    config.extend = config.extend || this.prototype.alias
-
-	    return define(config)
-	}
-
-/***/ },
-/* 77 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(config){
-
-	    'use strict'
-
-	    //this refers to a Class
-	    return __webpack_require__(49).overrideClass(this, config)
-	}
-
-/***/ },
-/* 78 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var REGISTRY = __webpack_require__(43)
-
-	module.exports = function unregisterClass(){
-
-	    'use strict'
-
-	    //this refers to a Class
-
-	    var alias = this.prototype.alias
-	    REGISTRY[alias] = null
-
-	    delete REGISTRY[alias]
-	}
-
-/***/ },
-/* 79 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var callSuperRe     = /\bcallSuper|callSuperWith\b/
-	var callOverridenRe = /\bcallOverriden|callOverridenWith\b/
-
-	var ClassFunctionBuilder = __webpack_require__(82)
-	var buildSuperFn         = ClassFunctionBuilder.buildSuperFn
-	var buildOverridenFn     = ClassFunctionBuilder.buildOverridenFn
-
-	var emptyObject = {}
-
-	function modify(name, fn, superTarget, superClass, target, getterSetterConfig){
-	    var hasCallSuper     = callSuperRe.test    (fn)
-	    var hasCallOverriden = callOverridenRe.test(fn)
-
-	    getterSetterConfig = getterSetterConfig || {}
-
-	    if ( hasCallSuper ){
-	        fn = buildSuperFn(name, fn, superTarget, superClass, getterSetterConfig)
-	    }
-
-	    if ( hasCallOverriden ){
-	        fn = buildOverridenFn(name, fn, target, getterSetterConfig)
-	    }
-
-	    return fn
-	}
-
-	module.exports = modify
-
-/***/ },
-/* 80 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict';
-
-	    var fns = {}
-
-	    return function(len){
-
-	        if ( ! fns [len ] ) {
-
-	            var args = []
-	            var i    = 0
-
-	            for (; i < len; i++ ) {
-	                args.push( 'a[' + i + ']')
-	            }
-
-	            fns[len] = new Function(
-	                            'c',
-	                            'a',
-	                            'return new c(' + args.join(',') + ')'
-	                        )
-	        }
-
-	        return fns[len]
-	    }
-
-	}()
-
-/***/ },
-/* 81 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict';
-
-	    var fns = {}
-
-	    return function(len){
-
-	        if ( ! fns [len ] ) {
-
-	            var args = []
-	            var i    = 0
-
-	            for (; i < len; i++ ) {
-	                args.push( 'a[' + i + ']')
-	            }
-
-	            fns[len] = new Function(
-	                            'c',
-	                            'a',
-	                            'return new c(' + args.join(',') + ')'
-	                        )
-	        }
-
-	        return fns[len]
-	    }
-
-	}()
-
-/***/ },
-/* 82 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(){
-
-	    'use strict'
-
-	    var emptyFn = function(){}
-	    var getDescriptor = Object.getOwnPropertyDescriptor
-
-	    function buildSuperFn(name, fn, superHost, superClass, getterSetterConfig){
-
-	        function execute(args){
-
-	            var accessor = getterSetterConfig.getter?
-	                                'get':
-	                                getterSetterConfig.setter?
-	                                    'set':
-	                                    null
-	            var descriptor = accessor?
-	                                getDescriptor(superHost, name):
-	                                null
-
-	            var fn   = accessor?
-	                            descriptor? descriptor[accessor]: null
-	                            :
-	                            superHost[name]
-
-
-	            var isFn = typeof fn == 'function'
-
-	            if (!isFn && name == 'init'){
-	                //if the superClass is not from the classy registry,
-	                //it means it is a simple function and we accept those as well
-	                if (!superClass.$superClass){
-	                    fn   = superClass
-	                    isFn = true
-	                }
-	            }
-
-	            if (isFn){
-	                return fn.apply(this, args)
-	            }
-	        }
-
-	        return function() {
-	            var tmpSuper     = this.callSuper
-	            var tmpSuperWith = this.callSuperWith
-	            var args         = arguments
-
-	            /*
-	             * Use callSuperWith method in order to pass in different parameter values from those that have been used
-	             * @param argumentsPassed
-	             * @return {Mixed} the result of the super method
-	             */
-	            this.callSuperWith = function(){
-	                return execute.call(this, arguments)
-	            }
-
-	            /*
-	             * Use the callSuper method to call the super method and pass the arguments array
-	             * Example usage:
-	             *      setName: function(name){
-	             *          this.callSuper() //you don't have to explicitly pass 'arguments', since it automagically does so :)
-	             *      }
-	             * @return {Mixed} the result of the super method
-	             */
-	            this.callSuper = function(){
-	                return execute.call(this, args)
-	            }
-
-	            var ret = fn.apply(this, args)
-
-	            this.callSuper     = tmpSuper
-	            this.callSuperWith = tmpSuperWith
-
-	            return ret
-	        }
-	    }
-
-	    function buildOverridenFn(name, currentFn, host, getterSetterConfig){
-
-	        var accessor = getterSetterConfig.getter?
-	                            'get':
-	                            getterSetterConfig.setter?
-	                                'set':
-	                                null
-
-	        var descriptor = accessor?
-	                            getDescriptor(host, name):
-	                            null
-
-	        var overridenFn = accessor?
-	                            descriptor? descriptor[accessor]: null
-	                            :
-	                            host[name]
-
-	        if (typeof overridenFn == 'undefined') {
-	            //this check is needed for the following scenario - if a method is overriden, and it also calls
-	            //to callOverriden, but has no method to override (so is the first in the override chain)
-
-	            //in this case, currentFn calls to callOverriden, and will later be also overriden.
-	            //so on the callStack, when currentFn is called in the context of another function,
-	            //callOverriden will still be bound, and currentFn will call it, while it should be a no-op
-
-	            //so in order to avoid all this scenario
-	            //just make sure we have one more method in the override chain (the base overriden method)
-	            //and that this method is the empty function
-	            overridenFn = emptyFn
-	        }
-
-	        return function() {
-	            var tmpOverriden     = this.callOverriden,
-	                tmpOverridenWith = this.callOverridenWith,
-	                args             = arguments
-
-	            /*
-	             * Use callOverridenWith method in order to pass in different parameter values from those that have been used
-	             * @return {Mixed} the result of the overriden method
-	             */
-	            this.callOverridenWith = function(){
-	                return overridenFn.apply(this, arguments)
-	            }
-
-	            /*
-	             * Use the callOverriden method to call the overriden method and pass the arguments array
-	             * Example usage:
-	             *      setName: function(name){
-	             *          this.callOverriden() //you don't have to explicitly pass 'arguments', since it automagically does so :)
-	             *      }
-	             * @return {Mixed} the result of the overriden method
-	             */
-	            this.callOverriden = function(){
-	                return overridenFn.apply(this, args)
-	            }
-
-	            var ret = currentFn.apply(this, args)
-
-	            this.callOverriden     = tmpOverriden
-	            this.callOverridenWith = tmpOverridenWith
-
-	            return ret
-	        }
-	    }
-
-	    return {
-	        buildSuperFn     : buildSuperFn,
-	        buildOverridenFn : buildOverridenFn
-	    }
-	}()
 
 /***/ }
 /******/ ])
