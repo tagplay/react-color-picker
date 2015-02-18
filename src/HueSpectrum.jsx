@@ -2,13 +2,12 @@
 
 var React  = require('react')
 var Region = require('region')
-var copy   = require('copy-utils').copy
-
+var assign   = require('object-assign')
 var common = require('./utils/common')
 
 var VALIDATE = require('./utils/validate')
 
-module.exports = React.createClass(copy(common, {
+module.exports = React.createClass(assign({
 
     displayName: 'HueSpectrum',
 
@@ -44,13 +43,14 @@ module.exports = React.createClass(copy(common, {
 
     render: function(){
         this.hsv = this.toColorValue(this.state.value || this.props.value || this.props.defaultValue || this.props.defaultColor)
+        // console.log('hue:', this.hsv)
 
         if (this.state.h == 360 && !this.hsv.h){
             //in order to show bottom red as well on drag
             this.hsv.h = 360
         }
 
-        var style = this.props.style || {}
+        var style = assign({}, this.props.style)
 
         if (this.props.height){
             style.height = this.props.height
@@ -107,4 +107,4 @@ module.exports = React.createClass(copy(common, {
     },
 
     toStringValue: require('./utils/toStringValue')
-}))
+}, common))

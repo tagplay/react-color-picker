@@ -1,10 +1,10 @@
 'use strict'
 
-var copy    = require('copy-utils').copy
+var assign = require('object-assign')
 var toColor = require('./color').toColor
 
 module.exports = function toStringValue(color){
-    color = toColor(copy(color))
+    color = toColor(assign({}, color))
 
     return color.toRgb().a == 1?
                 color.toHexString():

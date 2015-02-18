@@ -57,7 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/** @jsx React.DOM */'use strict';
 
 	var React      = __webpack_require__(1)
-	var copy       = __webpack_require__(7).copy
+	var assign = __webpack_require__(7)
 	var colorUtils = __webpack_require__(5)
 
 	var HueSpectrum        = React.createFactory(__webpack_require__(2))
@@ -103,7 +103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    render: function(){
 
-	        var props = this.prepareProps(copy(this.props))
+	        var props = this.prepareProps(assign({}, this.props))
 
 	        var hueStyle = this.props.hueStyle || {}
 
@@ -141,11 +141,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        if (value){
-	            saturationConfig.value = copy(value)
-	            hueConfig.value = copy(value)
+	            saturationConfig.value = assign({}, value)
+	            hueConfig.value = assign({}, value)
 	        } else {
-	            saturationConfig.defaultValue = copy(defaultValue)
-	            hueConfig.defaultValue = copy(defaultValue)
+	            saturationConfig.defaultValue = assign({}, defaultValue)
+	            hueConfig.defaultValue = assign({}, defaultValue)
 	        }
 
 	        return React.DOM.div(
@@ -167,7 +167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.state.dragHue = null
 
-	        color = copy(color)
+	        color = assign({}, color)
 
 	        var value = this.toStringValue(color)
 
@@ -226,14 +226,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	/** @jsx React.DOM */'use strict'
 
 	var React  = __webpack_require__(1)
-	var Region = __webpack_require__(16)
-	var copy   = __webpack_require__(7).copy
-
+	var Region = __webpack_require__(10)
+	var assign   = __webpack_require__(7)
 	var common = __webpack_require__(8)
 
 	var VALIDATE = __webpack_require__(9)
 
-	module.exports = React.createClass(copy(common, {
+	module.exports = React.createClass(assign({
 
 	    displayName: 'HueSpectrum',
 
@@ -269,13 +268,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    render: function(){
 	        this.hsv = this.toColorValue(this.state.value || this.props.value || this.props.defaultValue || this.props.defaultColor)
+	        // console.log('hue:', this.hsv)
 
 	        if (this.state.h == 360 && !this.hsv.h){
 	            //in order to show bottom red as well on drag
 	            this.hsv.h = 360
 	        }
 
-	        var style = this.props.style || {}
+	        var style = assign({}, this.props.style)
 
 	        if (this.props.height){
 	            style.height = this.props.height
@@ -332,7 +332,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    toStringValue: __webpack_require__(6)
-	}))
+	}, common))
 
 /***/ },
 /* 3 */
@@ -340,16 +340,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/** @jsx React.DOM */'use strict'
 
-	var React  = __webpack_require__(1)
-	var Region = __webpack_require__(16)
-	var copy   = __webpack_require__(7).copy
-
-	var fromRatio  = __webpack_require__(5).fromRatio
-	var common = __webpack_require__(8)
+	var React     = __webpack_require__(1)
+	var Region    = __webpack_require__(10)
+	var assign    = __webpack_require__(7)
+	var fromRatio = __webpack_require__(5).fromRatio
+	var common    = __webpack_require__(8)
 
 	var VALIDATE = __webpack_require__(9)
 
-	module.exports = React.createClass(copy(common, {
+	module.exports = React.createClass(assign({
 
 	    displayName: 'SaturationSpectrum',
 
@@ -420,11 +419,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    prepareBackgroundColor: function(color){
 	        var hsv = color
 
-	        return fromRatio({
-	            h: hsv.h,
+	        var col = fromRatio({
+	            h: (hsv.h % 360) / 360,
 	            s: 1,
 	            v: 1
-	        }).toRgbString()
+	        })
+
+	        return col.toRgbString()
 	    },
 
 	    render: function(){
@@ -485,7 +486,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    toStringValue: __webpack_require__(6)
-	}))
+	}, common))
 
 /***/ },
 /* 4 */
@@ -499,7 +500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict'
 
-	var tinycolor = __webpack_require__(17)
+	var tinycolor = __webpack_require__(11)
 
 	if (typeof window != 'undefined'){
 	    window.tinycolor = tinycolor
@@ -554,11 +555,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict'
 
-	var copy    = __webpack_require__(7).copy
+	var assign = __webpack_require__(7)
 	var toColor = __webpack_require__(5).toColor
 
 	module.exports = function toStringValue(color){
-	    color = toColor(copy(color))
+	    color = toColor(assign({}, color))
 
 	    return color.toRgb().a == 1?
 	                color.toHexString():
@@ -569,202 +570,33 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = function(){
+	'use strict';
 
-	    'use strict'
+	function ToObject(val) {
+		if (val == null) {
+			throw new TypeError('Object.assign cannot be called with null or undefined');
+		}
 
-	    var HAS_OWN       = Object.prototype.hasOwnProperty,
-	        STR_OBJECT    = 'object',
-	        STR_UNDEFINED = 'undefined'
+		return Object(val);
+	}
 
-	    return {
+	module.exports = Object.assign || function (target, source) {
+		var from;
+		var keys;
+		var to = ToObject(target);
 
-	        /**
-	         * Copies all properties from source to destination
-	         *
-	         *      copy({name: 'jon',age:5}, this);
-	         *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
-	         *
-	         * @param {Object} source
-	         * @param {Object} destination
-	         *
-	         * @return {Object} destination
-	         */
-	        copy: __webpack_require__(10),
+		for (var s = 1; s < arguments.length; s++) {
+			from = arguments[s];
+			keys = Object.keys(Object(from));
 
-	        /**
-	         * Copies all properties from source to destination, if the property does not exist into the destination
-	         *
-	         *      copyIf({name: 'jon',age:5}, {age:7})
-	         *      // => { name: 'jon', age: 7}
-	         *
-	         * @param {Object} source
-	         * @param {Object} destination
-	         *
-	         * @return {Object} destination
-	         */
-	        copyIf: __webpack_require__(11),
+			for (var i = 0; i < keys.length; i++) {
+				to[keys[i]] = from[keys[i]];
+			}
+		}
 
-	        /**
-	         * Copies all properties from source to a new object, with the given value. This object is returned
-	         *
-	         *      copyAs({name: 'jon',age:5})
-	         *      // => the resulting object will have the 'name' and 'age' properties set to 1
-	         *
-	         * @param {Object} source
-	         * @param {Object/Number/String} [value=1]
-	         *
-	         * @return {Object} destination
-	         */
-	        copyAs: function(source, value){
+		return to;
+	};
 
-	            var destination = {}
-
-	            value = value || 1
-
-	            if (source != null && typeof source === STR_OBJECT ){
-
-	                for (var i in source) if ( HAS_OWN.call(source, i) ) {
-	                    destination[i] = value
-	                }
-
-	            }
-
-	            return destination
-	        },
-
-	        /**
-	         * Copies all properties named in the list, from source to destination
-	         *
-	         *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
-	         *      // => {name: 'jon', age: 5}
-	         *
-	         * @param {Object} source
-	         * @param {Object} destination
-	         * @param {Array} list the array with the names of the properties to copy
-	         *
-	         * @return {Object} destination
-	         */
-	        copyList: __webpack_require__(12),
-
-	        /**
-	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
-	         *
-	         *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
-	         *      // => {name: 'jon', age: 10}
-	         *
-	         * @param {Object} source
-	         * @param {Object} destination
-	         * @param {Array} list the array with the names of the properties to copy
-	         *
-	         * @return {Object} destination
-	         */
-	        copyListIf: __webpack_require__(13),
-
-	        /**
-	         * Copies all properties named in the namedKeys, from source to destination
-	         *
-	         *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
-	         *      // => {name: 'jon', age: 5, theYear: 2006}
-	         *
-	         * @param {Object} source
-	         * @param {Object} destination
-	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
-	         *
-	         * @return {Object} destination
-	         */
-	        copyKeys: __webpack_require__(14),
-
-	        /**
-	         * Copies all properties named in the namedKeys, from source to destination,
-	         * but only if the property does not already exist in the destination object
-	         *
-	         *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
-	         *      // => {aname: 'test', age: 5}
-	         *
-	         * @param {Object} source
-	         * @param {Object} destination
-	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
-	         *
-	         * @return {Object} destination
-	         */
-	        copyKeysIf: __webpack_require__(15),
-
-	        copyExceptKeys: function(source, destination, exceptKeys){
-	            destination = destination || {}
-	            exceptKeys  = exceptKeys  || {}
-
-	            if (source != null && typeof source === STR_OBJECT ){
-
-	                for (var i in source) if ( HAS_OWN.call(source, i) && !HAS_OWN.call(exceptKeys, i) ) {
-
-	                    destination[i] = source[i]
-	                }
-
-	            }
-
-	            return destination
-	        },
-
-	        /**
-	         * Copies the named keys from source to destination.
-	         * For the keys that are functions, copies the functions bound to the source
-	         *
-	         * @param  {Object} source      The source object
-	         * @param  {Object} destination The target object
-	         * @param  {Object} namedKeys   An object with the names of the keys to copy The values from the keys in this object
-	         *                              need to be either numbers or booleans if you want to copy the property under the same name,
-	         *                              or a string if you want to copy the property under a different name
-	         * @return {Object}             Returns the destination object
-	         */
-	        bindCopyKeys: function(source, destination, namedKeys){
-	            if (arguments.length == 2){
-	                namedKeys = destination
-	                destination = null
-	            }
-
-	            destination = destination || {}
-
-	            if (
-	                       source != null && typeof source    === STR_OBJECT &&
-	                    namedKeys != null && typeof namedKeys === STR_OBJECT
-	                ) {
-
-
-	                var typeOfNamedProperty,
-	                    namedPropertyValue,
-
-	                    typeOfSourceProperty,
-	                    propValue
-
-
-	                for(var propName in namedKeys) if (HAS_OWN.call(namedKeys, propName)) {
-
-	                    namedPropertyValue = namedKeys[propName]
-	                    typeOfNamedProperty = typeof namedPropertyValue
-
-	                    propValue = source[propName]
-	                    typeOfSourceProperty = typeof propValue
-
-
-	                    if ( typeOfSourceProperty !== STR_UNDEFINED ) {
-
-	                        destination[
-	                            typeOfNamedProperty == 'string'?
-	                                            namedPropertyValue :
-	                                            propName
-	                            ] = typeOfSourceProperty == 'function' ?
-	                                            propValue.bind(source):
-	                                            propValue
-	                    }
-	                }
-	            }
-
-	            return destination
-	        }
-	    }
-
-	}()
 
 /***/ },
 /* 8 */
@@ -772,9 +604,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var Region = __webpack_require__(16)
-	var copy   = __webpack_require__(7).copy
-	var DragHelper = __webpack_require__(18)
+	var Region = __webpack_require__(10)
+	var assign = __webpack_require__(7)
+	var DragHelper = __webpack_require__(12)
 	var toHsv = __webpack_require__(5).toHsv
 
 	function emptyFn(){}
@@ -890,7 +722,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var args = [first]
 
 	        if (!this.props.inPicker){
-	            args.push(copy(this.hsv))
+	            args.push(assign({}, this.hsv))
 	        }
 
 	        return args
@@ -944,295 +776,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-	var STR_OBJECT    = 'object'
-
-	/**
-	 * Copies all properties from source to destination
-	 *
-	 *      copy({name: 'jon',age:5}, this);
-	 *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination){
-
-	    destination = destination || {}
-
-	    if (source != null && typeof source === STR_OBJECT ){
-
-	        for (var i in source) if ( HAS_OWN.call(source, i) ) {
-	            destination[i] = source[i]
-	        }
-
-	    }
-
-	    return destination
-	}
+	module.exports = __webpack_require__(13)
 
 /***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-	var STR_OBJECT    = 'object'
-	var STR_UNDEFINED = 'undefined'
-
-	/**
-	 * Copies all properties from source to destination, if the property does not exist into the destination
-	 *
-	 *      copyIf({name: 'jon',age:5}, {age:7})
-	 *      // => { name: 'jon', age: 7}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination){
-	    destination = destination || {}
-
-	    if (source != null && typeof source === STR_OBJECT){
-
-	        for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
-
-	            destination[i] = source[i]
-
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-
-	/**
-	 * Copies all properties named in the list, from source to destination
-	 *
-	 *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
-	 *      // => {name: 'jon', age: 5}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Array} list the array with the names of the properties to copy
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, list){
-	    if (arguments.length < 3){
-	        list = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-	    list        = list || Object.keys(source)
-
-	    var i   = 0
-	    var len = list.length
-	    var propName
-
-	    for ( ; i < len; i++ ){
-	        propName = list[i]
-
-	        if ( typeof source[propName] !== STR_UNDEFINED ) {
-	            destination[list[i]] = source[list[i]]
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-
-	/**
-	 * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
-	 *
-	 *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
-	 *      // => {name: 'jon', age: 10}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Array} list the array with the names of the properties to copy
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, list){
-	    if (arguments.length < 3){
-	        list = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-	    list        = list || Object.keys(source)
-
-	    var i   = 0
-	    var len = list.length
-	    var propName
-
-	    for ( ; i < len ; i++ ){
-	        propName = list[i]
-	        if (
-	                (typeof source[propName]      !== STR_UNDEFINED) &&
-	                (typeof destination[propName] === STR_UNDEFINED)
-	            ){
-	            destination[propName] = source[propName]
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-	var STR_OBJECT    = 'object'
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-
-	var copyList = __webpack_require__(12)
-
-	/**
-	 * Copies all properties named in the namedKeys, from source to destination
-	 *
-	 *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
-	 *      // => {name: 'jon', age: 5, theYear: 2006}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, namedKeys){
-	    if (arguments.length < 3 ){
-	        namedKeys = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-
-	    if (!namedKeys || Array.isArray(namedKeys)){
-	        return copyList(source, destination, namedKeys)
-	    }
-
-	    if (
-	           source != null && typeof source    === STR_OBJECT &&
-	        namedKeys != null && typeof namedKeys === STR_OBJECT
-	    ) {
-	        var typeOfNamedProperty
-	        var namedPropertyValue
-
-	        for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
-	            namedPropertyValue  = namedKeys[propName]
-	            typeOfNamedProperty = typeof namedPropertyValue
-
-	            if (typeof source[propName] !== STR_UNDEFINED){
-	                destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
-	            }
-	        }
-	    }
-
-	    return destination
-	}
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var STR_UNDEFINED = 'undefined'
-	var STR_OBJECT    = 'object'
-	var HAS_OWN       = Object.prototype.hasOwnProperty
-
-	var copyListIf = __webpack_require__(13)
-
-	/**
-	 * Copies all properties named in the namedKeys, from source to destination,
-	 * but only if the property does not already exist in the destination object
-	 *
-	 *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
-	 *      // => {aname: 'test', age: 5}
-	 *
-	 * @param {Object} source
-	 * @param {Object} destination
-	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
-	 *
-	 * @return {Object} destination
-	 */
-	module.exports = function(source, destination, namedKeys){
-	    if (arguments.length < 3 ){
-	        namedKeys = destination
-	        destination = null
-	    }
-
-	    destination = destination || {}
-
-	    if (!namedKeys || Array.isArray(namedKeys)){
-	        return copyListIf(source, destination, namedKeys)
-	    }
-
-	    if (
-	               source != null && typeof source    === STR_OBJECT &&
-	            namedKeys != null && typeof namedKeys === STR_OBJECT
-	        ) {
-
-	            var typeOfNamedProperty
-	            var namedPropertyValue
-	            var newPropertyName
-
-	            for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
-
-	                namedPropertyValue  = namedKeys[propName]
-	                typeOfNamedProperty = typeof namedPropertyValue
-	                newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
-
-	                if (
-	                        typeof      source[propName]        !== STR_UNDEFINED &&
-	                        typeof destination[newPropertyName] === STR_UNDEFINED
-	                    ) {
-	                    destination[newPropertyName] = source[propName]
-	                }
-
-	            }
-	        }
-
-	    return destination
-	}
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(19)
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;// TinyColor v1.0.0
+	var __WEBPACK_AMD_DEFINE_RESULT__;// TinyColor v1.1.1
 	// https://github.com/bgrins/TinyColor
 	// Brian Grinstead, MIT License
 
@@ -1262,6 +812,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    var rgb = inputToRGB(color);
+	    this._originalInput = color,
 	    this._r = rgb.r,
 	    this._g = rgb.g,
 	    this._b = rgb.b,
@@ -1291,6 +842,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    isValid: function() {
 	        return this._ok;
+	    },
+	    getOriginalInput: function() {
+	      return this._originalInput;
 	    },
 	    getFormat: function() {
 	        return this._format;
@@ -2108,6 +1662,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    plum: "dda0dd",
 	    powderblue: "b0e0e6",
 	    purple: "800080",
+	    rebeccapurple: "663399",
 	    red: "f00",
 	    rosybrown: "bc8f8f",
 	    royalblue: "4169e1",
@@ -2255,6 +1810,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        hsl: new RegExp("hsl" + PERMISSIVE_MATCH3),
 	        hsla: new RegExp("hsla" + PERMISSIVE_MATCH4),
 	        hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
+	        hsva: new RegExp("hsva" + PERMISSIVE_MATCH4),
 	        hex3: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
 	        hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
 	        hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
@@ -2295,6 +1851,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    if ((match = matchers.hsv.exec(color))) {
 	        return { h: match[1], s: match[2], v: match[3] };
+	    }
+	    if ((match = matchers.hsva.exec(color))) {
+	        return { h: match[1], s: match[2], v: match[3], a: match[4] };
 	    }
 	    if ((match = matchers.hex8.exec(color))) {
 	        return {
@@ -2342,22 +1901,45 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	var F      = __webpack_require__(23)
-	var copy   = __webpack_require__(7).copy
-	var Region = __webpack_require__(24)
+	var assign = __webpack_require__(7)
+	var Region = __webpack_require__(18)
+	var hasTouch = __webpack_require__(19)
+	var once   = __webpack_require__(14)
 
 	var Helper = function(config){
 	    this.config = config
 	}
 
+	var EVENTS = {
+	    move: hasTouch? 'touchmove': 'mousemove',
+	    up  : hasTouch? 'touchend': 'mouseup'
+	}
+
 	function emptyFn(){}
 
-	copy({
+	function getPageCoords(event){
+	    var firstTouch
+
+	    var pageX = event.pageX
+	    var pageY = event.pageY
+
+	    if (hasTouch && event.touches && (firstTouch = event.touches[0])){
+	        pageX = firstTouch.pageX
+	        pageY = firstTouch.pageY
+	    }
+
+	    return {
+	        pageX: pageX,
+	        pageY: pageY
+	    }
+	}
+
+	assign(Helper.prototype, {
 
 	    /**
 	     * Should be called on a mousedown event
@@ -2369,7 +1951,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.onDragInit(event)
 
-	        var onDragStart = F.once(this.onDragStart, this)
+	        var onDragStart = once(this.onDragStart, this)
+	        var target = hasTouch?
+	                        event.target:
+	                        window
 
 	        var mouseMoveListener = (function(event){
 	            onDragStart(event)
@@ -2380,12 +1965,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            this.onDrop(event)
 
-	            window.removeEventListener('mousemove', mouseMoveListener)
-	            window.removeEventListener('mouseup', mouseUpListener)
+	            target.removeEventListener(EVENTS.move, mouseMoveListener)
+	            target.removeEventListener(EVENTS.up, mouseUpListener)
 	        }).bind(this)
 
-	        window.addEventListener('mousemove', mouseMoveListener, false)
-	        window.addEventListener('mouseup', mouseUpListener)
+	        target.addEventListener(EVENTS.move, mouseMoveListener, false)
+	        target.addEventListener(EVENTS.up, mouseUpListener)
 	    },
 
 	    onDragInit: function(event){
@@ -2398,11 +1983,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        this.state = {
 	            config: config
-	        }
-
-	        var initPageCoords = this.state.initPageCoords = {
-	            pageX: event.pageX,
-	            pageY: event.pageY
 	        }
 
 	        if (this.config.region){
@@ -2423,6 +2003,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param  {Event} event
 	     */
 	    onDragStart: function(event){
+	        this.state.initPageCoords = getPageCoords(event)
+
 	        this.state.didDrag = this.state.config.didDrag = true
 	        this.callConfig('onDragStart', event)
 	    },
@@ -2435,13 +2017,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    onDrag: function(event){
 
 	        var config = this.state.config
-	        var args   = [event, config]
 
 	        var initPageCoords = this.state.initPageCoords
+	        var eventCoords = getPageCoords(event)
 
 	        var diff = config.diff = {
-	            left: event.pageX - initPageCoords.pageX,
-	            top : event.pageY - initPageCoords.pageY
+	            left: eventCoords.pageX - initPageCoords.pageX,
+	            top : eventCoords.pageY - initPageCoords.pageY
 	        }
 
 	        if (this.state.initialRegion){
@@ -2489,7 +2071,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	}, Helper.prototype)
+	})
 
 	module.exports = function(event, config){
 
@@ -2517,24 +2099,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    helper.initDrag(event)
 
 	    return helper
-
 	}
 
 /***/ },
-/* 19 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var hasOwn    = __webpack_require__(25)
-	var newify    = __webpack_require__(26)
-	var copyUtils = __webpack_require__(7)
+	var hasOwn    = __webpack_require__(20)
+	var newify    = __webpack_require__(21)
+	var copyUtils = __webpack_require__(23)
 	var copyList  = copyUtils.copyList
 	var copy      = copyUtils.copy
-	var isObject  = __webpack_require__(27).object
-	var EventEmitter = __webpack_require__(28).EventEmitter
-	var inherits = __webpack_require__(20)
-	var VALIDATE = __webpack_require__(21)
+	var isObject  = __webpack_require__(22).object
+	var EventEmitter = __webpack_require__(24).EventEmitter
+	var inherits = __webpack_require__(15)
+	var VALIDATE = __webpack_require__(16)
 
 	/**
 	 * @class Region
@@ -3555,12 +3136,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	})
 
-	__webpack_require__(22)(REGION)
+	__webpack_require__(17)(REGION)
 
 	module.exports = REGION
 
 /***/ },
-/* 20 */
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use once'
+
+	module.exports = function once(fn, scope){
+
+	    var called
+	    var result
+
+	    return function(){
+	        if (called){
+	            return result
+	        }
+
+	        called = true
+
+	        return result = fn.apply(scope || this, arguments)
+	    }
+	}
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3578,7 +3181,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 21 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3610,13 +3213,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 22 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var hasOwn   = __webpack_require__(25)
-	var VALIDATE = __webpack_require__(21)
+	var hasOwn   = __webpack_require__(20)
+	var VALIDATE = __webpack_require__(16)
 
 	module.exports = function(REGION){
 
@@ -3829,665 +3432,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	    var setImmediate = function(fn){
-	        setTimeout(fn, 0)
-	    }
-	    var clearImmediate = clearTimeout
-	    /**
-	     * Utility methods for working with functions.
-	     * These methods augment the Function prototype.
-	     *
-	     * Using {@link #before}
-	     *
-	     *      function log(m){
-	     *          console.log(m)
-	     *      }
-	     *
-	     *      var doLog = function (m){
-	     *          console.log('LOG ')
-	     *      }.before(log)
-	     *
-	     *      doLog('test')
-	     *      //will log
-	     *      //"LOG "
-	     *      //and then
-	     *      //"test"
-	     *
-	     *
-	     *
-	     * Using {@link #bindArgs}:
-	     *
-	     *      //returns the sum of all arguments
-	     *      function add(){
-	     *          var sum = 0
-	     *          [].from(arguments).forEach(function(n){
-	     *              sum += n
-	     *          })
-	     *
-	     *          return sum
-	     *      }
-	     *
-	     *      var add1 = add.bindArgs(1)
-	     *
-	     *      add1(2, 3) == 6
-	     *
-	     * Using {@link #lockArgs}:
-	     *
-	     *      function add(){
-	     *          var sum = 0
-	     *          [].from(arguments).forEach(function(n){
-	     *              sum += n
-	     *          })
-	     *
-	     *          return sum
-	     *      }
-	     *
-	     *      var add1_2   = add.lockArgs(1,2)
-	     *      var add1_2_3 = add.lockArgs(1,2,3)
-	     *
-	     *      add1_2(3,4)  == 3 //args are locked to only be 1 and 2
-	     *      add1_2_3(6)  == 6 //args are locked to only be 1, 2 and 3
-	     *
-	     *
-	     *
-	     * Using {@link #compose}:
-	     *
-	     *      function multiply(a,b){
-	     *          return a* b
-	     *      }
-	     *
-	     *      var multiply2 = multiply.curry()(2)
-	     *
-	     *      Function.compose(multiply2( add(5,6) )) == multiply2( add(5,6) )
-	     *
-	     *
-	     * @class Function
-	     */
-
-	    var SLICE = Array.prototype.slice
-
-	    var curry = __webpack_require__(32),
-
-	        findFn = function(fn, target, onFound){
-	            // if (typeof target.find == 'function'){
-	            //     return target.find(fn)
-	            // }
-
-	            onFound = typeof onFound == 'function'?
-	                        onFound:
-	                        function(found, key, target){
-	                            return found
-	                        }
-
-	            if (Array.isArray(target)){
-	                var i   = 0
-	                var len = target.length
-	                var it
-
-	                for(; i < len; i++){
-	                    it = target[i]
-	                    if (fn(it, i, target)){
-	                        return onFound(it, i, target)
-	                    }
-	                }
-
-	                return
-	            }
-
-	            if (typeof target == 'object'){
-	                var keys = Object.keys(target)
-	                var i = 0
-	                var len = keys.length
-	                var k
-	                var it
-
-	                for( ; i < len; i++){
-	                    k  = keys[i]
-	                    it = target[k]
-
-	                    if (fn(it, k, target)){
-	                        return onFound(it, k, target)
-	                    }
-	                }
-	            }
-	        },
-
-	        find = curry(findFn, 2),
-
-	        findIndex = curry(function(fn, target){
-	            return findFn(fn, target, function(it, i){
-	                return i
-	            })
-	        }),
-
-	        bindFunctionsOf = function(obj) {
-	            Object.keys(obj).forEach(function(k){
-	                if (typeof obj[k] == 'function'){
-	                    obj[k] = obj[k].bind(obj)
-	                }
-	            })
-
-	            return obj
-	        },
-
-	        /*
-	         * @param {Function...} an enumeration of functions, each consuming the result of the following function.
-	         *
-	         * For example: compose(c, b, a)(1,4) == c(b(a(1,4)))
-	         *
-	         * @return the result of the first function in the enumeration
-	         */
-	        compose = __webpack_require__(33),
-
-	        chain = __webpack_require__(34),
-
-	        once = __webpack_require__(35),
-
-	        bindArgsArray = __webpack_require__(36),
-
-	        bindArgs = __webpack_require__(37),
-
-	        lockArgsArray = __webpack_require__(38),
-
-	        lockArgs = __webpack_require__(39),
-
-	        skipArgs = function(fn, count){
-	            return function(){
-	                var args = SLICE.call(arguments, count || 0)
-
-	                return fn.apply(this, args)
-	            }
-	        },
-
-	        intercept = function(interceptedFn, interceptingFn, withStopArg){
-
-	            return function(){
-	                var args    = [].from(arguments),
-	                    stopArg = { stop: false }
-
-	                if (withStopArg){
-	                    args.push(stopArg)
-	                }
-
-	                var result = interceptingFn.apply(this, args)
-
-	                if (withStopArg){
-	                    if (stopArg.stop === true){
-	                        return result
-	                    }
-
-	                } else {
-	                    if (result === false){
-	                        return result
-	                    }
-	                }
-
-	                //the interception was not stopped
-	                return interceptedFn.apply(this, arguments)
-	            }
-
-	        },
-
-	        delay = function(fn, delay, scope){
-
-	            var delayIsNumber = delay * 1 == delay
-
-	            if (arguments.length == 2 && !delayIsNumber){
-	                scope = delay
-	                delay = 0
-	            } else {
-	                if (!delayIsNumber){
-	                    delay = 0
-	                }
-	            }
-
-	            return function(){
-	                var self = scope || this,
-	                    args = arguments
-
-	                if (delay < 0){
-	                    fn.apply(self, args)
-	                    return
-	                }
-
-	                if (delay || !setImmediate){
-	                    setTimeout(function(){
-	                        fn.apply(self, args)
-	                    }, delay)
-
-	                } else {
-	                    setImmediate(function(){
-	                        fn.apply(self, args)
-	                    })
-	                }
-	            }
-	        },
-
-	        defer = function(fn, scope){
-	            return delay(fn, 0, scope)
-	        },
-
-	        buffer = function(fn, delay, scope){
-
-	            var timeoutId = -1
-
-	            return function(){
-
-	                var self = scope || this,
-	                    args = arguments
-
-	                if (delay < 0){
-	                    fn.apply(self, args)
-	                    return
-	                }
-
-	                var withTimeout = delay || !setImmediate,
-	                    clearFn = withTimeout?
-	                                clearTimeout:
-	                                clearImmediate,
-	                    setFn   = withTimeout?
-	                                setTimeout:
-	                                setImmediate
-
-	                if (timeoutId !== -1){
-	                    clearFn(timeoutId)
-	                }
-
-	                timeoutId = setFn(function(){
-	                    fn.apply(self, args)
-	                    self = null
-	                }, delay)
-
-	            }
-
-	        },
-
-	        throttle = function(fn, delay, scope) {
-	            var timeoutId = -1,
-	                self,
-	                args
-
-	            return function () {
-
-	                self = scope || this
-	                args = arguments
-
-	                if (timeoutId !== -1) {
-	                    //the function was called once again in the delay interval
-	                } else {
-	                    timeoutId = setTimeout(function () {
-	                        fn.apply(self, args)
-
-	                        self = null
-	                        timeoutId = -1
-	                    }, delay)
-	                }
-
-	            }
-
-	        },
-
-	        spread = function(fn, delay, scope){
-
-	            var timeoutId       = -1
-	            var callCount       = 0
-	            var executeCount    = 0
-	            var nextArgs        = {}
-	            var increaseCounter = true
-	            var resultingFnUnbound
-	            var resultingFn
-
-	            resultingFn = resultingFnUnbound = function(){
-
-	                var args = arguments,
-	                    self = scope || this
-
-	                if (increaseCounter){
-	                    nextArgs[callCount++] = {args: args, scope: self}
-	                }
-
-	                if (timeoutId !== -1){
-	                    //the function was called once again in the delay interval
-	                } else {
-	                    timeoutId = setTimeout(function(){
-	                        fn.apply(self, args)
-
-	                        timeoutId = -1
-	                        executeCount++
-
-	                        if (callCount !== executeCount){
-	                            resultingFn = bindArgsArray(resultingFnUnbound, nextArgs[executeCount].args).bind(nextArgs[executeCount].scope)
-	                            delete nextArgs[executeCount]
-
-	                            increaseCounter = false
-	                            resultingFn.apply(self)
-	                            increaseCounter = true
-	                        } else {
-	                            nextArgs = {}
-	                        }
-	                    }, delay)
-	                }
-
-	            }
-
-	            return resultingFn
-	        },
-
-	        /*
-	         * @param {Array} args the array for which to create a cache key
-	         * @param {Number} [cacheParamNumber] the number of args to use for the cache key. Use this to limit the args that area actually used for the cache key
-	         */
-	        getCacheKey = function(args, cacheParamNumber){
-	            if (cacheParamNumber == null){
-	                cacheParamNumber = -1
-	            }
-
-	            var i        = 0,
-	                len      = Math.min(args.length, cacheParamNumber),
-	                cacheKey = [],
-	                it
-
-	            for ( ; i < len; i++){
-	                it = args[i]
-
-	                if (root.check.isPlainObject(it) || Array.isArray(it)){
-	                    cacheKey.push(JSON.stringify(it))
-	                } else {
-	                    cacheKey.push(String(it))
-	                }
-	            }
-
-	            return cacheKey.join(', ')
-	        },
-
-	        /*
-	         * @param {Function} fn - the function to cache results for
-	         * @param {Number} skipCacheParamNumber - the index of the boolean parameter that makes this function skip the caching and
-	         * actually return computed results.
-	         * @param {Function|String} cacheBucketMethod - a function or the name of a method on this object which makes caching distributed across multiple buckets.
-	         * If given, cached results will be searched into the cache corresponding to this bucket. If no result found, return computed result.
-	         *
-	         * For example this param is very useful when a function from a prototype is cached,
-	         * but we want to return the same cached results only for one object that inherits that proto, not for all objects. Thus, for example for Wes.Element,
-	         * we use the 'getId' cacheBucketMethod to indicate cached results for one object only.
-	         * @param {Function} [cacheKeyBuilder] A function to be used to compose the cache key
-	         *
-	         * @return {Function} a new function, which returns results from cache, if they are available, otherwise uses the given fn to compute the results.
-	         * This returned function has a 'clearCache' function attached, which clears the caching. If a parameter ( a bucket id) is  provided,
-	         * only clears the cache in the specified cache bucket.
-	         */
-	        cache = function(fn, config){
-	            config = config || {}
-
-	            var bucketCache = {},
-	                cache       = {},
-	                skipCacheParamNumber = config.skipCacheIndex,
-	                cacheBucketMethod    = config.cacheBucket,
-	                cacheKeyBuilder      = config.cacheKey,
-	                cacheArgsLength      = skipCacheParamNumber == null?
-	                                            fn.length:
-	                                            skipCacheParamNumber,
-	                cachingFn
-
-	            cachingFn = function(){
-	                var result,
-	                    skipCache = skipCacheParamNumber != null?
-	                                                arguments[skipCacheParamNumber] === true:
-	                                                false,
-	                    args = skipCache?
-	                                    SLICE.call(arguments, 0, cacheArgsLength):
-	                                    SLICE.call(arguments),
-
-	                    cacheBucketId = cacheBucketMethod != null?
-	                                        typeof cacheBucketMethod == 'function'?
-	                                            cacheBucketMethod():
-	                                            typeof this[cacheBucketMethod] == 'function'?
-	                                                this[cacheBucketMethod]():
-	                                                null
-	                                        :
-	                                        null,
-
-
-	                    cacheObject = cacheBucketId?
-	                                        bucketCache[cacheBucketId]:
-	                                        cache,
-
-	                    cacheKey = (cacheKeyBuilder || getCacheKey)(args, cacheArgsLength)
-
-	                if (cacheBucketId && !cacheObject){
-	                    cacheObject = bucketCache[cacheBucketId] = {}
-	                }
-
-	                if (skipCache || cacheObject[cacheKey] == null){
-	                    cacheObject[cacheKey] = result = fn.apply(this, args)
-	                } else {
-	                    result = cacheObject[cacheKey]
-	                }
-
-	                return result
-	            }
-
-	            /*
-	             * @param {String|Object|Number} [bucketId] the bucket for which to clear the cache. If none given, clears all the cache for this function.
-	             */
-	            cachingFn.clearCache = function(bucketId){
-	                if (bucketId){
-	                    delete bucketCache[String(bucketId)]
-	                } else {
-	                    cache = {}
-	                    bucketCache = {}
-	                }
-	            }
-
-	            /*
-	             *
-	             * @param {Array} cacheArgs The array of objects from which to create the cache key
-	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
-	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
-	             */
-	            cachingFn.getCache = function(cacheArgs, cacheParamNumber, cacheKeyBuilder){
-	                return cachingFn.getBucketCache(null, cacheArgs, cacheParamNumber, cacheKeyBuilder)
-	            }
-
-	            /*
-	             *
-	             * @param {String} bucketId The id of the cache bucket from which to retrieve the cached value
-	             * @param {Array} cacheArgs The array of objects from which to create the cache key
-	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
-	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
-	             */
-	            cachingFn.getBucketCache = function(bucketId, cacheArgs, cacheParamNumber, cacheKeyBuilder){
-	                var cacheObject = cache,
-	                    cacheKey = (cacheKeyBuilder || getCacheKey)(cacheArgs, cacheParamNumber)
-
-	                if (bucketId){
-	                    bucketId = String(bucketId);
-
-	                    cacheObject = bucketCache[bucketId] = bucketCache[bucketId] || {}
-	                }
-
-	                return cacheObject[cacheKey]
-	            }
-
-	            /*
-	             *
-	             * @param {Object} value The value to set in the cache
-	             * @param {Array} cacheArgs The array of objects from which to create the cache key
-	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
-	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
-	             */
-	            cachingFn.setCache = function(value, cacheArgs, cacheParamNumber, cacheKeyBuilder){
-	                return cachingFn.setBucketCache(null, value, cacheArgs, cacheParamNumber, cacheKeyBuilder)
-	            }
-
-	            /*
-	             *
-	             * @param {String} bucketId The id of the cache bucket for which to set the cache value
-	             * @param {Object} value The value to set in the cache
-	             * @param {Array} cacheArgs The array of objects from which to create the cache key
-	             * @param {Number} [cacheParamNumber] A limit for the cache args that are actually used to compute the cache key.
-	             * @param {Function} [cacheKeyBuilder] The function to be used to compute the cache key from the given cacheArgs and cacheParamNumber
-	             */
-	            cachingFn.setBucketCache = function(bucketId, value, cacheArgs, cacheParamNumber, cacheKeyBuilder){
-
-	                var cacheObject = cache,
-	                    cacheKey = (cacheKeyBuilder || getCacheKey)(cacheArgs, cacheParamNumber)
-
-	                if (bucketId){
-	                    bucketId = String(bucketId)
-
-	                    cacheObject = bucketCache[bucketId] = bucketCache[bucketId] || {};
-	                }
-
-	                return cacheObject[cacheKey] = value
-	            }
-
-	            return cachingFn
-	        }
-
-	module.exports = {
-
-	    map: __webpack_require__(40),
-
-	    dot: __webpack_require__(41),
-
-	    maxArgs: __webpack_require__(42),
-
-	    /**
-	     * @method compose
-	     *
-	     * Example:
-	     *
-	     *      zippy.Function.compose(c, b, a)
-	     *
-	     * See {@link Function#compose}
-	     */
-	    compose: compose,
-
-	    /**
-	     * See {@link Function#self}
-	     */
-	    self: function(fn){
-	        return fn
-	    },
-
-	    /**
-	     * See {@link Function#buffer}
-	     */
-	    buffer: buffer,
-
-	    /**
-	     * See {@link Function#delay}
-	     */
-	    delay: delay,
-
-	    /**
-	     * See {@link Function#defer}
-	     * @param {Function} fn
-	     * @param {Object} scope
-	     */
-	    defer:defer,
-
-	    /**
-	     * See {@link Function#skipArgs}
-	     * @param {Function} fn
-	     * @param {Number} [count=0] how many args to skip when calling the resulting function
-	     * @return {Function} The function that will call the original fn without the first count args.
-	     */
-	    skipArgs: skipArgs,
-
-	    /**
-	     * See {@link Function#intercept}
-	     */
-	    intercept: function(fn, interceptedFn, withStopArgs){
-	        return intercept(interceptedFn, fn, withStopArgs)
-	    },
-
-	    /**
-	     * See {@link Function#throttle}
-	     */
-	    throttle: throttle,
-
-	    /**
-	     * See {@link Function#spread}
-	     */
-	    spread: spread,
-
-	    /**
-	     * See {@link Function#chain}
-	     */
-	    chain: function(fn, where, mainFn){
-	        return chain(where, mainFn, fn)
-	    },
-
-	    /**
-	     * See {@link Function#before}
-	     */
-	    before: function(fn, otherFn){
-	        return chain('before', otherFn, fn)
-	    },
-
-	    /**
-	     * See {@link Function#after}
-	     */
-	    after: function(fn, otherFn){
-	        return chain('after', otherFn, fn)
-	    },
-
-	    /**
-	     * See {@link Function#curry}
-	     */
-	    curry: curry,
-
-	    /**
-	     * See {@link Function#once}
-	     */
-	    once: once,
-
-	    /**
-	     * See {@link Function#bindArgs}
-	     */
-	    bindArgs: bindArgs,
-
-	    /**
-	     * See {@link Function#bindArgsArray}
-	     */
-	    bindArgsArray: bindArgsArray,
-
-	    /**
-	     * See {@link Function#lockArgs}
-	     */
-	    lockArgs: lockArgs,
-
-	    /**
-	     * See {@link Function#lockArgsArray}
-	     */
-	    lockArgsArray: lockArgsArray,
-
-	    bindFunctionsOf: bindFunctionsOf,
-
-	    find: find,
-
-	    findIndex: findIndex,
-
-	    newify: __webpack_require__(43)
-	}
-
-/***/ },
-/* 24 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Region = __webpack_require__(16)
+	var Region = __webpack_require__(36)
 
-	__webpack_require__(29)
-	__webpack_require__(30)
+	__webpack_require__(25)
+	__webpack_require__(26)
 
-	var COMPUTE_ALIGN_REGION = __webpack_require__(31)
+	var COMPUTE_ALIGN_REGION = __webpack_require__(27)
 
 	/**
 	 * region-align module exposes methods for aligning {@link Element} and {@link Region} instances
@@ -4663,7 +3618,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Region
 
 /***/ },
-/* 25 */
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch)
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -4706,23 +3668,224 @@ return /******/ (function(modules) { // webpackBootstrap
 	})
 
 /***/ },
-/* 26 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getInstantiatorFunction = __webpack_require__(44)
+	var getInstantiatorFunction = __webpack_require__(28)
 
 	module.exports = function(fn, args){
 		return getInstantiatorFunction(args.length)(fn, args)
 	}
 
 /***/ },
-/* 27 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(45)
+	module.exports = __webpack_require__(35)
 
 /***/ },
-/* 28 */
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(){
+
+	    'use strict'
+
+	    var HAS_OWN       = Object.prototype.hasOwnProperty,
+	        STR_OBJECT    = 'object',
+	        STR_UNDEFINED = 'undefined'
+
+	    return {
+
+	        /**
+	         * Copies all properties from source to destination
+	         *
+	         *      copy({name: 'jon',age:5}, this);
+	         *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copy: __webpack_require__(29),
+
+	        /**
+	         * Copies all properties from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyIf({name: 'jon',age:5}, {age:7})
+	         *      // => { name: 'jon', age: 7}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         *
+	         * @return {Object} destination
+	         */
+	        copyIf: __webpack_require__(30),
+
+	        /**
+	         * Copies all properties from source to a new object, with the given value. This object is returned
+	         *
+	         *      copyAs({name: 'jon',age:5})
+	         *      // => the resulting object will have the 'name' and 'age' properties set to 1
+	         *
+	         * @param {Object} source
+	         * @param {Object/Number/String} [value=1]
+	         *
+	         * @return {Object} destination
+	         */
+	        copyAs: function(source, value){
+
+	            var destination = {}
+
+	            value = value || 1
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	                    destination[i] = value
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies all properties named in the list, from source to destination
+	         *
+	         *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	         *      // => {name: 'jon', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyList: __webpack_require__(31),
+
+	        /**
+	         * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	         *
+	         *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	         *      // => {name: 'jon', age: 10}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Array} list the array with the names of the properties to copy
+	         *
+	         * @return {Object} destination
+	         */
+	        copyListIf: __webpack_require__(32),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination
+	         *
+	         *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	         *      // => {name: 'jon', age: 5, theYear: 2006}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeys: __webpack_require__(33),
+
+	        /**
+	         * Copies all properties named in the namedKeys, from source to destination,
+	         * but only if the property does not already exist in the destination object
+	         *
+	         *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	         *      // => {aname: 'test', age: 5}
+	         *
+	         * @param {Object} source
+	         * @param {Object} destination
+	         * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	         *
+	         * @return {Object} destination
+	         */
+	        copyKeysIf: __webpack_require__(34),
+
+	        copyExceptKeys: function(source, destination, exceptKeys){
+	            destination = destination || {}
+	            exceptKeys  = exceptKeys  || {}
+
+	            if (source != null && typeof source === STR_OBJECT ){
+
+	                for (var i in source) if ( HAS_OWN.call(source, i) && !HAS_OWN.call(exceptKeys, i) ) {
+
+	                    destination[i] = source[i]
+	                }
+
+	            }
+
+	            return destination
+	        },
+
+	        /**
+	         * Copies the named keys from source to destination.
+	         * For the keys that are functions, copies the functions bound to the source
+	         *
+	         * @param  {Object} source      The source object
+	         * @param  {Object} destination The target object
+	         * @param  {Object} namedKeys   An object with the names of the keys to copy The values from the keys in this object
+	         *                              need to be either numbers or booleans if you want to copy the property under the same name,
+	         *                              or a string if you want to copy the property under a different name
+	         * @return {Object}             Returns the destination object
+	         */
+	        bindCopyKeys: function(source, destination, namedKeys){
+	            if (arguments.length == 2){
+	                namedKeys = destination
+	                destination = null
+	            }
+
+	            destination = destination || {}
+
+	            if (
+	                       source != null && typeof source    === STR_OBJECT &&
+	                    namedKeys != null && typeof namedKeys === STR_OBJECT
+	                ) {
+
+
+	                var typeOfNamedProperty,
+	                    namedPropertyValue,
+
+	                    typeOfSourceProperty,
+	                    propValue
+
+
+	                for(var propName in namedKeys) if (HAS_OWN.call(namedKeys, propName)) {
+
+	                    namedPropertyValue = namedKeys[propName]
+	                    typeOfNamedProperty = typeof namedPropertyValue
+
+	                    propValue = source[propName]
+	                    typeOfSourceProperty = typeof propValue
+
+
+	                    if ( typeOfSourceProperty !== STR_UNDEFINED ) {
+
+	                        destination[
+	                            typeOfNamedProperty == 'string'?
+	                                            namedPropertyValue :
+	                                            propName
+	                            ] = typeOfSourceProperty == 'function' ?
+	                                            propValue.bind(source):
+	                                            propValue
+	                    }
+	                }
+	            }
+
+	            return destination
+	        }
+	    }
+
+	}()
+
+/***/ },
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -5029,12 +4192,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var Region = __webpack_require__(16)
+	var Region = __webpack_require__(36)
 
 	/**
 	 * @static
@@ -5150,12 +4313,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 30 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Region = __webpack_require__(16)
+	var Region = __webpack_require__(36)
 
 	/**
 	 *
@@ -5192,14 +4355,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 31 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var ALIGN_TO_NORMALIZED = __webpack_require__(46)
+	var ALIGN_TO_NORMALIZED = __webpack_require__(37)
 
-	var Region = __webpack_require__(16)
+	var Region = __webpack_require__(36)
 
 	/**
 	 * @localdoc Given source and target regions, and the given alignments required, returns a region that is the resulting allignment.
@@ -5273,244 +4436,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = COMPUTE_ALIGN_REGION
 
 /***/ },
-/* 32 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	function curry(fn, n){
-
-	    if (typeof n !== 'number'){
-	        n = fn.length
-	    }
-
-	    function getCurryClosure(prevArgs){
-
-	        function curryClosure() {
-
-	            var len  = arguments.length
-	            var args = [].concat(prevArgs)
-
-	            if (len){
-	                args.push.apply(args, arguments)
-	            }
-
-	            if (args.length < n){
-	                return getCurryClosure(args)
-	            }
-
-	            return fn.apply(this, args)
-	        }
-
-	        return curryClosure
-	    }
-
-	    return getCurryClosure([])
-	}
-
-	module.exports = curry
-
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	function composeTwo(f, g) {
-	    return function () {
-	        return f(g.apply(this, arguments))
-	    }
-	}
-
-	/*
-	 * @param {Function...} an enumeration of functions, each consuming the result of the following function.
-	 *
-	 * For example: compose(c, b, a)(1,4) == c(b(a(1,4)))
-	 *
-	 * @return the result of the first function in the enumeration
-	 */
-	module.exports = function(){
-
-	    var args = arguments
-	    var len  = args.length
-	    var i    = 0
-	    var f    = args[0]
-
-	    while (++i < len) {
-	        f = composeTwo(f, args[i])
-	    }
-
-	    return f
-	}
-
-/***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	function chain(where, fn, secondFn){
-
-	    return function(){
-	        if (where === 'before'){
-	            secondFn.apply(this, arguments)
-	        }
-
-	        var result = fn.apply(this, arguments)
-
-	        if (where !== 'before'){
-	            secondFn.apply(this, arguments)
-	        }
-
-	        return result
-	    }
-	}
-
-	module.exports = chain
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use once'
-
-	function once(fn, scope){
-
-	    var called
-	    var result
-
-	    return function(){
-	        if (called){
-	            return result
-	        }
-
-	        called = true
-
-	        return result = fn.apply(scope || this, arguments)
-	    }
-	}
-
-	module.exports = once
-
-/***/ },
-/* 36 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var SLICE = Array.prototype.slice
-
-	module.exports = function(fn, args){
-	    return function(){
-	        var thisArgs = SLICE.call(args || [])
-
-	        if (arguments.length){
-	            thisArgs.push.apply(thisArgs, arguments)
-	        }
-
-	        return fn.apply(this, thisArgs)
-	    }
-	}
-
-/***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var SLICE = Array.prototype.slice
-	var bindArgsArray = __webpack_require__(36)
-
-	module.exports = function(fn){
-	    return bindArgsArray(fn, SLICE.call(arguments,1))
-	}
-
-/***/ },
-/* 38 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var SLICE = Array.prototype.slice
-
-	module.exports = function(fn, args){
-
-	    return function(){
-	        if (!Array.isArray(args)){
-	            args = SLICE.call(args || [])
-	        }
-
-	        return fn.apply(this, args)
-	    }
-	}
-
-/***/ },
-/* 39 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var SLICE = Array.prototype.slice
-	var lockArgsArray = __webpack_require__(38)
-
-	module.exports = function(fn){
-	    return lockArgsArray(fn, SLICE.call(arguments, 1))
-	}
-
-/***/ },
-/* 40 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var curry = __webpack_require__(32)
-
-	module.exports = curry(function(fn, value){
-	    return value != undefined && typeof value.map?
-	            value.map(fn):
-	            fn(value)
-	})
-
-/***/ },
-/* 41 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var curry = __webpack_require__(32)
-
-	module.exports = curry(function(prop, value){
-	    return value != undefined? value[prop]: undefined
-	})
-
-/***/ },
-/* 42 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var SLICE = Array.prototype.slice
-	var curry = __webpack_require__(32)
-
-	module.exports = function(fn, count){
-	    return function(){
-	        return fn.apply(this, SLICE.call(arguments, 0, count))
-	    }
-	}
-
-/***/ },
-/* 43 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	var newify = __webpack_require__(26)
-	var curry  = __webpack_require__(32)
-
-	module.exports = curry(newify)
-
-/***/ },
-/* 44 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(){
@@ -5543,33 +4469,321 @@ return /******/ (function(modules) { // webpackBootstrap
 	}()
 
 /***/ },
-/* 45 */
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+
+	/**
+	 * Copies all properties from source to destination
+	 *
+	 *      copy({name: 'jon',age:5}, this);
+	 *      // => this will have the 'name' and 'age' properties set to 'jon' and 5 respectively
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT ){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) ) {
+	            destination[i] = source[i]
+	        }
+
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+	var STR_OBJECT    = 'object'
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyIf({name: 'jon',age:5}, {age:7})
+	 *      // => { name: 'jon', age: 7}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination){
+	    destination = destination || {}
+
+	    if (source != null && typeof source === STR_OBJECT){
+
+	        for (var i in source) if ( HAS_OWN.call(source, i) && (typeof destination[i] === STR_UNDEFINED) ) {
+
+	            destination[i] = source[i]
+
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination
+	 *
+	 *      copyList({name: 'jon',age:5, year: 2006}, {}, ['name','age'])
+	 *      // => {name: 'jon', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len; i++ ){
+	        propName = list[i]
+
+	        if ( typeof source[propName] !== STR_UNDEFINED ) {
+	            destination[list[i]] = source[list[i]]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+
+	/**
+	 * Copies all properties named in the list, from source to destination, if the property does not exist into the destination
+	 *
+	 *      copyListIf({name: 'jon',age:5, year: 2006}, {age: 10}, ['name','age'])
+	 *      // => {name: 'jon', age: 10}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Array} list the array with the names of the properties to copy
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, list){
+	    if (arguments.length < 3){
+	        list = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+	    list        = list || Object.keys(source)
+
+	    var i   = 0
+	    var len = list.length
+	    var propName
+
+	    for ( ; i < len ; i++ ){
+	        propName = list[i]
+	        if (
+	                (typeof source[propName]      !== STR_UNDEFINED) &&
+	                (typeof destination[propName] === STR_UNDEFINED)
+	            ){
+	            destination[propName] = source[propName]
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyList = __webpack_require__(31)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination
+	 *
+	 *      copyKeys({name: 'jon',age:5, year: 2006, date: '2010/05/12'}, {}, {name:1 ,age: true, year: 'theYear'})
+	 *      // => {name: 'jon', age: 5, theYear: 2006}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyList(source, destination, namedKeys)
+	    }
+
+	    if (
+	           source != null && typeof source    === STR_OBJECT &&
+	        namedKeys != null && typeof namedKeys === STR_OBJECT
+	    ) {
+	        var typeOfNamedProperty
+	        var namedPropertyValue
+
+	        for  (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+	            namedPropertyValue  = namedKeys[propName]
+	            typeOfNamedProperty = typeof namedPropertyValue
+
+	            if (typeof source[propName] !== STR_UNDEFINED){
+	                destination[typeOfNamedProperty == 'string'? namedPropertyValue : propName] = source[propName]
+	            }
+	        }
+	    }
+
+	    return destination
+	}
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var STR_UNDEFINED = 'undefined'
+	var STR_OBJECT    = 'object'
+	var HAS_OWN       = Object.prototype.hasOwnProperty
+
+	var copyListIf = __webpack_require__(32)
+
+	/**
+	 * Copies all properties named in the namedKeys, from source to destination,
+	 * but only if the property does not already exist in the destination object
+	 *
+	 *      copyKeysIf({name: 'jon',age:5, year: 2006}, {aname: 'test'}, {name:'aname' ,age: true})
+	 *      // => {aname: 'test', age: 5}
+	 *
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Object} namedKeys an object with keys denoting the properties to be copied
+	 *
+	 * @return {Object} destination
+	 */
+	module.exports = function(source, destination, namedKeys){
+	    if (arguments.length < 3 ){
+	        namedKeys = destination
+	        destination = null
+	    }
+
+	    destination = destination || {}
+
+	    if (!namedKeys || Array.isArray(namedKeys)){
+	        return copyListIf(source, destination, namedKeys)
+	    }
+
+	    if (
+	               source != null && typeof source    === STR_OBJECT &&
+	            namedKeys != null && typeof namedKeys === STR_OBJECT
+	        ) {
+
+	            var typeOfNamedProperty
+	            var namedPropertyValue
+	            var newPropertyName
+
+	            for (var propName in namedKeys) if ( HAS_OWN.call(namedKeys, propName) ) {
+
+	                namedPropertyValue  = namedKeys[propName]
+	                typeOfNamedProperty = typeof namedPropertyValue
+	                newPropertyName     = typeOfNamedProperty == 'string'? namedPropertyValue : propName
+
+	                if (
+	                        typeof      source[propName]        !== STR_UNDEFINED &&
+	                        typeof destination[newPropertyName] === STR_UNDEFINED
+	                    ) {
+	                    destination[newPropertyName] = source[propName]
+	                }
+
+	            }
+	        }
+
+	    return destination
+	}
+
+/***/ },
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	module.exports = {
-	    'numeric'  : __webpack_require__(47),
-	    'number'   : __webpack_require__(48),
-	    'int'      : __webpack_require__(49),
-	    'float'    : __webpack_require__(50),
-	    'string'   : __webpack_require__(51),
-	    'function' : __webpack_require__(52),
-	    'object'   : __webpack_require__(53),
-	    'arguments': __webpack_require__(54),
-	    'boolean'  : __webpack_require__(55),
-	    'date'     : __webpack_require__(56),
-	    'regexp'   : __webpack_require__(57),
-	    'array'    : __webpack_require__(58)
+	    'numeric'  : __webpack_require__(38),
+	    'number'   : __webpack_require__(39),
+	    'int'      : __webpack_require__(40),
+	    'float'    : __webpack_require__(41),
+	    'string'   : __webpack_require__(42),
+	    'function' : __webpack_require__(43),
+	    'object'   : __webpack_require__(44),
+	    'arguments': __webpack_require__(45),
+	    'boolean'  : __webpack_require__(46),
+	    'date'     : __webpack_require__(47),
+	    'regexp'   : __webpack_require__(48),
+	    'array'    : __webpack_require__(49)
 	}
 
 /***/ },
-/* 46 */
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(50)
+
+/***/ },
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var Region = __webpack_require__(16)
+	var Region = __webpack_require__(36)
 
 	/**
 	 *
@@ -5746,7 +4960,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = ALIGN_TO_NORMALIZED
 
 /***/ },
-/* 47 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5756,7 +4970,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 48 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5766,31 +4980,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 49 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var number = __webpack_require__(48)
+	var number = __webpack_require__(39)
 
 	module.exports = function(value){
 	    return number(value) && (value === parseInt(value, 10))
 	}
 
 /***/ },
-/* 50 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	var number = __webpack_require__(48)
+	var number = __webpack_require__(39)
 
 	module.exports = function(value){
 	    return number(value) && (value === parseFloat(value, 10)) && !(value === parseInt(value, 10))
 	}
 
 /***/ },
-/* 51 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5800,7 +5014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 52 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5812,7 +5026,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 53 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5824,7 +5038,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 54 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5836,7 +5050,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 55 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5846,7 +5060,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 56 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5858,7 +5072,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 57 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5870,7 +5084,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 58 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -5878,6 +5092,1374 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function(value){
 	    return Array.isArray(value)
 	}
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var hasOwn    = __webpack_require__(54)
+	var newify    = __webpack_require__(21)
+
+	var assign      = __webpack_require__(7);
+	var EventEmitter = __webpack_require__(24).EventEmitter
+
+	var inherits = __webpack_require__(51)
+	var VALIDATE = __webpack_require__(52)
+
+	var objectToString = Object.prototype.toString
+
+	var isObject = function(value){
+	    return objectToString.apply(value) === '[object Object]'
+	}
+
+	function copyList(source, target, list){
+	    if (source){
+	        list.forEach(function(key){
+	            if (hasOwn(source, key)){
+	                target[key] = source[key]
+	            }
+	        })
+	    }
+
+	    return target
+	}
+
+	/**
+	 * @class Region
+	 *
+	 * The Region is an abstraction that allows the developer to refer to rectangles on the screen,
+	 * and move them around, make diffs and unions, detect intersections, compute areas, etc.
+	 *
+	 * ## Creating a region
+	 *      var region = require('region')({
+	 *          top  : 10,
+	 *          left : 10,
+	 *          bottom: 100,
+	 *          right : 100
+	 *      })
+	 *      //this region is a square, 90x90, starting from (10,10) to (100,100)
+	 *
+	 *      var second = require('region')({ top: 10, left: 100, right: 200, bottom: 60})
+	 *      var union  = region.getUnion(second)
+	 *
+	 *      //the "union" region is a union between "region" and "second"
+	 */
+
+	var POINT_POSITIONS = {
+	        cy: 'YCenter',
+	        cx: 'XCenter',
+	        t : 'Top',
+	        tc: 'TopCenter',
+	        tl: 'TopLeft',
+	        tr: 'TopRight',
+	        b : 'Bottom',
+	        bc: 'BottomCenter',
+	        bl: 'BottomLeft',
+	        br: 'BottomRight',
+	        l : 'Left',
+	        lc: 'LeftCenter',
+	        r : 'Right',
+	        rc: 'RightCenter',
+	        c : 'Center'
+	    }
+
+	/**
+	 * @constructor
+	 *
+	 * Construct a new Region.
+	 *
+	 * Example:
+	 *
+	 *      var r = new Region({ top: 10, left: 20, bottom: 100, right: 200 })
+	 *
+	 *      //or, the same, but with numbers (can be used with new or without)
+	 *
+	 *      r = Region(10, 200, 100, 20)
+	 *
+	 *      //or, with width and height
+	 *
+	 *      r = Region({ top: 10, left: 20, width: 180, height: 90})
+	 *
+	 * @param {Number|Object} top The top pixel position, or an object with top, left, bottom, right properties. If an object is passed,
+	 * instead of having bottom and right, it can have width and height.
+	 *
+	 * @param {Number} right The right pixel position
+	 * @param {Number} bottom The bottom pixel position
+	 * @param {Number} left The left pixel position
+	 *
+	 * @return {Region} this
+	 */
+	var REGION = function(top, right, bottom, left){
+
+	    if (!(this instanceof REGION)){
+	        return newify(REGION, arguments)
+	    }
+
+	    EventEmitter.call(this)
+
+	    if (isObject(top)){
+	        copyList(top, this, ['top','right','bottom','left'])
+
+	        if (top.bottom == null && top.height != null){
+	            this.bottom = this.top + top.height
+	        }
+	        if (top.right == null && top.width != null){
+	            this.right = this.left + top.width
+	        }
+
+	        if (top.emitChangeEvents){
+	            this.emitChangeEvents = top.emitChangeEvents
+	        }
+	    } else {
+	        this.top    = top
+	        this.right  = right
+	        this.bottom = bottom
+	        this.left   = left
+	    }
+
+	    this[0] = this.left
+	    this[1] = this.top
+
+	    VALIDATE(this)
+	}
+
+	inherits(REGION, EventEmitter)
+
+	assign(REGION.prototype, {
+
+	    /**
+	     * @cfg {Boolean} emitChangeEvents If this is set to true, the region
+	     * will emit 'changesize' and 'changeposition' whenever the size or the position changs
+	     */
+	    emitChangeEvents: false,
+
+	    /**
+	     * Returns this region, or a clone of this region
+	     * @param  {Boolean} [clone] If true, this method will return a clone of this region
+	     * @return {Region}       This region, or a clone of this
+	     */
+	    getRegion: function(clone){
+	        return clone?
+	                    this.clone():
+	                    this
+	    },
+
+	    /**
+	     * Sets the properties of this region to those of the given region
+	     * @param {Region/Object} reg The region or object to use for setting properties of this region
+	     * @return {Region} this
+	     */
+	    setRegion: function(reg){
+
+	        if (reg instanceof REGION){
+	            this.set(reg.get())
+	        } else {
+	            this.set(reg)
+	        }
+
+	        return this
+	    },
+
+	    /**
+	     * Returns true if this region is valid, false otherwise
+	     *
+	     * @param  {Region} region The region to check
+	     * @return {Boolean}        True, if the region is valid, false otherwise.
+	     * A region is valid if
+	     *  * left <= right  &&
+	     *  * top  <= bottom
+	     */
+	    validate: function(){
+	        return REGION.validate(this)
+	    },
+
+	    _before: function(){
+	        if (this.emitChangeEvents){
+	            return copyList(this, {}, ['left','top','bottom','right'])
+	        }
+	    },
+
+	    _after: function(before){
+	        if (this.emitChangeEvents){
+
+	            if(this.top != before.top || this.left != before.left) {
+	                this.emitPositionChange()
+	            }
+
+	            if(this.right != before.right || this.bottom != before.bottom) {
+	                this.emitSizeChange()
+	            }
+	        }
+	    },
+
+	    notifyPositionChange: function(){
+	        this.emit('changeposition', this)
+	    },
+
+	    emitPositionChange: function(){
+	        this.notifyPositionChange()
+	    },
+
+	    notifySizeChange: function(){
+	        this.emit('changesize', this)
+	    },
+
+	    emitSizeChange: function(){
+	        this.notifySizeChange()
+	    },
+
+	    /**
+	     * Add the given amounts to each specified side. Example
+	     *
+	     *      region.add({
+	     *          top: 50,    //add 50 px to the top side
+	     *          bottom: -100    //substract 100 px from the bottom side
+	     *      })
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @return {Region} this
+	     */
+	    add: function(directions){
+
+	        var before = this._before()
+	        var direction
+
+	        for (direction in directions) if ( hasOwn(directions, direction) ) {
+	            this[direction] += directions[direction]
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * The same as {@link #add}, but substracts the given values
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @return {Region} this
+	     */
+	    substract: function(directions){
+
+	        var before = this._before()
+	        var direction
+
+	        for (direction in directions) if (hasOwn(directions, direction) ) {
+	            this[direction] -= directions[direction]
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Retrieves the size of the region.
+	     * @return {Object} An object with {width, height}, corresponding to the width and height of the region
+	     */
+	    getSize: function(){
+	        return {
+	            width  : this.width,
+	            height : this.height
+	        }
+	    },
+
+	    /**
+	     * Move the region to the given position and keeps the region width and height.
+	     *
+	     * @param {Object} position An object with {top, left} properties. The values in {top,left} are used to move the region by the given amounts.
+	     * @param {Number} [position.left]
+	     * @param {Number} [position.top]
+	     *
+	     * @return {Region} this
+	     */
+	    setPosition: function(position){
+	        var width  = this.width
+	        var height = this.height
+
+	        if (position.left != undefined){
+	            position.right  = position.left + width
+	        }
+
+	        if (position.top != undefined){
+	            position.bottom = position.top  + height
+	        }
+
+	        return this.set(position)
+	    },
+
+	    /**
+	     * Sets both the height and the width of this region to the given size.
+	     *
+	     * @param {Number} size The new size for the region
+	     * @return {Region} this
+	     */
+	    setSize: function(size){
+	        if (size.height != undefined && size.width != undefined){
+	            return this.set({
+	                right  : this.left + size.width,
+	                bottom : this.top  + size.height
+	            })
+	        }
+
+	        if (size.width != undefined){
+	            this.setWidth(size.width)
+	        }
+
+	        if (size.height != undefined){
+	            this.setHeight(size.height)
+	        }
+
+	        return this
+	    },
+
+
+
+	    /**
+	     * @chainable
+	     *
+	     * Sets the width of this region
+	     * @param {Number} width The new width for this region
+	     * @return {Region} this
+	     */
+	    setWidth: function(width){
+	        return this.set({
+	            right: this.left + width
+	        })
+	    },
+
+	    /**
+	     * @chainable
+	     *
+	     * Sets the height of this region
+	     * @param {Number} height The new height for this region
+	     * @return {Region} this
+	     */
+	    setHeight: function(height){
+	        return this.set({
+	            bottom: this.top + height
+	        })
+	    },
+
+	    /**
+	     * Sets the given properties on this region
+	     *
+	     * @param {Object} directions an object containing top, left, and EITHER bottom, right OR width, height
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @param {Number} [directions.bottom]
+	     * @param {Number} [directions.right]
+	     *
+	     * @param {Number} [directions.width]
+	     * @param {Number} [directions.height]
+	     *
+	     *
+	     * @return {Region} this
+	     */
+	    set: function(directions){
+	        var before = this._before()
+
+	        copyList(directions, this, ['left','top','bottom','right'])
+
+	        if (directions.bottom == null && directions.height != null){
+	            this.bottom = this.top + directions.height
+	        }
+	        if (directions.right == null && directions.width != null){
+	            this.right = this.left + directions.width
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Retrieves the given property from this region. If no property is given, return an object
+	     * with {left, top, right, bottom}
+	     *
+	     * @param {String} [dir] the property to retrieve from this region
+	     * @return {Number/Object}
+	     */
+	    get: function(dir){
+	        return dir? this[dir]:
+	                    copyList(this, {}, ['left','right','top','bottom'])
+	    },
+
+	    /**
+	     * Shifts this region to either top, or left or both.
+	     * Shift is similar to {@link #add} by the fact that it adds the given dimensions to top/left sides, but also adds the given dimensions
+	     * to bottom and right
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @return {Region} this
+	     */
+	    shift: function(directions){
+
+	        var before = this._before()
+
+	        if (directions.top){
+	            this.top    += directions.top
+	            this.bottom += directions.top
+	        }
+
+	        if (directions.left){
+	            this.left  += directions.left
+	            this.right += directions.left
+	        }
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Same as {@link #shift}, but substracts the given values
+	     * @chainable
+	     *
+	     * @param {Object} directions
+	     * @param {Number} [directions.top]
+	     * @param {Number} [directions.left]
+	     *
+	     * @return {Region} this
+	     */
+	    unshift: function(directions){
+
+	        if (directions.top){
+	            directions.top *= -1
+	        }
+
+	        if (directions.left){
+	            directions.left *= -1
+	        }
+
+	        return this.shift(directions)
+	    },
+
+	    /**
+	     * Compare this region and the given region. Return true if they have all the same size and position
+	     * @param  {Region} region The region to compare with
+	     * @return {Boolean}       True if this and region have same size and position
+	     */
+	    equals: function(region){
+	        return this.equalsPosition(region) && this.equalsSize(region)
+	    },
+
+	    /**
+	     * Returns true if this region has the same bottom,right properties as the given region
+	     * @param  {Region/Object} size The region to compare against
+	     * @return {Boolean}       true if this region is the same size as the given size
+	     */
+	    equalsSize: function(size){
+	        var isInstance = size instanceof REGION
+
+	        var s = {
+	            width: size.width == null && isInstance?
+	                    size.getWidth():
+	                    size.width,
+
+	            height: size.height == null && isInstance?
+	                    size.getHeight():
+	                    size.height
+	        }
+	        return this.getWidth() == s.width && this.getHeight() == s.height
+	    },
+
+	    /**
+	     * Returns true if this region has the same top,left properties as the given region
+	     * @param  {Region} region The region to compare against
+	     * @return {Boolean}       true if this.top == region.top and this.left == region.left
+	     */
+	    equalsPosition: function(region){
+	        return this.top == region.top && this.left == region.left
+	    },
+
+	    /**
+	     * Adds the given ammount to the left side of this region
+	     * @param {Number} left The ammount to add
+	     * @return {Region} this
+	     */
+	    addLeft: function(left){
+	        var before = this._before()
+
+	        this.left = this[0] = this.left + left
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the top side of this region
+	     * @param {Number} top The ammount to add
+	     * @return {Region} this
+	     */
+	    addTop: function(top){
+	        var before = this._before()
+
+	        this.top = this[1] = this.top + top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the bottom side of this region
+	     * @param {Number} bottom The ammount to add
+	     * @return {Region} this
+	     */
+	    addBottom: function(bottom){
+	        var before = this._before()
+
+	        this.bottom += bottom
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Adds the given ammount to the right side of this region
+	     * @param {Number} right The ammount to add
+	     * @return {Region} this
+	     */
+	    addRight: function(right){
+	        var before = this._before()
+
+	        this.right += right
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Minimize the top side.
+	     * @return {Region} this
+	     */
+	    minTop: function(){
+	        return this.expand({top: 1})
+	    },
+	    /**
+	     * Minimize the bottom side.
+	     * @return {Region} this
+	     */
+	    maxBottom: function(){
+	        return this.expand({bottom: 1})
+	    },
+	    /**
+	     * Minimize the left side.
+	     * @return {Region} this
+	     */
+	    minLeft: function(){
+	        return this.expand({left: 1})
+	    },
+	    /**
+	     * Maximize the right side.
+	     * @return {Region} this
+	     */
+	    maxRight: function(){
+	        return this.expand({right: 1})
+	    },
+
+	    /**
+	     * Expands this region to the dimensions of the given region, or the document region, if no region is expanded.
+	     * But only expand the given sides (any of the four can be expanded).
+	     *
+	     * @param {Object} directions
+	     * @param {Boolean} [directions.top]
+	     * @param {Boolean} [directions.bottom]
+	     * @param {Boolean} [directions.left]
+	     * @param {Boolean} [directions.right]
+	     *
+	     * @param {Region} [region] the region to expand to, defaults to the document region
+	     * @return {Region} this region
+	     */
+	    expand: function(directions, region){
+	        var docRegion = region || REGION.getDocRegion()
+	        var list      = []
+	        var direction
+	        var before = this._before()
+
+	        for (direction in directions) if ( hasOwn(directions, direction) ) {
+	            list.push(direction)
+	        }
+
+	        copyList(docRegion, this, list)
+
+	        this[0] = this.left
+	        this[1] = this.top
+
+	        this._after(before)
+
+	        return this
+	    },
+
+	    /**
+	     * Returns a clone of this region
+	     * @return {Region} A new region, with the same position and dimension as this region
+	     */
+	    clone: function(){
+	        return new REGION({
+	                    top    : this.top,
+	                    left   : this.left,
+	                    right  : this.right,
+	                    bottom : this.bottom
+	                })
+	    },
+
+	    /**
+	     * Returns true if this region contains the given point
+	     * @param {Number/Object} x the x coordinate of the point
+	     * @param {Number} [y] the y coordinate of the point
+	     *
+	     * @return {Boolean} true if this region constains the given point, false otherwise
+	     */
+	    containsPoint: function(x, y){
+	        if (arguments.length == 1){
+	            y = x.y
+	            x = x.x
+	        }
+
+	        return this.left <= x  &&
+	               x <= this.right &&
+	               this.top <= y   &&
+	               y <= this.bottom
+	    },
+
+	    /**
+	     *
+	     * @param region
+	     *
+	     * @return {Boolean} true if this region contains the given region, false otherwise
+	     */
+	    containsRegion: function(region){
+	        return this.containsPoint(region.left, region.top)    &&
+	               this.containsPoint(region.right, region.bottom)
+	    },
+
+	    /**
+	     * Returns an object with the difference for {top, bottom} positions betwen this and the given region,
+	     *
+	     * See {@link #diff}
+	     * @param  {Region} region The region to use for diff
+	     * @return {Object}        {top,bottom}
+	     */
+	    diffHeight: function(region){
+	        return this.diff(region, {top: true, bottom: true})
+	    },
+
+	    /**
+	     * Returns an object with the difference for {left, right} positions betwen this and the given region,
+	     *
+	     * See {@link #diff}
+	     * @param  {Region} region The region to use for diff
+	     * @return {Object}        {left,right}
+	     */
+	    diffWidth: function(region){
+	        return this.diff(region, {left: true, right: true})
+	    },
+
+	    /**
+	     * Returns an object with the difference in sizes for the given directions, between this and region
+	     *
+	     * @param  {Region} region     The region to use for diff
+	     * @param  {Object} directions An object with the directions to diff. Can have any of the following keys:
+	     *  * left
+	     *  * right
+	     *  * top
+	     *  * bottom
+	     *
+	     * @return {Object} and object with the same keys as the directions object, but the values being the
+	     * differences between this region and the given region
+	     */
+	    diff: function(region, directions){
+	        var result = {}
+	        var dirName
+
+	        for (dirName in directions) if ( hasOwn(directions, dirName) ) {
+	            result[dirName] = this[dirName] - region[dirName]
+	        }
+
+	        return result
+	    },
+
+	    /**
+	     * Returns the position, in {left,top} properties, of this region
+	     *
+	     * @return {Object} {left,top}
+	     */
+	    getPosition: function(){
+	        return {
+	            left: this.left,
+	            top : this.top
+	        }
+	    },
+
+	    /**
+	     * Returns the point at the given position from this region.
+	     *
+	     * @param {String} position Any of:
+	     *
+	     *  * 'cx' - See {@link #getPointXCenter}
+	     *  * 'cy' - See {@link #getPointYCenter}
+	     *  * 'b'  - See {@link #getPointBottom}
+	     *  * 'bc' - See {@link #getPointBottomCenter}
+	     *  * 'l'  - See {@link #getPointLeft}F
+	     *  * 'lc' - See {@link #getPointLeftCenter}
+	     *  * 't'  - See {@link #getPointTop}
+	     *  * 'tc' - See {@link #getPointTopCenter}
+	     *  * 'r'  - See {@link #getPointRight}
+	     *  * 'rc' - See {@link #getPointRightCenter}
+	     *  * 'c'  - See {@link #getPointCenter}
+	     *  * 'tl' - See {@link #getPointTopLeft}
+	     *  * 'bl' - See {@link #getPointBottomLeft}
+	     *  * 'br' - See {@link #getPointBottomRight}
+	     *  * 'tr' - See {@link #getPointTopRight}
+	     *
+	     * @param {Boolean} asLeftTop
+	     *
+	     * @return {Object} either an object with {x,y} or {left,top} if asLeftTop is true
+	     */
+	    getPoint: function(position, asLeftTop){
+
+	        //<debug>
+	        if (!POINT_POSITIONS[position]) {
+	            console.warn('The position ', position, ' could not be found! Available options are tl, bl, tr, br, l, r, t, b.');
+	        }
+	        //</debug>
+
+	        var method = 'getPoint' + POINT_POSITIONS[position],
+	            result = this[method]()
+
+	        if (asLeftTop){
+	            return {
+	                left : result.x,
+	                top  : result.y
+	            }
+	        }
+
+	        return result
+	    },
+
+	    /**
+	     * Returns a point with x = null and y being the middle of the left region segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointYCenter: function(){
+	        return { x: null, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point with y = null and x being the middle of the top region segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointXCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: null }
+	    },
+
+	    /**
+	     * Returns a point with x = null and y the region top position on the y axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointTop: function(){
+	        return { x: null, y: this.top }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region top segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.top }
+	    },
+
+	    /**
+	     * Returns a point that is the top-left point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopLeft: function(){
+	        return { x: this.left, y: this.top}
+	    },
+
+	    /**
+	     * Returns a point that is the top-right point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointTopRight: function(){
+	        return { x: this.right, y: this.top}
+	    },
+
+	    /**
+	     * Returns a point with x = null and y the region bottom position on the y axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottom: function(){
+	        return { x: null, y: this.bottom }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region bottom segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.bottom }
+	    },
+
+	    /**
+	     * Returns a point that is the bottom-left point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomLeft: function(){
+	        return { x: this.left, y: this.bottom}
+	    },
+
+	    /**
+	     * Returns a point that is the bottom-right point of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointBottomRight: function(){
+	        return { x: this.right, y: this.bottom}
+	    },
+
+	    /**
+	     * Returns a point with y = null and x the region left position on the x axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointLeft: function(){
+	        return { x: this.left, y: null }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region left segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointLeftCenter: function(){
+	        return { x: this.left, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point with y = null and x the region right position on the x axis
+	     * @return {Object} {x,y}
+	     */
+	    getPointRight: function(){
+	        return { x: this.right, y: null }
+	    },
+
+	    /**
+	     * Returns a point that is the middle point of the region right segment
+	     * @return {Object} {x,y}
+	     */
+	    getPointRightCenter: function(){
+	        return { x: this.right, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * Returns a point that is the center of the region
+	     * @return {Object} {x,y}
+	     */
+	    getPointCenter: function(){
+	        return { x: this.left + this.getWidth() / 2, y: this.top + this.getHeight() / 2 }
+	    },
+
+	    /**
+	     * @return {Number} returns the height of the region
+	     */
+	    getHeight: function(){
+	        return this.bottom - this.top
+	    },
+
+	    /**
+	     * @return {Number} returns the width of the region
+	     */
+	    getWidth: function(){
+	        return this.right - this.left
+	    },
+
+	    /**
+	     * @return {Number} returns the top property of the region
+	     */
+	    getTop: function(){
+	        return this.top
+	    },
+
+	    /**
+	     * @return {Number} returns the left property of the region
+	     */
+	    getLeft: function(){
+	        return this.left
+	    },
+
+	    /**
+	     * @return {Number} returns the bottom property of the region
+	     */
+	    getBottom: function(){
+	        return this.bottom
+	    },
+
+	    /**
+	     * @return {Number} returns the right property of the region
+	     */
+	    getRight: function(){
+	        return this.right
+	    },
+
+	    /**
+	     * Returns the area of the region
+	     * @return {Number} the computed area
+	     */
+	    getArea: function(){
+	        return this.getWidth() * this.getHeight()
+	    },
+
+	    constrainTo: function(contrain){
+	        var intersect = this.getIntersection(contrain)
+	        var shift
+
+	        if (!intersect || !intersect.equals(this)){
+
+	            var contrainWidth  = contrain.getWidth(),
+	                contrainHeight = contrain.getHeight()
+
+	            if (this.getWidth() > contrainWidth){
+	                this.left = contrain.left
+	                this.setWidth(contrainWidth)
+	            }
+
+	            if (this.getHeight() > contrainHeight){
+	                this.top = contrain.top
+	                this.setHeight(contrainHeight)
+	            }
+
+	            shift = {}
+
+	            if (this.right > contrain.right){
+	                shift.left = contrain.right - this.right
+	            }
+
+	            if (this.bottom > contrain.bottom){
+	                shift.top = contrain.bottom - this.bottom
+	            }
+
+	            if (this.left < contrain.left){
+	                shift.left = contrain.left - this.left
+	            }
+
+	            if (this.top < contrain.top){
+	                shift.top = contrain.top - this.top
+	            }
+
+	            this.shift(shift)
+
+	            return true
+	        }
+
+	        return false
+	    },
+
+	    __IS_REGION: true
+
+	    /**
+	     * @property {Number} top
+	     */
+
+	    /**
+	     * @property {Number} right
+	     */
+
+	    /**
+	     * @property {Number} bottom
+	     */
+
+	    /**
+	     * @property {Number} left
+	     */
+
+	    /**
+	     * @property {Number} [0] the top property
+	     */
+
+	    /**
+	     * @property {Number} [1] the left property
+	     */
+
+	    /**
+	     * @method getIntersection
+	     * Returns a region that is the intersection of this region and the given region
+	     * @param  {Region} region The region to intersect with
+	     * @return {Region}        The intersection region
+	     */
+
+	    /**
+	     * @method getUnion
+	     * Returns a region that is the union of this region with the given region
+	     * @param  {Region} region  The region to make union with
+	     * @return {Region}        The union region. The smallest region that contains both this and the given region.
+	     */
+
+	})
+
+	Object.defineProperties(REGION.prototype, {
+	    width: {
+	        get: function(){
+	            return this.getWidth()
+	        },
+	        set: function(width){
+	            return this.setWidth(width)
+	        }
+	    },
+	    height: {
+	        get: function(){
+	            return this.getHeight()
+	        },
+	        set: function(height){
+	            return this.setHeight(height)
+	        }
+	    }
+	})
+
+	__webpack_require__(53)(REGION)
+
+	module.exports = REGION
+
+/***/ },
+/* 51 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = function(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	        constructor: {
+	            value       : ctor,
+	            enumerable  : false,
+	            writable    : true,
+	            configurable: true
+	        }
+	    })
+	}
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * @static
+	 * Returns true if the given region is valid, false otherwise.
+	 * @param  {Region} region The region to check
+	 * @return {Boolean}        True, if the region is valid, false otherwise.
+	 * A region is valid if
+	 *  * left <= right  &&
+	 *  * top  <= bottom
+	 */
+	module.exports = function validate(region){
+
+	    var isValid = true
+
+	    if (region.right < region.left){
+	        isValid = false
+	        region.right = region.left
+	    }
+
+	    if (region.bottom < region.top){
+	        isValid = false
+	        region.bottom = region.top
+	    }
+
+	    return isValid
+	}
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var hasOwn   = __webpack_require__(54)
+	var VALIDATE = __webpack_require__(52)
+
+	module.exports = function(REGION){
+
+	    var MAX = Math.max
+	    var MIN = Math.min
+
+	    var statics = {
+	        init: function(){
+	            var exportAsNonStatic = {
+	                getIntersection      : true,
+	                getIntersectionArea  : true,
+	                getIntersectionHeight: true,
+	                getIntersectionWidth : true,
+	                getUnion             : true
+	            }
+	            var thisProto = REGION.prototype
+	            var newName
+
+	            var exportHasOwn = hasOwn(exportAsNonStatic)
+	            var methodName
+
+	            for (methodName in exportAsNonStatic) if (exportHasOwn(methodName)) {
+	                newName = exportAsNonStatic[methodName]
+	                if (typeof newName != 'string'){
+	                    newName = methodName
+	                }
+
+	                ;(function(proto, methodName, protoMethodName){
+
+	                    proto[methodName] = function(region){
+	                        //<debug>
+	                        if (!REGION[protoMethodName]){
+	                            console.warn('cannot find method ', protoMethodName,' on ', REGION)
+	                        }
+	                        //</debug>
+	                        return REGION[protoMethodName](this, region)
+	                    }
+
+	                })(thisProto, newName, methodName);
+	            }
+	        },
+
+	        validate: VALIDATE,
+
+	        /**
+	         * Returns the region corresponding to the documentElement
+	         * @return {Region} The region corresponding to the documentElement. This region is the maximum region visible on the screen.
+	         */
+	        getDocRegion: function(){
+	            return REGION.fromDOM(document.documentElement)
+	        },
+
+	        from: function(reg){
+	            if (reg.__IS_REGION){
+	                return reg
+	            }
+
+	            if (typeof document != 'undefined'){
+	                if (typeof HTMLElement != 'undefined' && reg instanceof HTMLElement){
+	                    return REGION.fromDOM(reg)
+	                }
+
+	                if (reg.type && typeof reg.pageX !== 'undefined' && typeof reg.pageY !== 'undefined'){
+	                    return REGION.fromEvent(reg)
+	                }
+	            }
+
+	            return REGION(reg)
+	        },
+
+	        fromEvent: function(event){
+	            return REGION.fromPoint({
+	                x: event.pageX,
+	                y: event.pageY
+	            })
+	        },
+
+	        fromDOM: function(dom){
+	            var rect = dom.getBoundingClientRect()
+	            // var docElem = document.documentElement
+	            // var win     = window
+
+	            // var top  = rect.top + win.pageYOffset - docElem.clientTop
+	            // var left = rect.left + win.pageXOffset - docElem.clientLeft
+
+	            return new REGION({
+	                top   : rect.top,
+	                left  : rect.left,
+	                bottom: rect.bottom,
+	                right : rect.right
+	            })
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region that is the intersection of the given two regions
+	         * @param  {Region} first  The first region
+	         * @param  {Region} second The second region
+	         * @return {Region/Boolean}        The intersection region or false if no intersection found
+	         */
+	        getIntersection: function(first, second){
+
+	            var area = this.getIntersectionArea(first, second)
+
+	            if (area){
+	                return new REGION(area)
+	            }
+
+	            return false
+	        },
+
+	        getIntersectionWidth: function(first, second){
+	            var minRight  = MIN(first.right, second.right)
+	            var maxLeft   = MAX(first.left,  second.left)
+
+	            if (maxLeft < minRight){
+	                return minRight  - maxLeft
+	            }
+
+	            return 0
+	        },
+
+	        getIntersectionHeight: function(first, second){
+	            var maxTop    = MAX(first.top,   second.top)
+	            var minBottom = MIN(first.bottom,second.bottom)
+
+	            if (maxTop  < minBottom){
+	                return minBottom - maxTop
+	            }
+
+	            return 0
+	        },
+
+	        getIntersectionArea: function(first, second){
+	            var maxTop    = MAX(first.top,   second.top)
+	            var minRight  = MIN(first.right, second.right)
+	            var minBottom = MIN(first.bottom,second.bottom)
+	            var maxLeft   = MAX(first.left,  second.left)
+
+	            if (
+	                    maxTop  < minBottom &&
+	                    maxLeft < minRight
+	                ){
+	                return {
+	                    top    : maxTop,
+	                    right  : minRight,
+	                    bottom : minBottom,
+	                    left   : maxLeft,
+
+	                    width  : minRight  - maxLeft,
+	                    height : minBottom - maxTop
+	                }
+	            }
+
+	            return false
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region that is the union of the given two regions
+	         * @param  {Region} first  The first region
+	         * @param  {Region} second The second region
+	         * @return {Region}        The union region. The smallest region that contains both given regions.
+	         */
+	        getUnion: function(first, second){
+	            var top    = MIN(first.top,   second.top)
+	            var right  = MAX(first.right, second.right)
+	            var bottom = MAX(first.bottom,second.bottom)
+	            var left   = MIN(first.left,  second.left)
+
+	            return new REGION(top, right, bottom, left)
+	        },
+
+	        /**
+	         * @static
+	         * Returns a region. If the reg argument is a region, returns it, otherwise return a new region built from the reg object.
+	         *
+	         * @param  {Region} reg A region or an object with either top, left, bottom, right or
+	         * with top, left, width, height
+	         * @return {Region} A region
+	         */
+	        getRegion: function(reg){
+	            return REGION.from(reg)
+	        },
+
+	        /**
+	         * Creates a region that corresponds to a point.
+	         *
+	         * @param  {Object} xy The point
+	         * @param  {Number} xy.x
+	         * @param  {Number} xy.y
+	         *
+	         * @return {Region}    The new region, with top==xy.y, bottom = xy.y and left==xy.x, right==xy.x
+	         */
+	        fromPoint: function(xy){
+	            return new REGION({
+	                        top    : xy.y,
+	                        bottom : xy.y,
+	                        left   : xy.x,
+	                        right  : xy.x
+	                    })
+	        }
+	    }
+
+	    Object.keys(statics).forEach(function(key){
+	        REGION[key] = statics[key]
+	    })
+
+	    REGION.init()
+	}
+
+/***/ },
+/* 54 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	var hasOwn = Object.prototype.hasOwnProperty
+
+	function curry(fn, n){
+
+	    if (typeof n !== 'number'){
+	        n = fn.length
+	    }
+
+	    function getCurryClosure(prevArgs){
+
+	        function curryClosure() {
+
+	            var len  = arguments.length
+	            var args = [].concat(prevArgs)
+
+	            if (len){
+	                args.push.apply(args, arguments)
+	            }
+
+	            if (args.length < n){
+	                return getCurryClosure(args)
+	            }
+
+	            return fn.apply(this, args)
+	        }
+
+	        return curryClosure
+	    }
+
+	    return getCurryClosure([])
+	}
+
+
+	module.exports = curry(function(object, property){
+	    return hasOwn.call(object, property)
+	})
 
 /***/ }
 /******/ ])
