@@ -1,6 +1,6 @@
 {
   "name": "react-color-picker",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "React Color Picker",
   "main": "lib/index.js",
   "scripts": {
@@ -21,36 +21,35 @@
     "picker",
     "color-picker"
   ],
-  "author": "Radu Brehar",
-  "license": "MIT",
   "dependencies": {
     "drag-helper": "^1.2.3",
     "normalize.css": "^3.0.2",
     "object-assign": "^2.0.0",
-    "react": "^0.12.0",
-    "region": "^2.0.0",
+    "region": "^2.1.2",
     "tinycolor2": "^1.1.1"
   },
   "devDependencies": {
     "css-loader": "~0.9.0",
     "extract-text-webpack-plugin": "~0.3.1",
     "gulp": "^3.8.11",
-    "gulp-react": "^2.0.0",
+    "gulp-react": "^3.0.1",
     "http-server": "^0.7.2",
-    "jsx-loader": "~0.11.2",
+    "jsx-loader": "~0.13.2",
     "style-loader": "~0.8.1",
     "stylus-loader": "~0.4.0",
     "webpack": "~1.4.7",
     "webpack-dev-server": "~1.6.5"
   },
-  "directories": {
-    "test": "test"
+  "peerDependencies": {
+    "react": ">=0.12.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/radubrehar/react-color-picker.git"
+    "url": "https://github.com/zippyui/react-color-picker.git"
   },
   "bugs": {
-    "url": "https://github.com/radubrehar/react-color-picker/issues"
-  }
+    "url": "https://github.com/zippyui/react-color-picker/issues"
+  },
+  "license": "MIT",
+  "author": "ZippyUI <contact@zippyui.com>"
 }

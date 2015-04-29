@@ -4,7 +4,23 @@
 <head>
     <title>Color Picker</title>
 
-    <script src="./node_modules/react/dist/react-with-addons.js"></script>
+    <script src="./node_modules/react/dist/react.js"></script>
+    <style>
+		body
+		body * {
+		    box-sizing: border-box;
+		}
+		html,
+		body,
+		#content {
+		    width: 100%;
+		    height: 100%;
+		    position: absolute;
+		}
+		body {
+			margin: 0px;
+		}
+    </style>
 </head>
 <body>
     <div id="content">
@@ -12,5 +28,7 @@
 
     <script src="http://localhost:8090/webpack-dev-server.js"></script>
     <script type="text/javascript" src="http://localhost:8090/assets/bundle.js"></script>
+
+
 </body>
 </html>
