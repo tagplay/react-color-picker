@@ -68,7 +68,7 @@ var RESULT = React.createClass({
             onChange   : this.handleSaturationChange,
             onMouseDown: this.handleSaturationMouseDown,
             height     : props.saturationHeight,
-            width     : props.saturationWidth,
+            width      : props.saturationWidth,
             inPicker   : true
         }
 
@@ -85,12 +85,13 @@ var RESULT = React.createClass({
             ;(value || defaultValue).h = this.state.dragHue
         }
 
+        //both value and defaultValue are objects like: {h,s,v}
         if (value){
             saturationConfig.value = assign({}, value)
-            hueConfig.value = assign({}, value)
+            hueConfig.value        = assign({}, value)
         } else {
             saturationConfig.defaultValue = assign({}, defaultValue)
-            hueConfig.defaultValue = assign({}, defaultValue)
+            hueConfig.defaultValue        = assign({}, defaultValue)
         }
 
         return <div {...props}>

@@ -1,12 +1,16 @@
 # React Color Picker
 
+> A carefully crafted color picker for React.
+
 Demo: [jslog.com/react-color-picker](http://jslog.com/react-color-picker)
+
+No images have been used in the making of this color picker :)
 
 ![Color Picker](https://cloud.githubusercontent.com/assets/512416/5023604/0761ac7a-6aca-11e4-90db-d8678be7c267.PNG)
 
 ## Install
 
-#### NPM
+#### npm
 
 ```sh
 $ npm install react-color-picker
@@ -126,10 +130,30 @@ Called during the dragging operation.
 
 Called after mouse up - when the color has been selected
 
-## Development
+## Contributing
 
-In order to make new build, run
+Use [Github issues](https://github.com/zippyui/react-color-picker/issues) for feature requests and bug reports.
+
+We actively welcome pull requests.
+
+For setting up & starting the project locally, use:
+
+```sh
+$ git clone https://github.com/zippyui/react-color-picker
+$ cd react-color-picker
+$ npm install
+$ npm dev
+```
+
+Now navigate to [localhost:9090](http://localhost:9090/)
+
+Before building a new version, make sure you run
 
 ```sh
 $ npm run build
 ```
+which compiles the `src` folder (which contains jsx & ES6 files) into the `lib` folder (only valid EcmaScript 5 files).
+
+## License
+
+#### MIT

@@ -1,13 +1,13 @@
 'use strict';
 
-var Region = require('region')
-var assign = require('object-assign')
+var Region     = require('region')
+var assign     = require('object-assign')
 var DragHelper = require('drag-helper')
-var toHsv = require('./color').toHsv
+var toHsv      = require('./color').toHsv
 
 function emptyFn(){}
 
-module.exports = {
+export default {
 
     toColorValue: function(value){
         if (typeof value == 'string'){
@@ -35,13 +35,16 @@ module.exports = {
 
             onDragStart: function(event, config){
                 config.initialPoint = info
+
+                config.minLeft = 0
+                config.maxLeft = region.width
+
                 this.handleDragStart(event)
             },
             onDrag: function(event, config){
                 var info = this.getEventInfo(event, region)
 
                 this.updateColor(info)
-
                 this.handleDrag(event, config)
             },
             onDrop: function(event, config){
@@ -73,15 +76,21 @@ module.exports = {
             var top
             var left
 
-            this.state.top  = top = initialPoint.y + diff.top
-            this.state.left = left = initialPoint.x + diff.left
+            left = initialPoint.x + diff.left
+            top  = initialPoint.y + diff.top
+
+            left = Math.max(left, config.minLeft)
+            left = Math.min(left, config.maxLeft)
+
+            this.state.top  = top
+            this.state.left = left
 
             this.state.mouseDown = {
                 x     : left,
                 y     : top,
                 width : initialPoint.width,
                 height: initialPoint.height
-        }
+            }
 
         }
 

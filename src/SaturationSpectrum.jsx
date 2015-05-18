@@ -8,7 +8,7 @@ var common    = require('./utils/common')
 
 var VALIDATE = require('./utils/validate')
 
-module.exports = React.createClass(assign({
+export default React.createClass(assign({
 
     displayName: 'SaturationSpectrum',
 
@@ -61,10 +61,10 @@ module.exports = React.createClass(assign({
             width  = width  || region.getWidth()
         }
 
-        var x = hsv.s * width
-        var y = height - (hsv.v * height)
-        var size  = this.props.pointerSize
-        var diff  = Math.floor(size/2)
+        var x    = hsv.s * width
+        var y    = height - (hsv.v * height)
+        var size = this.props.pointerSize
+        var diff = Math.floor(size/2)
 
         if (this.props.value && this.state.mouseDown){
             x = this.state.mouseDown.x
@@ -88,22 +88,47 @@ module.exports = React.createClass(assign({
         return col.toRgbString()
     },
 
-    render: function(){
+    prepareProps: function(thisProps, state) {
+        var props = assign({}, thisProps)
 
-        var color = this.state.value || this.props.value || this.props.defaultValue || this.props.defaultColor
+        var color = state.value || props.value || props.defaultValue || props.defaultColor
+
+        props.color = color
 
         this.hsv = this.toColorValue(color)
 
-        var style = this.props.style || {}
+        props.style     = this.prepareStyle(props)
+        props.className = this.prepareClassName(props)
 
-        if (this.props.height){
-            style.height = this.props.height
+        return props
+    },
+
+    prepareClassName: function(props) {
+        var className = props.className || ''
+
+        className += ' cp-saturation-spectrum'
+
+        return className
+    },
+
+    prepareStyle: function(props) {
+        var style = props.style || {}
+
+        if (props.height){
+            style.height = props.height
         }
-        if (this.props.width){
-            style.width = this.props.width
+        if (props.width){
+            style.width = props.width
         }
 
         style.backgroundColor = this.prepareBackgroundColor(this.hsv)
+
+        return style
+    },
+
+    render: function(){
+
+        var props = this.p = this.prepareProps(this.props, this.state)
 
         var dragStyle = {
             width : this.props.pointerSize,
@@ -119,7 +144,7 @@ module.exports = React.createClass(assign({
         }
 
         return (
-            <div className='cp-saturation-spectrum' style={style} onMouseDown={this.onMouseDown}>
+            <div className={props.className} style={props.style} onMouseDown={this.onMouseDown}>
                 <div className='cp-saturation-white'>
                     <div className='cp-saturation-black' />
                 </div>
