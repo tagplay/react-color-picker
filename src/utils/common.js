@@ -79,8 +79,8 @@ export default {
             left = initialPoint.x + diff.left
             top  = initialPoint.y + diff.top
 
-            left = Math.max(left, config.minLeft)
-            left = Math.min(left, config.maxLeft)
+            if (config.minLeft) left = Math.max(left, config.minLeft)
+            if (config.maxLeft) left = Math.min(left, config.maxLeft)
 
             this.state.top  = top
             this.state.left = left
@@ -136,8 +136,10 @@ export default {
     getEventInfo: function(event, region){
         region = region || Region.fromDOM(this.getDOMNode())
 
-        var x = event.clientX - region.left
-        var y = event.clientY - region.top
+        var origin = event.touches ? event.touches[0] : event;
+
+        var x = origin.clientX - region.left
+        var y = origin.clientY - region.top
 
         return {
             x: x,
