@@ -138,8 +138,14 @@ export default {
 
         var origin = event.touches ? event.touches[0] : event;
 
-        var x = origin.clientX - region.left
-        var y = origin.clientY - region.top
+        if (origin) {
+            var x = origin.clientX - region.left
+            var y = origin.clientY - region.top
+        }
+        else {
+            var x = 0
+            var y = 0
+        }
 
         return {
             x: x,
