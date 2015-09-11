@@ -3296,9 +3296,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            onDrag: function onDrag(event, config) {
 	                var info = this.getEventInfo(event, region);
 
-	                config.minLeft = 0;
-	                config.maxLeft = region.width;
-
 	                this.updateColor(info);
 	                this.handleDrag(event, config);
 	            },
@@ -3334,8 +3331,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            left = initialPoint.x + diff.left;
 	            top = initialPoint.y + diff.top;
 
-	            if (config.minLeft) left = Math.max(left, config.minLeft);
-	            if (config.maxLeft) left = Math.min(left, config.maxLeft);
+	            if (config.minLeft !== undefined) left = Math.max(left, config.minLeft);
+	            if (config.maxLeft !== undefined) left = Math.min(left, config.maxLeft);
 
 	            this.state.top = top;
 	            this.state.left = left;
