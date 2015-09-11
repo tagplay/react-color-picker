@@ -3296,6 +3296,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            onDrag: function onDrag(event, config) {
 	                var info = this.getEventInfo(event, region);
 
+	                config.minLeft = 0;
+	                config.maxLeft = region.width;
+
 	                this.updateColor(info);
 	                this.handleDrag(event, config);
 	            },

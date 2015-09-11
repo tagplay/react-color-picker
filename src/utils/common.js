@@ -44,6 +44,9 @@ export default {
             onDrag: function(event, config){
                 var info = this.getEventInfo(event, region)
 
+                config.minLeft = 0
+                config.maxLeft = region.width
+
                 this.updateColor(info)
                 this.handleDrag(event, config)
             },
